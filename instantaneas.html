@@ -126,6 +126,13 @@ details{border-top:1px solid var(--line)}
 @media (max-width:640px){.lenses{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .lens svg{width:100%;height:auto;display:block;margin-bottom:6px;color:var(--ink)}
 .opt input:checked + span svg{color:var(--accent)}
+.hist{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.histlab{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-right:4px}
+.hitem{display:inline-flex;align-items:center;background:var(--panel);border:1px dashed var(--line);border-radius:999px;max-width:100%;min-width:0}
+.hchip{border:0;background:transparent;font:500 13px var(--f-body);color:var(--ink);padding:5px 4px 5px 12px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:280px}
+.hchip:hover{color:var(--accent)}
+.hdel{border:0;background:transparent;color:var(--muted);cursor:pointer;padding:5px 10px 5px 4px;font-size:15px;line-height:1}
+.hdel:hover{color:var(--accent)}
 .check{flex-wrap:nowrap;font-size:15px;font-weight:500;letter-spacing:0;padding:14px 16px}
 .hint b{color:var(--ink)}
 </style>
@@ -148,11 +155,13 @@ details{border-top:1px solid var(--line)}
       <div class="field">
         <label for="people"><span class="step">1</span> Quién está <small>personas, edad, aspecto</small></label>
         <textarea id="people" rows="2">Mujer de unos 30 años, pelo castaño ondulado y despeinado, pijama de rayas azules y blancas, calcetines rojos de lana</textarea>
+        <div class="hist" id="histPeople" hidden></div>
       </div>
 
       <div class="field">
         <label for="action"><span class="step">2</span> Qué está haciendo <small>la acción, en movimiento</small></label>
         <textarea id="action" rows="3">Tumbada boca arriba en la cama recién levantada, lee una revista con las piernas apoyadas en alto contra la pared, absorta</textarea>
+        <div class="hist" id="histAction" hidden></div>
         <div class="chips" id="actChips" aria-label="Acciones rápidas"></div>
       </div>
 
@@ -161,6 +170,7 @@ details{border-top:1px solid var(--line)}
         <div class="opts" id="shots" role="radiogroup" aria-labelledby="shotLab"></div>
         <label for="focusPoint" style="font-size:14px;margin-top:4px">Punto de interés <small>opcional</small></label>
         <textarea id="focusPoint" rows="1" placeholder="Ej.: los pies con calcetines rojos en primer término, la cara tapada por la revista"></textarea>
+        <div class="hist" id="histFocus" hidden></div>
       </div>
 
       <div class="field">
@@ -356,6 +366,28 @@ const ACCIDENTS = [
 
 const $ = id => document.getElementById(id);
 
+
+/* ---------- Histórico de campos (se guarda en este navegador) ---------- */
+const HIST_KEY="lmHistorico", HIST_FIELDS=[["people","histPeople"],["action","histAction"],["focusPoint","histFocus"]];
+function getHist(){ try{ return JSON.parse(localStorage.getItem(HIST_KEY)||"{}")||{}; }catch(e){ return {}; } }
+function setHist(h){ try{ localStorage.setItem(HIST_KEY,JSON.stringify(h)); }catch(e){} }
+function pushHist(field,v){ v=(v||"").trim(); if(!v) return; const h=getHist(); h[field]=[v,...(h[field]||[]).filter(x=>x!==v)].slice(0,12); setHist(h); }
+function drawHist(){
+  const h=getHist();
+  HIST_FIELDS.forEach(([field,box])=>{
+    const el=$(box); if(!el) return; const arr=h[field]||[]; el.innerHTML=""; el.hidden=!arr.length; if(!arr.length) return;
+    const lab=document.createElement("span"); lab.className="histlab"; lab.textContent="Recientes"; el.appendChild(lab);
+    arr.forEach(v=>{
+      const w=document.createElement("span"); w.className="hitem";
+      const b=document.createElement("button"); b.type="button"; b.className="hchip"; b.title=v; b.textContent=v;
+      b.onclick=()=>{ $(field).value=v; render(); save(); };
+      const x=document.createElement("button"); x.type="button"; x.className="hdel"; x.textContent="×"; x.setAttribute("aria-label","Quitar del historial");
+      x.onclick=()=>{ const hh=getHist(); hh[field]=(hh[field]||[]).filter(y=>y!==v); setHist(hh); drawHist(); };
+      w.append(b,x); el.appendChild(w);
+    });
+  });
+}
+
 /* ---------- Objetivos de cámara ---------- */
 const LENSES = [
   {id:"24", name:"24 mm", hint:"Gran angular", s:0.72, r:0.42, text:"24mm wide-angle lens: a lot of the room in frame, strong perspective with converging lines, near objects look larger. Keep people away from the frame edges so nothing gets stretched"},
@@ -387,13 +419,23 @@ const lensText = () => (LENSES.find(l=>l.id===(document.querySelector('input[nam
 /* ---------- Modelos de colchón LOMONACO ---------- */
 const MATTRESS_COMMON = {
   shape: "Rectangular, tall mattress about 30 cm thick with a pillow-top. The FRONT and the BACK are the two SHORT sides (the width of the bed). The two LATERALS are the LONG sides (the length of the bed)",
-  construction: "Two stacked layers visible on every side: an upper pillow-top layer, about one third of the height, wrapped by a band of fine vertical ribbed quilting between two thin piping lines; and a taller lower body panel in white embossed jacquard knit with a soft organic pattern, closed by a piping line along the bottom edge",
+  construction: "Two stacked layers visible on every side: an upper pillow-top layer, about one third of the height, wrapped by a band of fine vertical ribbed quilting between two thin piping lines; and a taller lower body panel in white embossed jacquard knit with a soft organic pattern, closed by a piping line along the bottom edge. Both layers are ONE single sewn mattress: the pillow-top has exactly the same width and length as the body, edges aligned, no gap and no overhang. It is never a separate topper or a second mattress lying on top",
   top: "White jacquard knit top with dense biscuit tufting: a regular grid of round puffy cushions, each sunk at its tuft point, covering the whole surface",
-  front: "FRONT = the short side that carries the model name in small spaced capitals above the LOMONACO wordmark, embroidered in burgundy and centered on the lower body panel. LOMONACO is one word in spaced capitals with a short horizontal bar under the central M. The front is always the foot of the bed, open to the room",
+  front: "FRONT = the short side that carries the model name in small spaced capitals above the LOMONACO wordmark, embroidered in burgundy and centered on the lower body panel. LOMONACO is one word in spaced capitals with a short horizontal bar under the central M. The front is always the foot of the bed, open to the room. The front has NO handles",
   back: "BACK = the opposite short side: plain white jacquard with no text and no logo. It is the head of the bed, against the wall or the headboard, where the pillows rest",
-  laterals: "Each LONG lateral side has NO text and NO logo. It only has two horizontal rectangular fabric carry handles on the lower body panel, one near each end. Each handle has a stitched square with an X at both ends and thin burgundy edging along its top and bottom borders. The handle closest to the front carries a small embroidered burgundy M with a short bar beneath it; the other handle has no M",
-  ribbon: "A single burgundy satin ribbon printed with LOMONACO in light cream capitals crosses the RIGHT front corner diagonally (as seen facing the front), lying on the top surface and folding over the edge. Never on the left corner, never at the back, never more than one",
-  color: "The whole mattress is white. The only color is burgundy: the front embroidery, the ribbon, the handle edging and the M"
+  laterals: "Each LONG lateral side has NO text and NO logo. It only has two horizontal rectangular fabric carry handles on the lower body panel, one near each end. Each handle has a stitched square with an X at both ends and thin burgundy edging along its top and bottom borders. The handle closest to the front carries a small embroidered burgundy M with a short bar beneath it; the other handle has no M. A long side NEVER carries embroidered text: no LOMONACO and no model name, ever",
+  ribbon: "A single burgundy satin ribbon printed with LOMONACO in light cream capitals crosses the RIGHT front corner diagonally (as seen facing the front), lying on the top surface and folding over the edge. ALWAYS on the right corner, NEVER on the left corner, even when the left corner is the one facing the camera. Never at the back, never more than one",
+  color: "The whole mattress is white. The only color is burgundy: the front embroidery, the ribbon, the handle edging and the M",
+  fabric: "Copy the jacquard pattern, the biscuit tufting and the ribbed band exactly from the reference images. Never invent the fabric or replace it with a generic quilt",
+  view_logic: {
+    front: "Camera facing the front: model name and LOMONACO centered on the front, NO handles on the front, ribbon on the RIGHT top corner",
+    front_right_corner: "Camera at the front-right corner: front with the logo on the LEFT of the image, right long side with its two handles on the RIGHT of the image, the M handle next to the corner, ribbon on the corner closest to the camera",
+    front_left_corner: "Camera at the front-left corner: front with the logo on the RIGHT of the image, left long side with its two handles on the LEFT of the image. The ribbon stays on the FAR corner of the front, on the right of the image, small or hidden. Never a ribbon on the near left corner",
+    right_long_side: "Camera facing the right long side: the front is on the LEFT of the image, ribbon at the top-left corner, two handles, the M handle on the left",
+    left_long_side: "Camera facing the left long side: the front is on the RIGHT of the image, the ribbon at the far top-right corner, barely visible, two handles, the M handle on the right",
+    back: "Back: plain, no text, pillows resting against it"
+  },
+  coverage: "A duvet, a sheet or a blanket may cover part of the mattress, the ribbon or the logo. That is fine. Whatever stays visible must follow these rules"
 };
 const MODELS = [
   {id:"natura-latex", name:"Natura Látex", label:"NATURA LÁTEX", piping:"White piping on all edges"},
@@ -419,8 +461,9 @@ function productSpec(baseText){
       model_name_on_front: id==="otro" ? ("Model name as embroidered in the reference" + (custom? (": "+custom):"")) : ("Small spaced capitals reading " + m.label + ", exactly as in the reference"),
       piping: id==="otro" ? "As in the reference" : m.piping
     }),
-    orientation_rules: "Seen from the front: model name and LOMONACO facing the camera, ribbon at the right corner. When the camera sees a long side, it shows only its two horizontal handles, the M handle nearest the front, never any text. Only ONE handle per long side has an M, never two. The ribbon is on the front-right corner only: if the camera sees the LEFT long side (the front appears on the right of the image), the ribbon is on the far corner and mostly hidden; it is clearly visible only when the camera sees the right long side or the front-right corner. Do not copy the viewpoint of the vista 3:4 reference: rotate the mattress to match the camera position of this scene. Pillows and people's heads always at the back; people's feet point toward the front. The logo is never on a long side and is never mirrored, moved, duplicated or invented",
+    orientation_rules: "Seen from the front: model name and LOMONACO facing the camera, ribbon at the right corner. When the camera sees a long side, it shows only its two horizontal handles, the M handle nearest the front, never any text. Only ONE handle per long side has an M, never two. The ribbon is on the front-right corner only: if the camera sees the LEFT long side (the front appears on the right of the image), the ribbon is on the far corner and mostly hidden; it is clearly visible only when the camera sees the right long side or the front-right corner. Do not copy the viewpoint of the vista 3:4 reference: rotate the mattress to match the camera position of this scene and apply view_logic. Pillows and people's heads always at the back; people's feet point toward the front. The logo is never on a long side and is never mirrored, moved, duplicated or invented",
     text_check: "Spell LOMONACO and the model name exactly, letter by letter, with the bar under the M",
+    never: ["ribbon on the left corner","more than one ribbon","handles on the front","LOMONACO or the model name embroidered on a long side","two M handles on the same long side","a separate topper or pad lying on top of the mattress","invented fabric, tufting or pattern different from the references"],
     do_not_modify: "Strict product lock. Reproduce the mattress exactly as in the reference images and do not change any aspect of the product or any element of its design: shape, proportions, thickness, layers, tufting, ribbed band, jacquard pattern, colors, piping, handles, M, logo, typography and ribbon. Nothing added, removed, simplified, redesigned or restyled"
   };
   if(baseText) spec.bed_base = baseText;
@@ -478,7 +521,7 @@ function build(){
   if($("product").checked){ scene.product = productSpec(BED_BASES[$("pbase").value][1]); }
   scene.aspect_ratio = $("ar").value;
   const neg=$("neg").value.split(/[,\n]/).map(s=>s.trim()).filter(Boolean);
-  scene.strictly_exclude = ["looking into the camera","posed smiles","studio lighting","catalog look","socks, shoes, slippers or clothes on the floor","clothes piled on chairs or radiators","messy or cluttered room","visible light switches and power sockets","aluminium window frames","cheap laminate furniture","flat grey lighting","stock photo look","extra or missing limbs","extra fingers or fused hands","deformed bodies","impossible poses","floating objects","mirrored or garbled text","logo on the long side of the mattress", ...neg];
+  scene.strictly_exclude = ["ribbon on the left corner of the mattress","handles on the front of the mattress","separate topper on the mattress","looking into the camera","posed smiles","studio lighting","catalog look","socks, shoes, slippers or clothes on the floor","clothes piled on chairs or radiators","messy or cluttered room","visible light switches and power sockets","aluminium window frames","cheap laminate furniture","flat grey lighting","stock photo look","extra or missing limbs","extra fingers or fused hands","deformed bodies","impossible poses","floating objects","mirrored or garbled text","logo on the long side of the mattress", ...neg];
   $("stock").textContent = t.stock + " · color neutro";
   $("arLabel").textContent = $("ar").value;
   return {art_direction: ART_DIRECTION, production_value: find(VALUE_LEVELS,val("pv")).text, scene};
@@ -516,12 +559,13 @@ $("reroll").onclick=()=>{
   render(); $("toast").textContent="Nueva variación: cambia el pequeño accidente de cámara. La escena y la dirección de arte se mantienen.";
 };
 $("copy").onclick=()=>{
+  HIST_FIELDS.forEach(([field])=>pushHist(field,$(field).value)); drawHist();
   const ok=()=>{$("toast").textContent="Prompt copiado. Pégalo en Magnific.";};
   const fallback=()=>{const r=document.createRange();r.selectNodeContents($("json"));const s=getSelection();s.removeAllRanges();s.addRange(r);$("toast").textContent="Texto seleccionado. Pulsa Ctrl+C o Cmd+C para copiar.";};
   try{navigator.clipboard.writeText(current).then(ok,fallback)}catch(e){fallback()}
 };
 
-load(); render();
+load(); render(); drawHist();
 </script>
 
 </body>

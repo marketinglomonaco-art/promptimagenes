@@ -32,6 +32,15 @@ El prompt cita los nodos de referencia por su nombre exacto. Usa siempre estos n
 - Cinta: una sola, granate con LOMONACO en crudo, en diagonal en la esquina derecha de delante.
 - Color: todo blanco; el granate solo en bordado, cinta, ribetes de las asas y M (y el vivo en el Gran Natura).
 
+## Errores que no se pueden repetir
+
+- La cinta nunca en la esquina izquierda: siempre en la derecha de delante, aunque la izquierda sea la que mira a cámara.
+- Nunca LOMONACO ni el nombre del modelo bordados en un lateral.
+- Nunca asas en la parte de delante.
+- El pillow top va cosido al colchón: nunca un topper suelto encima.
+- Nunca inventar el tejido ni el capitoné: se copian de las referencias.
+- Si una manta o una sábana tapa parte del colchón, no pasa nada.
+
 ## Reglas de fotografía del manual
 
 Natural y sin filtros, sin viñetas, sin flash ni focos, nadie posa ni mira a cámara, luz de ventana o de lámpara.
