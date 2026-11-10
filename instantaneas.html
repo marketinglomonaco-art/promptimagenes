@@ -155,6 +155,9 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .lensrow button small{font-weight:400;color:var(--muted);margin-left:4px}
 .lensrow button[aria-checked="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
 .lensrow button[aria-checked="true"] small{color:#fff;opacity:.8}
+.fixbox{display:flex;flex-direction:column;gap:10px;align-items:flex-start;background:var(--panel);border:1px dashed var(--line);border-radius:var(--r-sm);padding:14px 16px}
+.fixbox p{margin:0;font-size:14px;color:var(--muted)}
+.fixbox p b{color:var(--ink)}
 .check{flex-wrap:nowrap;font-size:15px;font-weight:500;letter-spacing:0;padding:14px 16px}
 .hint b{color:var(--ink)}
 </style>
@@ -257,12 +260,15 @@ input[type=range]{width:100%;accent-color:var(--accent)}
         <div class="btns">
           <button type="button" class="ghost" id="reroll">Otra variación</button>
           <button type="button" class="main" id="copy">Copiar prompt</button>
-          <button type="button" class="ghost" id="copyFix" title="Prompt corto para corregir solo el colchón de una imagen ya generada">Corregir colchón</button>
         </div>
       </div>
       <pre id="json" tabindex="0"></pre>
       <div class="toast" id="toast" role="status"></div>
-      <p class="tip"><b>En Magnific:</b> Nano Banana 2.6, pega el JSON entero. Sube 1 o 2 de tus referencias como <b>Style</b> para clavar el grano y el color. Si incluyes el colchón, conéctalo como <b>Product</b>; si repites persona en varias fotos, súbela como <b>Character</b>.</p>
+      <div class="fixbox">
+        <p><b>Solo para corregir una imagen ya generada.</b> En Magnific, abre esa imagen, escribe sobre ella en "¿Qué quieres cambiar?" con los nodos del colchón conectados y pega este texto. No sirve para generar una imagen nueva.</p>
+        <button type="button" class="ghost" id="copyFix">Copiar prompt de corrección</button>
+      </div>
+      <p class="tip"><b>En Magnific:</b> Nano Banana 2.6, pega el JSON entero en el nodo de texto que genera la imagen. Sube 1 o 2 de tus referencias como <b>Style</b> para clavar el grano y el color. Si incluyes el colchón, conéctalo como <b>Product</b>; si repites persona en varias fotos, súbela como <b>Character</b>.</p>
     </section>
   </div>
 </div>
@@ -756,44 +762,63 @@ function setupCam(){
 const val = n => { const e=document.querySelector(`input[name="${n}"]:checked`); return e?e.value:null; };
 const find = (list,id) => list.find(o=>o.id===id) || list[0];
 
+const PV_SHORT={
+  everyday:"A real, modest but tasteful home: simple furniture, honest materials, calm and tidy",
+  premium:"A beautifully considered real home: washed linen bedding, wool throw, solid wood, lime plaster walls, oak or stone floor, a ceramic lamp, one piece of art, long linen curtains. Few objects, all of them beautiful",
+  luxury:"A spacious architectural bedroom in a high-end home: high ceilings, plaster walls, tall windows with flowing linen curtains, refined furniture, generous empty space"
+};
+function productLines(view, base){
+  const lbl=modelLabel(), notes=customNotes();
+  const id=$("model").value, m=MODELS.find(x=>x.id===id)||MODELS[0];
+  const name = id==="otro" ? (lbl||"model shown in the references") : m.name;
+  const front = lbl ? `burgundy embroidered '${lbl}' in small spaced capitals above a larger 'LOMONACO' (short bar under the central M)` : "the model name copied letter by letter from the vista frontal reference, above a larger 'LOMONACO' (short bar under the central M), burgundy embroidery";
+  return [
+    `The LOMONACO ${name} mattress, copied exactly from the connected references (vista frontal, vista lateral, vista 3:4, detalle asa y banda, detalle tela esquina derecha). Take only its design from them, never their framing, grey background or light. Do not redesign it.`,
+    `Tall mattress with an integrated pillow-top sewn as one piece: round biscuit tufting on top, a vertical ribbed band, a white jacquard lower panel. Never flat, never a separate topper.${base?" It sits on: "+base+".":""}`,
+    `FRONT (the short side at the foot of the bed, open to the room): ${front}, centered. No handles on the front. Exact spelling; if it cannot be sharp and correct, keep it covered by bedding.`,
+    "LONG SIDES: no words at all, only two horizontal handles; the handle nearest the front has a small burgundy M.",
+    "ONE burgundy ribbon with LOMONACO on the front-RIGHT corner only: the corner right after the final O of LOMONACO. Never on the front-left corner.",
+    "IN THIS IMAGE: "+view,
+    "Pillows rest at the head end against the wall. The mattress never turns. Bedding may cover parts of it."+(notes?" Model differences: "+notes+".":"")
+  ];
+}
 function build(){
   const t=find(TIMES,val("time")); const G=camGeo(), F=framing(G);
-  const scene = {
-    people: $("people").value.trim(),
-    action: $("action").value.trim() + ". Caught in the moment, unaware of the camera",
-    camera: F.block
-  };
-  const fp=$("focusPoint").value.trim();
-  if(fp) scene.point_of_interest = fp;
-  scene.lens = LENSES.find(l=>l.id===CAM.lens).text;
-  scene.time_of_day = t.time;
-  scene.lighting = t.light;
+  const prod=$("product").checked;
+  const clean=x=>x.trim().replace(/[.\s]+$/,"");
+  const who=clean($("people").value), act=clean($("action").value), fp=clean($("focusPoint").value);
   const room=ROOMS[$("room").value][1], pal=PALETTES[$("palette").value][1], extra=$("extra").value.trim();
-  if(room) scene.space = room;
-  if(pal) scene.textiles_and_color = pal;
-  if(extra) scene.decor_direction = "Priority over the default set: " + extra;
-  scene.camera_accident = accident;
-  scene.aspect_ratio = $("ar").value;
-  const neg=$("neg").value.split(/[,\n]/).map(s=>s.trim()).filter(Boolean);
-  const prodOn=$("product").checked;
-  if(!prodOn) delete scene.camera.mattress_seen_as;
-  scene.strictly_exclude = [...(G.ratio<0.95?["close-up of the mattress","product shot framing","mattress filling the frame"]:[]),"catalog product photo","glossy CGI render look",...(prodOn?["ribbon on the front-left corner of the mattress (before the L of LOMONACO)","the LOMONACO wordmark or the model name on a long side of the mattress","flat mattress without pillow-top","handles on the front of the mattress","separate topper on the mattress"]:[]),"garbled or misspelled text","looking into the camera","posed smiles","studio lighting","catalog look","socks, shoes, slippers or clothes on the floor","clothes piled on chairs or radiators","messy or cluttered room","visible light switches and power sockets","aluminium window frames","cheap laminate furniture","flat grey lighting","stock photo look","extra or missing limbs","extra fingers or fused hands","deformed bodies","impossible poses","floating objects","mirrored or garbled text", ...neg];
+  const neg=$("neg").value.split(/[,\n]/).map(x=>x.trim()).filter(Boolean);
+  const lens=LENSES.find(l=>l.id===CAM.lens);
+  const lensHint=(lens.text.split(":")[1]||"").split(",")[0].trim();
+  const out={};
+  out.SCENE = [who, act].filter(Boolean).join(". ") + ". A real moment caught on camera: nobody poses, nobody looks into the lens."
+    + (fp ? " Point of interest, sharpest focus and visual center: " + fp + "." : "");
+  out.CAMERA = F.sentence.replace(CAM.lens+"mm lens", CAM.lens+"mm lens"+(lensHint?" ("+lensHint+")":"")) + "." + (who ? " The people and their action are the subject of the frame." : "") + " Keep exactly this camera position, height, lens and framing.";
+  out.LIGHT = t.time + ". " + t.light + ".";
+  out.LOOK = [
+    "Candid editorial photograph, documentary and cinematic, shot on 35mm film: natural grain, soft highlights, real depth. Never an ad, a catalog shot or a CGI render.",
+    "Light only from the window, the sun or a bedside lamp: one dominant light with a clear direction, real shadows. No flash, no studio light.",
+    "Neutral color around 5200K: clean whites with a hint of cream, natural untouched skin, a calm neutral base with one or two color accents from textiles.",
+    "Intuitive framing with layered depth; focus on the emotional point with gentle falloff.",
+    "People with real weight and mid-movement gestures, anatomically correct hands and limbs, natural morning hair, quality cotton or linen sleepwear."
+  ];
+  out.SET = [PV_SHORT[val("pv")]||PV_SHORT.premium, room, pal, extra?("Priority: "+clean(extra)):"", "Tidy room: nothing on the floor, no clothes on chairs, no visible sockets or switches. The bed is lived in, with crumpled linen."].filter(Boolean).join(". ").replace(/\.\s*\./g,".");
+  if(accident && !/^None/.test(accident)) out.SET += " Small camera accident: " + accident + ".";
+  if(prod) out.PRODUCT = productLines(F.detail ? ("only part of the mattress is in frame; what is visible follows this: "+F.view) : F.view, BED_BASES[$("pbase").value][1]);
+  out.AVOID = ["posing or looking into the camera","flash or studio lighting","catalog, stock or CGI look","clutter or clothes on the floor","extra or missing limbs and fingers","garbled or mirrored text",
+    ...(prod?["ribbon on the front-left corner","words on the long sides of the mattress","handles on the front","a separate topper"]:[]), ...neg];
+  out.FORMAT = "Aspect ratio " + $("ar").value;
   $("stock").textContent = t.stock + " · color neutro";
   $("arLabel").textContent = $("ar").value;
-  const out={};
-  const prod=$("product").checked;
-  out.IMAGE = "A candid editorial photograph shot on film, NOT an advertisement" + (F.detail ? ". " : " and NOT a product shot. ")
-    + scene.people + ". " + scene.action + ". "
-    + "Camera and framing: " + F.sentence + ". " + t.time + ": " + t.light + ". "
-    + (prod ? (F.detail ? "A close, intimate detail of the LOMONACO mattress within a real moment. " : "The LOMONACO mattress is part of the room, recognizable but not the subject. ") : "")
-    + "Natural film grain, real available light, documentary feel, nobody posing or looking at the camera";
-  if(prod) out.PRODUCT_MUST_MATCH_REFERENCES = mustMatch(F.view, F.detail?"detail":"");
-  out.FRAMING_IS_MANDATORY = "Respect this camera position, height, lens and framing exactly: " + F.sentence + ". Do not move the camera, do not crop closer or wider" + (F.detail ? "" : ", do not turn it into a close-up of the mattress");
-  out.art_direction = ART_DIRECTION;
-  out.scene = scene;
-  out.production_value = find(VALUE_LEVELS,val("pv")).text;
-  if($("product").checked) out.product_details = productSpec(BED_BASES[$("pbase").value][1]);
   return out;
+}
+function fixPromptGen(){
+  const o=build(), F=framing(camGeo());
+  return "IMAGE EDIT ONLY. Use this text only as an edit of the attached generated image, never to create a new image.\n"
+    + "Change only the mattress. Keep the people, their pose, the bedding, the room, the light, the color and the framing exactly as in the image.\n"
+    + "Context of the image: " + o.SCENE + " " + o.CAMERA + "\n"
+    + "The mattress must match the connected references:\n- " + productLines(F.view, BED_BASES[$("pbase").value][1]).join("\n- ");
 }
 
 function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")}
@@ -835,7 +860,7 @@ $("copy").onclick=()=>{
 };
 
 $("copyFix").onclick=()=>{
-  const t=fixPrompt(framing(camGeo()).view);
+  const t=fixPromptGen();
   const ok=()=>{$("toast").textContent="Prompt de corrección copiado. Úsalo en Magnific editando la imagen, con las mismas referencias conectadas.";};
   const fb=()=>{ $("json").textContent=t; const r=document.createRange(); r.selectNodeContents($("json")); const sel=getSelection(); sel.removeAllRanges(); sel.addRange(r); $("toast").textContent="Texto seleccionado. Pulsa Ctrl+C o Cmd+C para copiar."; };
   try{ navigator.clipboard.writeText(t).then(ok,fb); }catch(e){ fb(); }
