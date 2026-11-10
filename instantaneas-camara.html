@@ -1,0 +1,876 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Generador de imágenes LOMONACO</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: hoja de rodaje. Izquierda la ficha de la toma, derecha el prompt fijo al hacer scroll */
+:root{
+  /* Herramienta corporativa LOMONACO: un solo tema claro, tokens del manual de marca */
+  --bg:#F6F6F6; --panel:#FFFFFF; --ink:#1D1D1F; --muted:#5F5F66; --line:#D9D9DE;
+  --accent:#7C1919; --accent-d:#5E1212; --accent-ink:#FFFFFF; --olive:#5F5F66;
+  --code-bg:#1D1D1F; --code-fg:#F1F1F1; --code-key:#E9A9A9; --code-str:#D9D9DE;
+  --swatch-line:rgba(0,0,0,.12); --mat:#FFFFFF; --wood:#78624A; --floor:#EDEDF0;
+  --f-display:"Albert Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --f-body:"Albert Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --serif:"Playfair Display", Georgia, "Times New Roman", serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  --r:24px; --r-sm:14px;
+  color-scheme:light;
+}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+.wrap{max-width:1240px;margin:0 auto;padding-block:28px 48px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;border-bottom:2px solid var(--ink);padding-bottom:14px;margin-bottom:24px}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(28px,4vw,42px);line-height:1;margin:0;letter-spacing:-.02em;text-wrap:balance}
+h1 span{color:var(--accent)}
+.sub{color:var(--muted);margin:6px 0 0;max-width:62ch}
+.slate{font-family:var(--f-mono);font-size:12px;display:flex;gap:16px;flex-wrap:wrap;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.slate b{color:var(--ink);font-weight:500}
+
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:28px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
+
+form{display:flex;flex-direction:column;gap:22px;min-width:0}
+.field{display:flex;flex-direction:column;gap:8px;min-width:0}
+label,.lab{font-family:var(--f-display);font-weight:500;font-size:17px;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
+label small,.lab small{font-family:var(--f-mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.step{font-family:var(--f-mono);font-size:12px;color:var(--accent)}
+textarea,select{width:100%;font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 12px}
+textarea{resize:vertical;min-height:64px}
+textarea:focus,select:focus,button:focus-visible,summary:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.hint{margin:0;font-size:13px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:500 13px var(--f-body);border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:5px 11px;cursor:pointer}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.opt{position:relative;display:block;margin:0}
+.opt input{position:absolute;opacity:0;pointer-events:none}
+.opt span{display:flex;flex-direction:column;gap:3px;height:100%;border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:9px 11px;cursor:pointer;font-family:var(--f-body);font-weight:600;font-size:14px;line-height:1.3}
+.opt span em{font-style:normal;font-weight:400;font-size:12px;color:var(--muted)}
+.opt input:checked + span{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.opt input:focus-visible + span{outline:2px solid var(--accent);outline-offset:2px}
+.check{display:flex;gap:10px;align-items:flex-start;font-family:var(--f-body);font-size:14px;font-weight:500;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 12px}
+.check input{margin-top:3px;accent-color:var(--accent)}
+details{border-top:1px solid var(--line);padding-top:14px}
+summary{cursor:pointer;font-family:var(--f-display);font-weight:500;font-size:17px}
+.adv{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:14px}
+.adv label{font-size:14px}
+
+.out{position:sticky;top:calc(env(safe-area-inset-top, 0px) + 16px);display:flex;flex-direction:column;gap:12px;min-width:0}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.stock{font-family:var(--f-mono);font-size:12px;color:var(--olive);text-transform:uppercase;letter-spacing:.08em}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+button.main,button.ghost{font:600 14px var(--f-body);border-radius:6px;padding:10px 16px;cursor:pointer;border:1px solid var(--accent)}
+button.main{background:var(--accent);color:var(--accent-ink)}
+button.ghost{background:transparent;color:var(--accent)}
+pre{margin:0;background:var(--code-bg);color:var(--code-fg);font:12.5px/1.55 var(--f-mono);padding:18px;border-radius:8px;overflow:auto;max-height:62vh;white-space:pre-wrap;word-break:break-word}
+pre .k{color:var(--code-key)} pre .s{color:var(--code-str)}
+.toast{font-size:13px;color:var(--olive);min-height:1.2em}
+.rule{border:1px solid var(--accent);border-radius:8px;padding:10px 14px;font-size:13.5px;color:var(--ink);background:var(--panel)}
+.rule b{color:var(--accent)}
+.tip{border-left:3px solid var(--olive);padding:4px 0 4px 12px;color:var(--muted);font-size:13.5px;margin:0}
+.tip b{color:var(--ink)}
+@media (max-width:900px){.out{position:static}pre{max-height:none}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* --- Capa de marca LOMONACO (manual de marca, ed. 01) --- */
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px}
+header{border-bottom:1px solid var(--line);padding-bottom:24px;margin-bottom:32px;align-items:flex-end}
+.brandlogo{display:block;height:20px;width:auto;color:var(--accent);margin-bottom:24px}
+.brandlogo svg{height:100%;width:auto;fill:currentColor;display:block}
+h1{font-family:var(--f-body);font-weight:700;letter-spacing:-.02em;line-height:1.05}
+h1 span{font-family:var(--serif);font-style:italic;font-weight:400;font-size:1.08em;letter-spacing:0;color:var(--accent)}
+.sub{color:var(--muted);font-size:17px;line-height:1.5}
+.slate{font-family:var(--f-body);font-weight:600;font-size:12px;color:var(--muted)}
+.slate b{font-weight:700;color:var(--ink)}
+label,.lab,summary{font-family:var(--f-body);font-weight:700;font-size:18px;letter-spacing:-.01em}
+label small,.lab small{font-family:var(--f-body);font-weight:700;font-size:12px;color:var(--ink);letter-spacing:.08em;opacity:.55}
+.step{font-family:var(--f-body);font-weight:800;color:var(--accent)}
+textarea,select{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-sm);font-family:var(--f-body);font-size:16px}
+textarea:focus,select:focus{border-color:var(--accent)}
+.opt span{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-sm);font-family:var(--f-body);font-weight:600}
+.opt span em{color:var(--muted);font-weight:400}
+.opt input:checked + span{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.chip{background:var(--panel);border:1px solid var(--line);font-family:var(--f-body);font-weight:600;border-radius:999px}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+button.main,button.ghost{font-family:var(--f-body);font-weight:600;font-size:15px;min-height:52px;padding:0 24px;border-radius:999px}
+button.main{background:var(--accent);border-color:var(--accent);color:#fff}
+button.main:hover{background:var(--accent-d);border-color:var(--accent-d)}
+button.ghost{background:var(--panel);color:var(--accent);border-color:var(--accent)}
+pre{border-radius:var(--r);background:var(--code-bg);color:var(--code-fg)}
+.stock{font-family:var(--f-body);font-weight:700;font-size:12px;color:var(--ink);letter-spacing:.08em}
+.toast{color:var(--accent);font-weight:600}
+.tip{border-left:2px solid var(--accent);color:var(--muted)}
+.tip b{color:var(--ink)}
+.rule{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:var(--r-sm)}
+.rule b{color:var(--accent)}
+.check,.slot,figure,.mode{background:var(--panel);border-radius:var(--r-sm)}
+.mode{border-color:var(--line)}
+.mode input:checked + span{background:var(--accent);color:#fff}
+.mode label + label span{border-left-color:var(--line)}
+details{border-top:1px solid var(--line)}
+.card h3 span{font-family:var(--f-body);font-weight:700}
+.views svg{color:var(--ink)}
+.lenses{grid-template-columns:repeat(5,minmax(0,1fr))}
+@media (max-width:640px){.lenses{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.lens svg{width:100%;height:auto;display:block;margin-bottom:6px;color:var(--ink)}
+.opt input:checked + span svg{color:var(--accent)}
+.hist{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.histlab{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-right:4px}
+.hitem{display:inline-flex;align-items:center;background:var(--panel);border:1px dashed var(--line);border-radius:999px;max-width:100%;min-width:0}
+.hchip{border:0;background:transparent;font:500 13px var(--f-body);color:var(--ink);padding:5px 4px 5px 12px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:280px}
+.hchip:hover{color:var(--accent)}
+.hdel{border:0;background:transparent;color:var(--muted);cursor:pointer;padding:5px 10px 5px 4px;font-size:15px;line-height:1}
+.hdel:hover{color:var(--accent)}
+.mviews{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:640px){.mviews{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.mviews svg{width:100%;max-width:110px;height:auto;display:block;margin-bottom:6px;color:var(--ink)}
+.camplan{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px;display:flex;flex-direction:column;gap:8px}
+#plan{width:100%;height:auto;display:block;touch-action:none;cursor:crosshair;user-select:none}
+.camplan figcaption{display:flex;flex-direction:column;gap:6px;font-size:14px}
+#camReadout{font-weight:700;color:var(--accent)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;color:var(--muted);font-size:12px;align-items:center}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.lg-cam{background:var(--accent)}.lg-aim{border:2px solid var(--ink)}.lg-rib{background:#7C1919;border-radius:0!important;transform:rotate(45deg)}
+.warn{margin:0;background:#FBEAEA;color:#5E1212;border:1px solid #E7C3C3;border-radius:var(--r-sm);padding:10px 12px;font-size:14px}
+.camctl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 18px}
+@media (max-width:520px){.camctl{grid-template-columns:minmax(0,1fr)}}
+.rng{display:flex;flex-direction:column;gap:2px}
+.rng label{font-size:14px;justify-content:space-between}
+.rng output{color:var(--accent);font-weight:700}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.lensrow{display:flex;flex-wrap:wrap;gap:6px}
+.lensrow button{font:600 14px var(--f-body);border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:7px 14px;cursor:pointer}
+.lensrow button small{font-weight:400;color:var(--muted);margin-left:4px}
+.lensrow button[aria-checked="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.lensrow button[aria-checked="true"] small{color:#fff;opacity:.8}
+.fixbox{display:flex;flex-direction:column;gap:10px;align-items:flex-start;background:var(--panel);border:1px dashed var(--line);border-radius:var(--r-sm);padding:14px 16px}
+.fixbox p{margin:0;font-size:14px;color:var(--muted)}
+.fixbox p b{color:var(--ink)}
+.check{flex-wrap:nowrap;font-size:15px;font-weight:500;letter-spacing:0;padding:14px 16px}
+.hint b{color:var(--ink)}
+</style>
+
+<div class="wrap">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="logo" viewBox="0 0 2931.33 426.24">
+    <polygon points="207.55 234.14 207.55 288.59 4.57 288.59 4.57 288.03 0 288.03 0 11.79 66.27 11.79 66.27 234.13 207.55 234.14"/><path d="M2167.23,180.65l-.39-1.04-74.71-167.5-69.11-.39-122.6,276.31h66.63l25.9-59.09,129.24-.39,26.29,59.48h66.51l-47.76-107.37ZM2014.95,180l42.82-96.7,42.43,96.31-85.25.39Z"/><polygon points="1805.31 11.79 1805.31 288.08 1740.17 288.08 1740.17 287.11 1613.74 130.47 1613.74 288.08 1547.47 288.08 1547.47 11.79 1613.74 11.79 1740.17 174.44 1740.17 11.79 1805.31 11.79"/><polygon points="1020.12 11.79 1020.12 288.08 953.85 288.08 953.85 130.77 874.37 257.82 840.93 257.82 764.43 135.44 764.43 288.07 698.16 288.07 698.16 11.79 764.43 11.79 857.88 178.96 953.85 11.79 1020.12 11.79"/><rect x="831.6" y="241.88" width="54.36" height="314.36" transform="translate(1257.85 -459.72) rotate(90)"/><path d="M435.33.39c-85.38-.39-154.75,66.9-154.75,149.8s69.37,149.54,154.75,149.15c85.38.39,154.88-66.9,154.88-149.15S520.71,0,435.33.39ZM435.33,240.52c-51.67,0-93.84-40.74-93.84-90.32s42.17-90.97,93.84-90.97,93.97,40.74,93.58,90.71c.39,49.85-41.78,90.58-93.58,90.58Z"/><path d="M1283.38.39c-85.77,0-154.75,67.03-155.14,149.54.39,82.52,69.76,149.8,154.75,149.8s155.14-67.29,154.88-149.8c.39-82.51-69.11-149.93-154.49-149.54ZM1283.38,240.52c-51.67,0-93.84-40.74-93.84-90.32s42.17-90.97,93.84-90.97,93.84,40.74,93.58,90.71c.26,49.85-41.78,90.58-93.58,90.58Z"/><path d="M2776.45,0c-85.38.39-154.75,67.03-154.75,149.93s69.37,149.41,154.75,149.8c85.77,0,154.88-66.9,154.88-149.8S2861.83.39,2776.45,0ZM2776.45,240.91c-51.67,0-93.84-40.74-93.84-90.97s41.78-90.71,94.23-90.71,93.58,40.35,93.58,90.71c-.13,50.24-41.91,90.58-93.97,90.97Z"/><path d="M2547.09,245.45c-28.41,33.14-71.26,54.2-119.19,54.2-85.49,0-154.79-67.04-154.79-149.7,0-82.71,69.3-149.7,154.79-149.7,47.47,0,89.9,20.65,118.31,53.17l-45.57,39.25c-17.21-20.4-43.41-33.44-72.74-33.44-51.84,0-93.81,40.58-93.81,90.72,0,50.09,41.97,90.73,93.81,90.73,29.28,0,55.43-13,72.59-33.29l46.6,38.07Z"/>
+  </symbol></svg>
+  <header>
+    <div>
+      <a class="brandlogo" href="index.html" aria-label="LOMONACO, volver a las herramientas"><svg viewBox="0 0 2931.33 426.24"><use href="#logo"/></svg></a>
+      <h1>Generador de imágenes LOMONACO</h1>
+      <p class="sub">Escribe quién sale, qué hace, el plano y la hora. La dirección de arte, la luz, el color, la textura y la regla de foto robada ya van dentro del prompt.</p>
+    </div>
+    <div class="slate"><span>Toma <b id="takeNo">01</b></span><span>Formato <b id="arLabel">4:5</b></span><span>Modelo <b>Nano Banana Pro</b></span></div>
+  </header>
+
+  <div class="grid">
+    <form id="f" autocomplete="off">
+      <div class="field">
+        <label for="people"><span class="step">1</span> Quién está <small>personas, edad, aspecto</small></label>
+        <textarea id="people" rows="2">Mujer de unos 30 años, pelo castaño ondulado y despeinado, pijama de rayas azules y blancas, calcetines rojos de lana</textarea>
+        <div class="hist" id="histPeople" hidden></div>
+      </div>
+
+      <div class="field">
+        <label for="action"><span class="step">2</span> Qué está haciendo <small>la acción, en movimiento</small></label>
+        <textarea id="action" rows="3">Tumbada boca arriba en la cama recién levantada, lee una revista con las piernas apoyadas en alto contra la pared del cabecero y la cabeza hacia los pies de la cama, absorta</textarea>
+        <div class="hist" id="histAction" hidden></div>
+        <div class="chips" id="actChips" aria-label="Acciones rápidas"></div>
+      </div>
+
+      <div class="field">
+        <span class="lab" id="camLab"><span class="step">3</span> Cámara y encuadre <small>arrastra la cámara y el punto de mira</small></span>
+        <div class="chips" id="camPresets" aria-label="Encuadres rápidos"></div>
+        <figure class="camplan">
+          <svg id="plan" viewBox="-0.25 -0.4 5.1 4.55" role="img" aria-labelledby="camLab"></svg>
+          <figcaption><span id="camReadout"></span><span class="legend"><i class="lg-cam"></i>Cámara <i class="lg-aim"></i>Punto de mira <i class="lg-rib"></i>Cinta (esquina delantera derecha)</span></figcaption>
+        </figure>
+        <p class="warn" id="camWarn" hidden></p>
+        <div class="camctl">
+          <div class="rng"><label for="camDist">Distancia <output id="camDistOut" for="camDist"></output></label><input type="range" id="camDist" min="0.4" max="5.5" step="0.1" value="2.5"></div>
+          <div class="rng"><label for="camH">Altura <output id="camHOut" for="camH"></output></label><input type="range" id="camH" min="20" max="260" step="10" value="120"></div>
+        </div>
+        <div class="lensrow" id="lensRow" role="radiogroup" aria-label="Objetivo"></div>
+        <label class="check" for="camDoor"><input type="checkbox" id="camDoor"><span>A través de la puerta: el marco de la puerta desenfocado en primer término</span></label>
+        <label for="focusPoint" style="font-size:14px;margin-top:4px">Punto de interés <small>opcional</small></label>
+        <textarea id="focusPoint" rows="1" placeholder="Ej.: los pies con calcetines rojos en primer término, la cara tapada por la revista"></textarea>
+        <div class="hist" id="histFocus" hidden></div>
+      </div>
+
+
+      <div class="field">
+        <span class="lab" id="timeLab"><span class="step">4</span> Hora del día <small>define la luz</small></span>
+        <div class="opts" id="times" role="radiogroup" aria-labelledby="timeLab"></div>
+      </div>
+
+      <div class="field">
+        <span class="lab" id="pvLab"><span class="step">5</span> Percepción de valor <small>cuánto glamour</small></span>
+        <div class="opts" id="pvs" role="radiogroup" aria-labelledby="pvLab"></div>
+      </div>
+
+      <label class="check" for="product"><input type="checkbox" id="product" checked><span>Incluir mi colchón (referencia de producto conectada en Magnific). El lado del logo es siempre los pies de la cama y las almohadas van en el lado contrario. Aparece de forma natural, nunca como bodegón.</span></label>
+
+      <div class="field">
+        <label for="model">Modelo de colchón <small>si incluyes el colchón</small></label>
+        <select id="model"></select>
+        <textarea id="customModel" rows="2" hidden placeholder="Nombre del modelo y lo que lo diferencia. Ej.: Supreme Pocket, vivo gris, asas sin bordado"></textarea>
+        <p class="hint">Las referencias del colchón se conectan en Magnific. El modelo ve las fotos, no los nombres de los nodos, así que el prompt no depende de cómo se llamen.</p>
+      </div>
+
+      <div class="field">
+        <label for="pbase">Base de la cama</label>
+        <select id="pbase"></select>
+      </div>
+
+      <details>
+        <summary>Ajustes opcionales del set</summary>
+        <div class="adv">
+          <div class="field"><label for="room">Espacio</label><select id="room"></select></div>
+          <div class="field"><label for="palette">Textiles y color</label><select id="palette"></select></div>
+          <div class="field"><label for="ar">Formato</label>
+            <select id="ar"><option value="4:5">4:5 feed (recomendado)</option><option value="3:4">3:4 vertical</option><option value="2:3">2:3 editorial</option><option value="9:16">9:16 stories</option><option value="3:2">3:2 horizontal</option></select></div>
+        </div>
+        <div class="field" style="margin-top:14px">
+          <label for="extra" style="font-size:14px">Indicación libre de decoración <small>manda sobre lo anterior</small></label>
+          <textarea id="extra" rows="2" placeholder="Ej.: cabecero tapizado verde, tocadiscos en la mesilla, pared de madera"></textarea>
+        </div>
+        <div class="field" style="margin-top:14px">
+          <label for="neg" style="font-size:14px">Evitar <small>separado por comas</small></label>
+          <textarea id="neg" rows="1" placeholder="Ej.: televisión, mascotas"></textarea>
+        </div>
+      </details>
+    </form>
+
+    <section class="out" aria-label="Prompt generado">
+      <div class="rule"><b>Regla fija:</b> nadie posa, nadie mira a cámara sonriendo. Cada foto es un momento real pillado al vuelo, con grano, textura y un aire cinematográfico.</div>
+      <div class="bar">
+        <span class="stock" id="stock">Luz de ventana · neutra</span>
+        <div class="btns">
+          <button type="button" class="ghost" id="reroll">Otra variación</button>
+          <button type="button" class="main" id="copy">Paso 1 · Copiar prompt de escena</button>
+        </div>
+      </div>
+      <pre id="json" tabindex="0"></pre>
+      <div class="toast" id="toast" role="status"></div>
+      <div class="fixbox">
+        <p><b>Paso 2 · El colchón exacto.</b> Cuando la escena del paso 1 te guste (persona, luz, encuadre), abre esa imagen en Magnific y edítala: con <b>Dibujo</b> marca solo el colchón, conecta las referencias y pega este texto. Sustituye el colchón por el real sin tocar el resto.</p>
+        <p>Referencias recomendadas para este ángulo: <b id="refHint"></b>. Menos fotos, del mismo ángulo, funcionan mejor que las cinco.</p>
+        <button type="button" class="ghost" id="copyFix">Paso 2 · Copiar prompt del colchón</button>
+      </div>
+      <p class="tip"><b>En Magnific:</b> Nano Banana Pro (o Nano Banana 2 con Thinking High). Paso 1: pega el JSON en el nodo que genera la imagen, con 1 o 2 referencias de estilo y, si quieres, las del colchón. Paso 2: edita la imagen elegida para poner el colchón exacto. Si repites persona en varias fotos, súbela como <b>Character</b>.</p>
+    </section>
+  </div>
+</div>
+
+<script>
+const ART_DIRECTION = {
+  concept: "Stolen moments. Candid editorial photography of real life in and around the bed: lazy mornings, reading, playing, napping, sharing. Intimate, human, a little funny, never staged",
+  mandatory_rule: {
+    candid: "A real snapshot taken without the people noticing. Nobody poses, nobody performs for the camera",
+    gaze: "Nobody looks into the lens. No posed smiles at the camera. Eyes closed, looking down, looking at each other, at a book, out of frame",
+    faces: "Faces may be partly hidden by a book, a blanket, hair, a pillow or the frame edge",
+    body: "Real body language with real weight: sprawled, curled, legs up, mid-stretch, mid-laugh, caught between two moments"
+  },
+  realism: {
+    anatomy: "Anatomically correct people: each person has exactly two arms, two legs, two hands with five fingers each and two feet. Every limb connects continuously and visibly to its own body; nothing extra, nothing missing, nothing fused with the bedding",
+    hands: "Natural hands with correct joints and proportions, holding objects with a believable grip",
+    faces: "Natural, symmetrical faces with consistent eyes and real skin texture",
+    physics: "Every pose is physically possible in the space: bodies have weight and sink into the mattress, hair and fabric fall with gravity, objects rest on surfaces with contact shadows, nothing floats. If legs rest on a wall, the hips are close to that wall and the head points away from it",
+    light_logic: "All shadows and highlights match the single light source and its direction",
+    scale: "Real proportions: a double bed about 150 cm wide and 190 cm long, people at true human scale against furniture and windows",
+    text_on_props: "Books and magazines show abstract, unreadable layouts; text is never mirrored or garbled"
+  },
+  photography: {
+    genre: "Editorial lifestyle photography with a documentary, cinematic feel. A real photographer's frame, not a catalog shoot",
+    camera: "35mm or medium format film camera, handheld, fast and intuitive",
+    lens: "As defined in scene.lens",
+    focus: "Focus on the emotional point of the scene, gentle falloff elsewhere, not everything perfectly sharp",
+    composition: "Intuitive but intentional framing: off-center subjects, occasional crops of feet, hands or heads, layered depth, generous negative space, few elements and all of them beautiful"
+  },
+  light: {
+    principle: "Only motivated, believable light: the window, the sun, a bedside lamp or a candle. No flash, no studio lights",
+    character: "Light that draws on the scene: sun patches and window shadows on walls and sheets, pools of lamp light falling off into soft dark corners",
+    contrast: "Rich natural contrast with real depth: one dominant motivated light sculpting the scene, creamy highlights, deep soft shadows, never flat or grey",
+    glow: "Skin and fabrics catch the light with a subtle natural glow"
+  },
+  color_grade: {
+    white_balance: "Neutral and balanced, around 5200K: neither warm nor cold. True clean whites with a hint of cream, natural skin tones",
+    look: "Natural color exactly as a good camera captures it: refined tonal depth, no filters, no trendy grades, untouched skin",
+    accents: "A calm neutral base with one or two confident color accents from textiles or clothing: tomato red, kelly green, cobalt blue, bubblegum pink, mustard or burgundy",
+    texture: "Only the natural grain a real camera produces, a little more in low light, never an added filter. No vignette. Cinematic, never digital-clean or plastic"
+  },
+  set_design: {
+    spaces: "Real homes with character and good taste: bedrooms and living rooms with lime plaster or warm cream walls, wood paneling or one deep painted wall, quality wood or stone floors",
+    architecture: "Clean architecture: no visible light switches, power sockets, exposed radiators, aluminium window frames or cheap fittings",
+    bed: "Beds always lived in: crumpled sheets, duvets pushed aside or pulled over heads, piles of pillows",
+    textiles: "Cotton and linen bedding, striped duvet covers, gingham, solid color sheets, knitted throws",
+    props: "Few, real, personal objects placed with care on nightstands, shelves or the bed itself: books, magazines, a mug of coffee, a breakfast tray, a lamp, a record player",
+    order: "The room is tidy and calm. The floor is clean and clear: no socks, no shoes, no slippers, no clothes, no bags, no objects lying around. No clothes on chairs. The only sign of life is in the bed and in what the people are doing"
+  },
+  styling: {
+    wardrobe: "Quality sleepwear: cotton poplin or washed linen pajamas with stripes or piping, silk-touch shirts, fine knitwear, robes, wool or cashmere socks, bare feet. Never worn-out basics",
+    hair_makeup: "Natural and undone but beautiful: morning hair with movement, skin with a healthy natural glow, no visible makeup"
+  }
+};
+
+const SHOTS = [
+  {id:"top", name:"Cenital", hint:"Desde arriba, sobre la cama", text:"High overhead view looking down onto the bed, the bodies and the bedding forming the composition"},
+  {id:"door", name:"Desde la puerta", hint:"Testigo a escondidas", text:"Wide shot from the doorway or through a half-open door, the door frame softly out of focus in the foreground, the whole bed and part of the room visible, the scene seen from outside the room"},
+  {id:"wide", name:"Plano general", hint:"La escena completa", text:"Wide shot of the whole bedroom from across the room: walls, window, floor and furniture visible, the bed taking about one third of the frame, the people seen full body within their space"},
+  {id:"mid", name:"Plano medio", hint:"En la cama, de cerca", text:"Medium shot at bed level, the people from the waist up or half body, the bedding around them"},
+  {id:"close", name:"Primer plano", hint:"Gesto íntimo", text:"Intimate close-up of a face, a gesture or a hand, very close, the background melting away"},
+  {id:"detail", name:"Detalle", hint:"Pies, manos, objetos", text:"Detail shot of feet, socks, hands or an object, faces out of frame, the body telling the story"},
+  {id:"low", name:"Contrapicado", hint:"Desde los pies de la cama", text:"Low angle from the foot of the bed looking up along the bed, feet or legs large in the foreground"},
+  {id:"side", name:"A ras de colchón", hint:"Lateral, cámara baja", text:"Side view with the camera at mattress height, the edge of the bed and the bodies stretched along the frame"}
+];
+
+const TIMES = [
+  {id:"dawn", name:"Amanecer", hint:"Luz tenue de cortina", stock:"Luz pálida de amanecer",
+   time:"Dawn, around 7 am", light:"Pale soft light filtering through sheer curtains, the room still dim and quiet, gentle low contrast, slight blue in the shadows balanced by neutral whites"},
+  {id:"morning", name:"Mañana de sol", hint:"Manchas de sol", stock:"Sol de mañana",
+   time:"Sunny morning, around 9 am", light:"Bright direct sun entering through the window, crisp patches of sunlight and window-frame shadows across the wall, the sheets and the people, the rest of the room in soft open shade"},
+  {id:"midday", name:"Mediodía", hint:"Luz rebotada", stock:"Luz de mediodía",
+   time:"Midday", light:"Bright airy daylight bouncing off white walls and sheets, soft and even, high-key and fresh"},
+  {id:"afternoon", name:"Tarde baja", hint:"Sol rasante", stock:"Sol de tarde",
+   time:"Late afternoon", light:"Low raking sun across the room, long shadows and slats of light on the wall and the bed, warm light balanced in the grade so the image stays neutral"},
+  {id:"dusk", name:"Anochecer", hint:"Ventana azul y lámpara", stock:"Anochecer",
+   time:"Dusk", light:"Fading blue daylight from the window mixed with a small warm bedside lamp just switched on, soft and calm"},
+  {id:"lamp", name:"Noche de lamparita", hint:"Una lámpara o una vela", stock:"Luz de lámpara",
+   time:"Late night", light:"Only one bedside lamp or a candle lit, a small pool of light on the faces and the bed, the room sinking into deep soft shadow, more visible grain"}
+];
+
+const ROOMS = [
+  ["Automático (según la escena)", ""],
+  ["Dormitorio luminoso, paredes crema", "Bright bedroom with warm cream lime plaster walls, an upholstered linen headboard, a solid wood nightstand with a ceramic lamp, long linen curtains"],
+  ["Dormitorio con pared de madera", "Bedroom with warm wood paneled walls, mid-century furniture"],
+  ["Pared de color profundo", "Bedroom with one deep painted wall in burgundy, petrol blue or forest green"],
+  ["Salón con sofá", "Living room with a soft sofa, a rug, a floor lamp and a few books"],
+  ["Habitación con cortinas de lino", "Room with long sheer linen curtains, white bedding, minimal furniture"]
+];
+const PALETTES = [
+  ["Automático (base neutra + un acento)", ""],
+  ["Blancos y crudos", "White and ecru bedding, the only color coming from skin and one small accent"],
+  ["Rayas de pijama", "Striped pajamas and striped bedding in two colors, a graphic touch"],
+  ["Color block", "Solid sheets and pillows in two or three bold colors that contrast with each other"],
+  ["Tonos tierra y burdeos", "Ecru, terracotta, burgundy and olive textiles"],
+  ["Frescos: azul y verde", "Cobalt blue, sky blue and kelly green accents on a white base"]
+];
+const BED_BASES = [
+  ["Canapé de madera oscura","Dark walnut wood storage base with a black band right under the mattress"],
+  ["Canapé tapizado gris claro","Light grey upholstered storage base"],
+  ["Estructura de madera con patas","Simple solid wood bed frame with slim legs"],
+  ["Sin base visible","The base hidden by the bedding or out of frame"]
+];
+const ACTIONS = [
+  ["Saltar", "Salta sobre la cama en pijama, a mitad de salto, el pelo en el aire"],
+  ["Esperar", "Embarazada tumbada de lado en la cama, con la mano sobre la tripa, mirando por la ventana"],
+  ["Despertar", "Se despierta despacio entre las sábanas, ojos entrecerrados y el pelo revuelto sobre la almohada"],
+  ["Leer", "Tumbada boca arriba leyendo una revista, con las piernas apoyadas en alto contra la pared del cabecero, la cadera junto a esa pared y la cabeza hacia los pies de la cama"],
+  ["Mañana", "Sentado en el borde del colchón con una taza de café entre las manos, mirando por la ventana"],
+  ["Abrazo", "Pareja abrazada bajo el edredón, ella con la cara hundida en su cuello, él con los ojos cerrados"],
+  ["Estirarse", "Sentada en la cama recién despierta, estirándose con los brazos hacia arriba y los ojos cerrados"],
+  ["Familia", "Padres tumbados en la cama con su bebé entre los dos, haciéndole cosquillas, el bebé muerto de risa"],
+  ["Noche", "Lee en la cama a la luz de la lamparita mientras su pareja ya duerme a su lado"],
+  ["Jugar", "Niños haciendo una cueva con el edredón sobre la cama, uno asomando la cabeza entre risas"]
+];
+const VALUE_LEVELS = [
+  {id:"everyday", name:"Cotidiano", hint:"Casa real, sencilla", text:"Everyday real home, modest but tasteful. Simple furniture, honest materials, a calm and tidy room"},
+  {id:"premium", name:"Cotidiano premium", hint:"Recomendado", text:"Elevated everyday: the same real, unposed moment, in a beautifully considered home. Natural quality materials: washed linen bedding, wool throws, solid wood, lime plaster walls, herringbone oak or stone floors. An upholstered or solid wood headboard, a sculptural ceramic lamp, one piece of art, long linen curtains. Fewer objects, all of them beautiful. Light designed like cinema, with depth and a clear direction. Premium sleepwear and natural glowing skin. The image feels like an editorial for a premium home brand while staying spontaneous"},
+  {id:"luxury", name:"Editorial de lujo", hint:"Revista, hotel boutique", text:"Editorial luxury: a spacious architectural bedroom in a high-end home or boutique hotel, high ceilings, moldings or plaster walls, tall windows with flowing linen curtains, refined furniture with sculptural details, generous empty space. Magazine-quality light and composition, rich materials, impeccable bedding, still a candid and unposed moment"}
+];
+const ACCIDENTS = [
+  "None. A clean, calm frame",
+  "None. A clean, calm frame",
+  "Slightly tilted horizon",
+  "A hand or a foot cut by the frame edge",
+  "Subtle motion blur on a moving hand or hair",
+  "Focus landing slightly behind the subject",
+  "Edge of a sheet softly out of focus in the foreground",
+  "A soft light flare entering from the window side"
+];
+
+const $ = id => document.getElementById(id);
+
+
+/* ---------- Histórico de campos (se guarda en este navegador) ---------- */
+const HIST_KEY="lmHistorico", HIST_FIELDS=[["people","histPeople"],["action","histAction"],["focusPoint","histFocus"]];
+function getHist(){ try{ return JSON.parse(localStorage.getItem(HIST_KEY)||"{}")||{}; }catch(e){ return {}; } }
+function setHist(h){ try{ localStorage.setItem(HIST_KEY,JSON.stringify(h)); }catch(e){} }
+function pushHist(field,v){ v=(v||"").trim(); if(!v) return; const h=getHist(); h[field]=[v,...(h[field]||[]).filter(x=>x!==v)].slice(0,12); setHist(h); }
+function drawHist(){
+  const h=getHist();
+  HIST_FIELDS.forEach(([field,box])=>{
+    const el=$(box); if(!el) return; const arr=h[field]||[]; el.innerHTML=""; el.hidden=!arr.length; if(!arr.length) return;
+    const lab=document.createElement("span"); lab.className="histlab"; lab.textContent="Recientes"; el.appendChild(lab);
+    arr.forEach(v=>{
+      const w=document.createElement("span"); w.className="hitem";
+      const b=document.createElement("button"); b.type="button"; b.className="hchip"; b.title=v; b.textContent=v;
+      b.onclick=()=>{ $(field).value=v; render(); save(); };
+      const x=document.createElement("button"); x.type="button"; x.className="hdel"; x.textContent="×"; x.setAttribute("aria-label","Quitar del historial");
+      x.onclick=()=>{ const hh=getHist(); hh[field]=(hh[field]||[]).filter(y=>y!==v); setHist(hh); drawHist(); };
+      w.append(b,x); el.appendChild(w);
+    });
+  });
+}
+
+/* ---------- Objetivos de cámara ---------- */
+const LENSES = [
+  {id:"24", name:"24 mm", hint:"Gran angular", s:0.72, r:0.42, text:"24mm wide-angle lens: a lot of the room in frame, strong perspective with converging lines, near objects look larger. Keep people away from the frame edges so nothing gets stretched"},
+  {id:"35", name:"35 mm", hint:"Documental", s:0.88, r:0.56, text:"35mm lens: documentary feel, the person and the room together, natural mild perspective"},
+  {id:"50", name:"50 mm", hint:"Como el ojo", s:1.05, r:0.68, text:"50mm lens: natural perspective close to the human eye, the bed fills more of the frame, little distortion"},
+  {id:"85", name:"85 mm", hint:"Íntimo, comprime", s:1.45, r:0.84, text:"85mm lens: compressed perspective, the bed and the background look closer together, little of the room visible, soft background, intimate"},
+  {id:"100", name:"100 mm macro", hint:"Detalle", s:0, r:0, text:"100mm macro lens: very close detail of the fabric, the tufts, the ribbon or a hand, extremely shallow depth of field"}
+];
+function lensSVG(l){
+  if(!l.s){
+    let t=""; for(let y=0;y<4;y++) for(let x=0;x<6;x++) t+=`<circle cx="${10+x*20+(y%2)*10}" cy="${10+y*20}" r="9" fill="none" stroke="currentColor" stroke-width="1.4"/>`;
+    return `<svg viewBox="0 0 120 80" aria-hidden="true"><rect x="1" y="1" width="118" height="78" rx="6" fill="none" stroke="currentColor" stroke-opacity=".25"/>${t}<path d="M40 80 L120 22 L120 44 L70 80Z" fill="var(--accent)" opacity=".9"/></svg>`;
+  }
+  const s=l.s, r=l.r, cx=60, fy=60, by=36, fw=34, bw=34*r;
+  const room=`<path d="M${cx-48*r} 6 H${cx+48*r} V${by-2} H${cx-48*r}Z M${cx-48*r} ${by-2} L-40 120 M${cx+48*r} ${by-2} L160 120" fill="none" stroke="currentColor" stroke-opacity=".35" stroke-width="1.2"/>`;
+  const bed=`<path d="M${cx-bw} ${by} H${cx+bw} L${cx+fw} ${fy} H${cx-fw}Z" fill="var(--panel)" stroke="currentColor" stroke-width="1.6"/><path d="M${cx-fw} ${fy} H${cx+fw} V${fy+7} H${cx-fw}Z" fill="var(--panel)" stroke="currentColor" stroke-width="1.6"/><path d="M${cx+fw-9} ${fy} L${cx+fw} ${fy-6} L${cx+fw} ${fy-1} L${cx+fw-4} ${fy+2}Z" fill="var(--accent)"/><rect x="${cx-bw+3}" y="${by-5}" width="${bw*0.7}" height="6" rx="2" fill="none" stroke="currentColor" stroke-width="1.2"/>`;
+  const id="lc"+l.id;
+  return `<svg viewBox="0 0 120 80" aria-hidden="true"><defs><clipPath id="${id}"><rect x="1" y="1" width="118" height="78" rx="6"/></clipPath></defs><g clip-path="url(#${id})"><g transform="translate(60 44) scale(${s}) translate(-60 -44)">${room}${bed}</g></g><rect x="1" y="1" width="118" height="78" rx="6" fill="none" stroke="currentColor" stroke-opacity=".25"/></svg>`;
+}
+function lensRadios(el, checked){
+  LENSES.forEach(l=>{
+    const lab=document.createElement("label"); lab.className="opt lens";
+    lab.innerHTML=`<input type="radio" name="lens" id="lens-${l.id}" value="${l.id}" ${l.id===checked?"checked":""}><span>${lensSVG(l)}${l.name}<em>${l.hint}</em></span>`;
+    el.appendChild(lab);
+  });
+}
+const lensText = () => (LENSES.find(l=>l.id===(document.querySelector('input[name="lens"]:checked')||{}).value)||LENSES[1]).text;
+
+/* ---------- Modelos de colchón LOMONACO ---------- */
+const MATTRESS_COMMON = {
+  shape: "Rectangular, tall mattress about 30 cm thick with a pillow-top. The FRONT and the BACK are the two SHORT sides (the width of the bed). The two LATERALS are the LONG sides (the length of the bed). LEFT and RIGHT are always as seen standing at the foot facing the headboard",
+  construction: "Two stacked layers visible on every side: an upper pillow-top layer, about one third of the height, wrapped by a band of fine vertical ribbed quilting between two thin piping lines; and a taller lower body panel in white embossed jacquard knit with a soft organic pattern, closed by a piping line along the bottom edge. Both layers are ONE single sewn mattress: the pillow-top has exactly the same width and length as the body, edges aligned, no gap and no overhang. It is never a separate topper or a second mattress lying on top",
+  top: "White jacquard knit top with dense biscuit tufting: a regular grid of round puffy cushions, each sunk at its tuft point, covering the whole surface",
+  front: "FRONT = the short side that carries the model name in small spaced capitals above the LOMONACO wordmark, embroidered in burgundy and centered on the lower body panel. LOMONACO is one word in spaced capitals with a short horizontal bar under the central M. The front is always the foot of the bed, open to the room. The front has NO handles",
+  back: "BACK = the opposite short side: plain white jacquard with no text and no logo. It is the head of the bed, against the wall or the headboard, where the pillows rest",
+  laterals: "Each LONG lateral side has no words: no LOMONACO wordmark, no model name. It only has two horizontal rectangular fabric carry handles on the lower body panel, one near each end. Each handle has a stitched square with an X at both ends and thin burgundy edging along its top and bottom borders. The handle closest to the front carries a small embroidered burgundy M with a short bar beneath it; the other handle has no M. A long side NEVER carries embroidered words: the only mark is the small M on the handle nearest the front",
+  ribbon: "A single burgundy satin ribbon printed with LOMONACO in light cream capitals crosses the FRONT-RIGHT corner diagonally, lying on the top surface and folding over the edge: the corner at the END of the front text, after the final O (right for someone standing at the foot facing the headboard). NEVER on the front-LEFT corner (before the L), even when it is nearest the camera. Where it appears in the image depends on the camera: see view_logic. Never at the back, never more than one",
+  color: "The whole mattress is white. The only color is burgundy: the front embroidery, the ribbon, the handle edging and the M and, on models that have it, the piping",
+  fabric: "Copy the jacquard pattern, the biscuit tufting and the ribbed band exactly from the reference images. Never invent the fabric or replace it with a generic quilt",
+  view_logic: {
+    front: "Camera facing the front: model name and LOMONACO centered on the front, NO handles on the front, ribbon on the RIGHT top corner",
+    front_right_corner: "Camera at the front-right corner: front with the logo on the LEFT of the image, right long side with its two handles on the RIGHT of the image, the M handle next to the corner, ribbon on the corner closest to the camera",
+    front_left_corner: "Camera at the front-left corner: front with the logo on the RIGHT of the image, left long side with its two handles on the LEFT of the image, the M handle next to the near corner, nearest the front. The ribbon stays on the FAR corner of the front, on the right of the image, small or hidden. Never a ribbon on the near front-left corner",
+    right_long_side: "Camera facing the right long side: the front is on the LEFT of the image, ribbon at the top-left corner, two handles, the M handle on the left",
+    left_long_side: "Camera facing the left long side: the front is on the RIGHT of the image, the ribbon at the far top-right corner, barely visible, two handles, the M handle on the right",
+    back: "Back: plain, no text, pillows resting against it"
+  },
+  coverage: "A duvet, a sheet or a blanket may cover part of the mattress, the ribbon or the logo. That is fine. Whatever stays visible must follow these rules"
+};
+const MODELS = [
+  {id:"natura-latex", name:"Natura Látex", label:"NATURA LÁTEX", piping:"White piping on all edges"},
+  {id:"gran-natura", name:"Gran Natura", label:"GRAN NATURA", piping:"Thin burgundy piping lines along the edges of the lower body panel, the signature detail of this model"},
+  {id:"otro", name:"Otro modelo (escribir)", label:"", piping:""}
+];
+const REF_VIEWS = [
+  ["vista frontal","FRONT view: the short side with the model name above LOMONACO; the ribbon on the top-RIGHT corner of the image"],
+  ["vista lateral","RIGHT long side: the front at the LEFT end of the image, the ribbon top-left, two horizontal handles, the M handle on the left (nearest the front), no text"],
+  ["vista 3:4","Front-right corner: the front face on the LEFT of the image, the right long side on the RIGHT, the ribbon on the corner between them, nearest the camera"],
+  ["detalle asa y banda","Close-up of the M handle and the vertical ribbed band of the pillow-top"],
+  ["detalle tela esquina derecha","Close-up of the front-right corner: the ribbon, the biscuit tufting and the fabric"]
+];
+function modelLabel(){ const id=$("model").value; if(id!=="otro") return (MODELS.find(x=>x.id===id)||MODELS[0]).label;
+  return ((($("customModel")||{}).value)||"").split(/[,.;:\n]/)[0].trim().toUpperCase(); }
+function customNotes(){ if($("model").value!=="otro") return ""; const v=((($("customModel")||{}).value)||"").trim(); const i=v.search(/[,.;:\n]/); return i<0?"":v.slice(i+1).trim(); }
+function productSpec(baseText){
+  const id=$("model").value, m=MODELS.find(x=>x.id===id)||MODELS[0];
+  const lbl=modelLabel(), notes=customNotes();
+  const name = id==="otro" ? (lbl||"model shown in the references") : m.name;
+  const spec = {
+    model: "LOMONACO " + name + " mattress",
+    reference_images: Object.fromEntries(REF_VIEWS.map(([v,d])=>[v, d])),
+    reference_rule: "The connected reference images carry exactly these names and all show this same mattress. Read the product design from them: they show the real product and win over any description. Use each one for what it shows: front, lateral, three-quarter view and the two close-ups",
+    anatomy: Object.assign({}, MATTRESS_COMMON, {
+      model_name_on_front: lbl ? ("Small spaced capitals reading " + lbl + ", exactly as in the reference") : "The model name copied letter by letter from the vista frontal reference",
+      piping: id==="otro" ? "As in the reference" : m.piping
+    }),
+    orientation_rules: "LEFT and RIGHT of the mattress are always as seen standing at the foot facing the headboard. Seen from the front: model name and LOMONACO facing the camera, ribbon on the front-right corner. When the camera sees a long side, it shows only its two horizontal handles, the M handle nearest the front, and no words. Only ONE handle per long side has an M, never two. The ribbon is on the front-right corner only: if the camera sees the LEFT long side (the front appears on the right of the image), the ribbon is on the far corner and mostly hidden; it is clearly visible when the camera sees the front, the front-right corner or the right long side. Copy the vista 3:4 orientation only when item 8 says front-right corner; otherwise rotate the mattress to the camera of this scene and apply view_logic. Pillows always rest at the back (headboard end). People may lie in any direction (for example legs up the headboard wall, head toward the foot), but the mattress never turns: the front with the text is always at the foot, open to the room. The wordmark is never on a long side and is never mirrored, moved, duplicated or invented",
+    text_check: "Exact text, letter by letter: the model name and LOMONACO with the bar under the M. No garbled, invented or extra letters. If it cannot be rendered sharp and correct, keep it covered or out of frame",
+    never: ["ribbon on the front-LEFT corner (before the L of LOMONACO)","more than one ribbon","handles on the front","the LOMONACO wordmark or the model name on a long side","two M handles on the same long side","a separate topper or pad lying on top of the mattress","invented fabric, tufting or pattern different from the references"],
+    do_not_modify: "Strict product lock. Reproduce the mattress exactly as in the reference images and do not change any aspect of the product or any element of its design: shape, proportions, thickness, layers, tufting, ribbed band, jacquard pattern, colors, piping, handles, M, logo, typography and ribbon. Nothing added, removed, simplified, redesigned or restyled"
+  };
+  if(notes) spec.model_notes = "Differences of this model, as seen in its references: " + notes;
+  if(baseText) spec.bed_base = baseText;
+  return spec;
+}
+
+/* ---------- Bloque prioritario del producto ---------- */
+const MATTRESS_VIEWS = [
+  {id:"r34", name:"Esquina derecha", hint:"Como la vista 3:4",
+   text:"The mattress is seen from its FRONT-RIGHT corner, with the same orientation as the vista 3:4 reference (orientation only: not its framing, distance, background or light). In the image, the face on the LEFT is the FRONT: it carries the small model name above LOMONACO. The face on the RIGHT is the right long side: only two horizontal handles, the M handle next to the corner, no words. The ONE ribbon sits on the corner between them, the corner closest to the camera"},
+  {id:"front", name:"Frente", hint:"El logo de cara",
+   text:"The mattress is seen from its FRONT, with the same orientation as the vista frontal reference (orientation only): the model name above LOMONACO centered on the face toward the camera, no handles on that face, the ribbon on the top-RIGHT corner of the mattress as seen in the image. The long sides are barely visible"},
+  {id:"right", name:"Lateral derecho", hint:"Asas, sin texto",
+   text:"The mattress is seen from its RIGHT long side, with the same orientation as the vista lateral reference (orientation only): the front is at the LEFT end of the mattress in the image. This long side shows only two horizontal handles, the one on the left with the M, and no words. The ribbon is on the top-LEFT corner of the mattress in the image, which is its front-right corner"},
+  {id:"top", name:"Desde arriba", hint:"Cenital",
+   text:"Seen from directly above: the head of the bed (pillows) at the TOP of the frame, the foot (front) at the BOTTOM. The tufted top fills the view. The ONE ribbon lies across the BOTTOM-RIGHT corner of the mattress in the image. No side text needs to be visible"},
+  {id:"cornerDetail", name:"Detalle esquina", hint:"",
+   text:"Close-up of the FRONT-RIGHT corner as in the detalle tela esquina derecha reference: the ribbon folding over the corner, the biscuit tufting and the ribbed band. The centered front text is out of frame: never move it toward the corner"},
+  {id:"handleDetail", name:"Detalle asa", hint:"",
+   text:"Close-up of the RIGHT long side near the front end, as in the detalle asa y banda reference: the M handle with its burgundy edging, the vertical ribbed band above, no words"},
+  {id:"tuftsDetail", name:"Detalle capitoné", hint:"",
+   text:"Close-up of the top surface only: the round biscuit tufts of the pillow-top, no sides and no text in frame"},
+  {id:"baseDetail", name:"Detalle base", hint:"",
+   text:"Low close-up of the front-right bottom corner where the mattress sits on its base: the front face to the LEFT, the right long side to the RIGHT, no text needed in frame"}
+];
+function mustMatch(viewText, ctx){
+  const lbl=modelLabel(), sheet=ctx==="sheet", detail=ctx==="detail";
+  const line1 = lbl ? ("line 1 small spaced capitals '"+lbl+"'") : "line 1 the model name in small spaced capitals, copied letter by letter from the vista frontal reference";
+  return [
+    "1. COPY THE MATTRESS FROM THE CONNECTED REFERENCE IMAGES (vista frontal, vista lateral, vista 3:4, detalle asa y banda, detalle tela esquina derecha). It is a real product: do not redesign, simplify or reinterpret it. Take ONLY the product design from the references, never their framing, studio background or lighting"+(sheet?"":" or catalog look")+". The orientation in THIS image is defined only by item 8",
+    "2. Tall mattress with an INTEGRATED pillow-top: round biscuit tufting all over the top, a vertical ribbed band, and a white jacquard lower panel. Never a flat top, never smooth fabric, never a separate topper",
+    "3. TEXT ONLY ON THE FRONT (a short side), nowhere else: "+line1+", line 2 larger 'LOMONACO' with a short bar under the central M. Burgundy embroidery, centered, straight, sharp and perfectly legible",
+    "4. EXACT SPELLING, letter by letter: "+(lbl?("'"+lbl+"' and "):"")+"'L-O-M-O-N-A-C-O'. No other words, no extra letters, no invented characters. If the text cannot be rendered sharp and correct, frame or cover that area instead of inventing it",
+    "5. LONG SIDES: only two horizontal handles, the one nearest the front with a small M. No words on a long side: no LOMONACO wordmark, no model name. The only mark there is that small M",
+    "6. FRONT: no handles",
+    "7. ONE burgundy ribbon with LOMONACO, ONLY on the front-RIGHT corner. ANCHOR RULE: read LOMONACO on the front from left to right; the ribbon is on the top corner at the END of the word, after the final O, never on the front-left corner before the L. If that corner is on the far side from the camera, the ribbon is small or hidden there; never move it to the near corner. Never two",
+    "8. VIEW IN THIS IMAGE: "+(detail?("Only part of the mattress is in frame; whatever is visible follows this orientation: "+viewText):viewText),
+    "9. Bedding may cover part of the mattress. Whatever stays visible follows these rules",
+    sheet ? "10. The framing comes from the scene: a clean image of the mattress alone in the set" : detail ? "10. This is a close detail: the camera position, lens and framing come from the scene" : "10. Product accuracy never turns the image into a product shot: the camera distance and framing come from the scene, so the mattress may be small in the frame"
+  ];
+}
+function fixPrompt(viewText){
+  return "Edit only the mattress in this image. Keep everything else identical: people, bedding, room, light, color and framing.\nMake the mattress match the connected reference images exactly:\n"+mustMatch(viewText).join("\n");
+}
+
+function fillModels(){
+  MODELS.forEach(m=>$("model").add(new Option(m.name,m.id)));
+}
+function toggleCustom(){ const c=$("customModel"); if(c) c.hidden = $("model").value!=="otro"; }
+
+const pick = arr => arr[Math.floor(Math.random()*arr.length)];
+let take = 1, accident = ACCIDENTS[0];
+
+function radio(el, name, list, checked){
+  list.forEach(o=>{
+    const l=document.createElement("label"); l.className="opt";
+    l.innerHTML=`<input type="radio" name="${name}" id="${name}-${o.id}" value="${o.id}" ${o.id===checked?"checked":""}><span>${o.name}<em>${o.hint}</em></span>`;
+    el.appendChild(l);
+  });
+}
+radio($("times"),"time",TIMES,"morning");
+radio($("pvs"),"pv",VALUE_LEVELS,"premium");
+fillModels();
+BED_BASES.forEach((b,i)=>$("pbase").add(new Option(b[0],i)));
+ROOMS.forEach((r,i)=>$("room").add(new Option(r[0],i)));
+PALETTES.forEach((p,i)=>$("palette").add(new Option(p[0],i)));
+ACTIONS.forEach(a=>{
+  const b=document.createElement("button"); b.type="button"; b.className="chip"; b.textContent=a[0];
+  b.onclick=()=>{ $("action").value=a[1]; render(); save(); };
+  $("actChips").appendChild(b);
+});
+
+
+/* ---------- Cámara en planta: posición, punto de mira, altura y objetivo ---------- */
+const ROOM={w:4.6,h:3.8}, BED={x:1.55,y:0.15,w:1.5,l:1.9}, DOOR={x1:3.3,x2:4.1};
+const BCX=BED.x+BED.w/2, BCY=BED.y+BED.l/2;
+const LENS_F={"24":24,"35":35,"50":50,"85":85,"100":100};
+const CAM={cx:3.95,cy:3.35,tx:BCX,ty:BCY,h:120,lens:"35",door:false};
+const CAM_PRESETS=[
+  ["Plano general",{cx:4.35,cy:3.6,tx:BCX,ty:BCY,h:150,lens:"24",door:false}],
+  ["Desde la puerta",{cx:3.7,cy:3.72,tx:BCX+0.1,ty:BCY,h:160,lens:"35",door:true}],
+  ["Plano medio",{cx:3.55,cy:2.85,tx:BCX,ty:1.0,h:120,lens:"35",door:false}],
+  ["Primer plano",{cx:3.25,cy:2.45,tx:2.55,ty:1.35,h:95,lens:"50",door:false}],
+  ["Detalle cinta",{cx:3.35,cy:2.3,tx:3.0,ty:1.98,h:85,lens:"100",door:false}],
+  ["Contrapicado",{cx:2.3,cy:2.7,tx:2.3,ty:0.8,h:30,lens:"24",door:false}],
+  ["A ras del lateral",{cx:3.95,cy:1.35,tx:BCX,ty:1.1,h:60,lens:"24",door:false}],
+  ["Cenital",{cx:BCX,cy:BCY,tx:BCX,ty:BCY,h:260,lens:"24",door:false}]
+];
+const isTopCam=()=>CAM.h>=220;
+function sensorW(){ const [a,b]=$("ar").value.split(":").map(Number); const r=a/b; return r>=1? Math.min(36,24*r) : Math.min(24,36*r); }
+function sensorH(){ const [a,b]=$("ar").value.split(":").map(Number); return sensorW()*b/a; }
+const hfov=()=>2*Math.atan(sensorW()/(2*LENS_F[CAM.lens]));
+const clampBed=v=>({x:Math.min(BED.x+BED.w-0.1,Math.max(BED.x+0.1,v.x)), y:Math.min(BED.y+BED.l-0.1,Math.max(BED.y+0.1,v.y))});
+const inBed=(x,y)=>x>BED.x-0.05&&x<BED.x+BED.w+0.05&&y>BED.y-0.05&&y<BED.y+BED.l+0.05;
+function camGeo(){
+  const top=isTopCam(), fov=hfov();
+  let dx=CAM.tx-CAM.cx, dy=CAM.ty-CAM.cy, dAim=Math.hypot(dx,dy);
+  if(dAim<0.05){ dx=BCX-CAM.cx; dy=BCY-CAM.cy+0.0001; dAim=Math.hypot(dx,dy)||1; }
+  const ux=dx/dAim, uy=dy/dAim, px=-uy, py=ux;
+  const az=Math.atan2(CAM.cx-BCX, CAM.cy-BCY)*180/Math.PI;
+  const dBed=Math.hypot(BCX-CAM.cx,BCY-CAM.cy);
+  let ratio,pos=0,inFrame=1;
+  if(top){ const fw=2*Math.max(0.3,(CAM.h-60)/100)*Math.tan(fov/2); ratio=BED.w/fw; }
+  else{
+    let mn=1e9,mx=-1e9;
+    [[BED.x,BED.y],[BED.x+BED.w,BED.y],[BED.x,BED.y+BED.l],[BED.x+BED.w,BED.y+BED.l]].forEach(([x,y])=>{
+      const vx=x-CAM.cx,vy=y-CAM.cy; const a=Math.atan2(vx*px+vy*py, Math.max(vx*ux+vy*uy,0.05)); mn=Math.min(mn,a); mx=Math.max(mx,a);});
+    const hf=fov/2; ratio=(mx-mn)/fov; inFrame=Math.max(0,Math.min(mx,hf)-Math.max(mn,-hf))/fov;
+    const bx=BCX-CAM.cx,by=BCY-CAM.cy, bf=bx*ux+by*uy;
+    pos = bf>0 ? Math.tan(Math.atan2(bx*px+by*py,bf))/Math.tan(hf) : 99;
+  }
+  const pitch=Math.atan2(CAM.h-60, Math.max(dAim*100,1))*180/Math.PI;
+  const out = !top && (inFrame<0.02 || pos===99);
+  return {top,fov,az,dBed,dAim,ratio,pos,pitch,ux,uy,inFrame,out};
+}
+function faceSpans(){ const fy=BED.y+BED.l, rx=BED.x+BED.w, lx=BED.x;
+  const ang=(x1,y1,x2,y2)=>{let d=Math.abs(Math.atan2(y1-CAM.cy,x1-CAM.cx)-Math.atan2(y2-CAM.cy,x2-CAM.cx));return d>Math.PI?2*Math.PI-d:d;};
+  return {front:CAM.cy>fy?ang(lx,fy,rx,fy):0, right:CAM.cx>rx?ang(rx,BED.y,rx,fy):0, left:CAM.cx<lx?ang(lx,BED.y,lx,fy):0}; }
+function sideOf(){ const s=faceSpans(), k=s.right>=s.left?"right":"left", sd=s[k];
+  if(!sd) return "front"; if(!s.front) return k; const q=sd/s.front;
+  return q<0.3?"front":q>3?k:(k==="right"?"r34":"l34"); }
+const SIDE_ES={front:"Frente",r34:"Esquina delantera derecha",right:"Lateral derecho",l34:"Esquina delantera izquierda",left:"Lateral izquierdo",top:"Cenital"};
+const SIDE_VIEW={
+  l34:"The mattress is seen from its FRONT-LEFT corner. In the image, the face on the RIGHT is the FRONT with the model name above LOMONACO; the face on the LEFT is the left long side with only two horizontal handles and no text. The ribbon is on the FAR end of the front, the corner on the right of the image after the final O of LOMONACO, small or partly hidden. Nothing on the near left corner",
+  left:"The mattress is seen from its LEFT long side: the front is at the RIGHT end of the mattress in the image. This long side shows only two horizontal handles, the one on the right with the M, and no text. The ribbon is on the far top-right corner, barely visible"
+};
+function framing(G){
+  const side=G.top?"top":sideOf();
+  const detail = !G.top && G.ratio>3;
+  const nearCorner = Math.hypot(CAM.tx-(BED.x+BED.w), CAM.ty-(BED.y+BED.l))<0.4;
+  let view = (side==="l34"||side==="left") ? SIDE_VIEW[side] : find(MATTRESS_VIEWS, side).text;
+  if(detail && nearCorner) view = find(MATTRESS_VIEWS,"cornerDetail").text;
+  const r=G.ratio, vis=Math.min(G.inFrame,1), pct=Math.round(vis*100);
+  const scale = G.out ? "The bed is out of frame: the camera looks at another part of the room"
+    : detail ? "Detail framing: only a small part of the mattress is in frame and fills it"
+    : r>1.05 ? "Tight framing: the bed fills the frame edge to edge and is cropped by the borders"
+    : r>0.65 ? `Medium framing: the whole bed fills about ${pct}% of the frame width with a little room around it`
+    : r>0.35 ? `Wide framing: the bed takes about ${pct}% of the frame width, walls, floor and furniture clearly visible`
+    : `Very wide framing: the room dominates and the bed takes only about ${pct}% of the frame width`;
+  const h=CAM.h;
+  const height = G.top ? `Overhead top-down camera about ${h} cm above the floor, looking straight down onto the bed`
+    : h<45 ? `Camera very low, about ${h} cm from the floor, looking slightly up at the bed`
+    : h<85 ? `Camera at mattress height, about ${h} cm from the floor, level with the side of the bed`
+    : h<110 ? `Camera at waist height, about ${h} cm from the floor, a little above the mattress`
+    : h<155 ? `Camera at chest height, about ${h} cm from the floor, looking down about ${Math.round(G.pitch)} degrees`
+    : `High camera, about ${h} cm from the floor, looking down about ${Math.round(G.pitch)} degrees onto the bed`;
+  const ang=Math.round(Math.abs(G.az)), dd=G.dBed.toFixed(1);
+  const place = G.top ? "Directly above the bed"
+    : side==="front" ? `At the foot of the bed, in front of it, ${dd} m from its center`
+    : side==="r34" ? `At the front-right corner of the bed, about ${ang} degrees to the right of the foot axis, ${dd} m from its center`
+    : side==="right" ? `On the right side of the bed (right as seen from the foot), ${dd} m from its center`
+    : side==="l34" ? `At the front-left corner of the bed, about ${ang} degrees to the left of the foot axis, ${dd} m from its center`
+    : `On the left side of the bed (left as seen from the foot), ${dd} m from its center`;
+  const p=G.pos;
+  const comp = G.top ? "The bed seen from above as the main shape of the frame"
+    : G.out ? "The bed stays out of the frame"
+    : r>1.05 ? "The mattress runs past the frame edges"
+    : Math.abs(p)<1/3 ? "The bed sits in the center of the frame"
+    : p<=-1 ? "The bed is partly out of frame on the left, the room fills most of the image"
+    : p>=1 ? "The bed is partly out of frame on the right, the room fills most of the image"
+    : p<0 ? "The bed sits in the left third of the frame, open space on the right"
+    : "The bed sits in the right third of the frame, open space on the left";
+  const lens=LENSES.find(l=>l.id===CAM.lens);
+  const nearDoor = CAM.cy>3.0 && CAM.cx>DOOR.x1-0.4 && CAM.cx<DOOR.x2+0.4;
+  const door = CAM.door && nearDoor ? "Shot through an open doorway: the door frame softly out of focus in the foreground at one edge of the frame" : "";
+  const sentence=[place, height, `${CAM.lens}mm lens`, scale, comp, door].filter(Boolean).join(". ");
+  return {side, view, sentence, detail, nearDoor, block:{position:place, height, lens:lens.text, framing_scale:scale, composition:comp, foreground: door||"None", mattress_seen_as:view}};
+}
+function svgEl(t,a,parent){ const e=document.createElementNS("http://www.w3.org/2000/svg",t); for(const k in a) e.setAttribute(k,a[k]); if(parent) parent.appendChild(e); return e; }
+function drawCam(){
+  const S=$("plan"); if(!S) return; S.innerHTML="";
+  const G=camGeo();
+  const defs=svgEl("defs",{},S); const cp=svgEl("clipPath",{id:"roomclip"},defs); svgEl("rect",{x:0,y:0,width:ROOM.w,height:ROOM.h},cp);
+  svgEl("rect",{x:0,y:0,width:ROOM.w,height:ROOM.h,fill:"#EDEBE6"},S);
+  for(let y=0.3;y<ROOM.h;y+=0.3) svgEl("line",{x1:0,y1:y,x2:ROOM.w,y2:y,stroke:"#DFDBD3","stroke-width":0.01},S);
+  // paredes, ventana y puerta
+  svgEl("path",{d:`M0 0 H${ROOM.w} V${ROOM.h} H${DOOR.x2} M${DOOR.x1} ${ROOM.h} H0 Z`,fill:"none",stroke:"#1D1D1F","stroke-width":0.07,"stroke-linejoin":"round"},S);
+  svgEl("line",{x1:ROOM.w,y1:0.9,x2:ROOM.w,y2:2.2,stroke:"#9FC3D9","stroke-width":0.09},S);
+  svgEl("text",{x:ROOM.w-0.08,y:1.55,"font-size":0.13,fill:"#5F5F66","text-anchor":"middle",transform:`rotate(90 ${ROOM.w-0.08} 1.55)`},S).textContent="ventana";
+  svgEl("path",{d:`M${DOOR.x1} ${ROOM.h} L${DOOR.x1} ${ROOM.h-0.8} A0.8 0.8 0 0 1 ${DOOR.x2} ${ROOM.h}`,fill:"none",stroke:"#9A948A","stroke-width":0.015,"stroke-dasharray":"0.05 0.04"},S);
+  svgEl("text",{x:(DOOR.x1+DOOR.x2)/2,y:ROOM.h+0.25,"font-size":0.14,fill:"#5F5F66","text-anchor":"middle"},S).textContent="puerta";
+  svgEl("text",{x:ROOM.w/2,y:-0.15,"font-size":0.14,fill:"#5F5F66","text-anchor":"middle"},S).textContent="pared del cabecero";
+  // mesillas
+  svgEl("rect",{x:BED.x-0.5,y:0.15,width:0.42,height:0.4,rx:0.03,fill:"#C9B79F"},S);
+  svgEl("rect",{x:BED.x+BED.w+0.08,y:0.15,width:0.42,height:0.4,rx:0.03,fill:"#C9B79F"},S);
+  // cama
+  svgEl("rect",{x:BED.x-0.05,y:BED.y,width:BED.w+0.1,height:BED.l+0.05,rx:0.03,fill:"#78624A"},S);
+  svgEl("rect",{x:BED.x,y:BED.y,width:BED.w,height:BED.l,rx:0.05,fill:"#FFFFFF",stroke:"#1D1D1F","stroke-width":0.02},S);
+  for(let i=0;i<5;i++) for(let j=0;j<6;j++) svgEl("circle",{cx:BED.x+0.18+i*0.285,cy:BED.y+0.55+j*0.24,r:0.05,fill:"none",stroke:"#D9D9DE","stroke-width":0.012},S);
+  svgEl("rect",{x:BED.x+0.1,y:BED.y+0.08,width:0.6,height:0.3,rx:0.06,fill:"#EFEDE8",stroke:"#B9B1A2","stroke-width":0.012},S);
+  svgEl("rect",{x:BED.x+0.8,y:BED.y+0.08,width:0.6,height:0.3,rx:0.06,fill:"#EFEDE8",stroke:"#B9B1A2","stroke-width":0.012},S);
+  const fy=BED.y+BED.l;
+  svgEl("text",{x:BCX,y:fy+0.2,"font-size":0.13,fill:"#7C1919","text-anchor":"middle","font-weight":"700","letter-spacing":"0.02"},S).textContent="LOMONACO · frente";
+  [[BED.x+BED.w,BED.y+0.45],[BED.x+BED.w,fy-0.45],[BED.x,BED.y+0.45],[BED.x,fy-0.45]].forEach(([x,y])=>svgEl("rect",{x:x-0.03,y:y-0.12,width:0.06,height:0.24,fill:"#7C1919",opacity:.75},S));
+  svgEl("text",{x:BED.x+BED.w+0.13,y:fy-0.4,"font-size":0.11,fill:"#7C1919","font-weight":"700"},S).textContent="M";
+  svgEl("path",{d:`M${BED.x+BED.w-0.32} ${fy} L${BED.x+BED.w} ${fy-0.32} L${BED.x+BED.w} ${fy-0.18} L${BED.x+BED.w-0.18} ${fy}Z`,fill:"#7C1919"},S);
+  // cono de visión
+  const g=svgEl("g",{"clip-path":"url(#roomclip)"},S);
+  if(G.top){
+    const fw=2*Math.max(0.3,(CAM.h-60)/100)*Math.tan(G.fov/2), fh=fw*sensorH()/sensorW();
+    svgEl("rect",{x:CAM.cx-fw/2,y:CAM.cy-fh/2,width:fw,height:fh,fill:"#7C1919","fill-opacity":0.12,stroke:"#7C1919","stroke-width":0.02},g);
+  } else {
+    const a0=Math.atan2(G.uy,G.ux), L=8;
+    const p1=[CAM.cx+Math.cos(a0-G.fov/2)*L, CAM.cy+Math.sin(a0-G.fov/2)*L], p2=[CAM.cx+Math.cos(a0+G.fov/2)*L, CAM.cy+Math.sin(a0+G.fov/2)*L];
+    svgEl("polygon",{points:`${CAM.cx},${CAM.cy} ${p1} ${p2}`,fill:"#7C1919","fill-opacity":0.12,stroke:"#7C1919","stroke-opacity":0.6,"stroke-width":0.015},g);
+    svgEl("line",{x1:CAM.cx,y1:CAM.cy,x2:CAM.tx,y2:CAM.ty,stroke:"#7C1919","stroke-width":0.015,"stroke-dasharray":"0.05 0.04"},g);
+  }
+  // punto de mira y cámara
+  svgEl("circle",{cx:CAM.tx,cy:CAM.ty,r:0.09,fill:"#FFFFFF",stroke:"#1D1D1F","stroke-width":0.03},S);
+  svgEl("circle",{cx:CAM.tx,cy:CAM.ty,r:0.025,fill:"#1D1D1F"},S);
+  const ang=Math.atan2(G.uy,G.ux)*180/Math.PI;
+  const cam=svgEl("g",{transform:`translate(${CAM.cx} ${CAM.cy}) rotate(${G.top?0:ang})`},S);
+  if(G.top){ svgEl("circle",{r:0.16,fill:"none",stroke:"#7C1919","stroke-width":0.03},cam); svgEl("circle",{r:0.08,fill:"#7C1919"},cam); }
+  else { svgEl("rect",{x:-0.15,y:-0.11,width:0.22,height:0.22,rx:0.04,fill:"#7C1919"},cam); svgEl("rect",{x:0.07,y:-0.07,width:0.09,height:0.14,rx:0.02,fill:"#7C1919"},cam); svgEl("circle",{cx:-0.04,cy:0,r:0.05,fill:"#FFFFFF"},cam); }
+  // lectura y avisos
+  const F=framing(G);
+  $("camReadout").textContent = `${SIDE_ES[F.side]} · a ${G.dBed.toFixed(1).replace(".",",")} m · ${CAM.h} cm · ${CAM.lens} mm · la cama ocupa ~${Math.round(Math.min(G.inFrame,1)*100)} % del ancho`;
+  const w=[];
+  if(F.side==="l34"||F.side==="left") w.push("Desde el lado izquierdo no tienes foto de referencia: el modelo tendrá que imaginarlo y es donde más falla la cinta. Si puedes, pasa la cámara al lado derecho.");
+  if(!G.top && inBed(CAM.cx,CAM.cy)) w.push("La cámara está encima de la cama. Súbela a cenital o sácala fuera de la cama.");
+  if(G.out) w.push("La cama queda fuera del encuadre: mueve el punto de mira hacia la cama.");
+  if(CAM.door && !F.nearDoor) w.push("La opción de la puerta solo se aplica con la cámara junto a la puerta (abajo a la derecha del plano).");
+  $("camWarn").hidden=!w.length; $("camWarn").textContent=w.join(" ");
+  $("camDist").value=Math.min(5.5,Math.max(0.4,G.dAim)).toFixed(1);
+  $("camDistOut").textContent=G.dAim.toFixed(1).replace(".",",")+" m";
+  $("camH").value=CAM.h; $("camHOut").textContent=CAM.h+" cm"+(G.top?" · cenital":"");
+  document.querySelectorAll("#lensRow button").forEach(b=>b.setAttribute("aria-checked",b.dataset.l===CAM.lens));
+  $("camDoor").checked=CAM.door;
+}
+function setupCam(){
+  const S=$("plan");
+  CAM_PRESETS.forEach(([name,v])=>{ const b=document.createElement("button"); b.type="button"; b.className="chip"; b.textContent=name; b.onclick=()=>{ Object.assign(CAM,v); render(); save(); }; $("camPresets").appendChild(b); });
+  LENSES.forEach(l=>{ const b=document.createElement("button"); b.type="button"; b.dataset.l=l.id; b.setAttribute("role","radio"); b.innerHTML=`${l.name}<small>${l.hint}</small>`; b.onclick=()=>{ CAM.lens=l.id; render(); save(); }; $("lensRow").appendChild(b); });
+  const pt=e=>{ const q=S.createSVGPoint(); q.x=e.clientX; q.y=e.clientY; return q.matrixTransform(S.getScreenCTM().inverse()); };
+  const clampR=v=>({x:Math.min(ROOM.w-0.12,Math.max(0.12,v.x)), y:Math.min(ROOM.h-0.12,Math.max(0.12,v.y))});
+  let drag=null;
+  S.addEventListener("pointerdown",e=>{ const q=pt(e);
+    const dC=Math.hypot(q.x-CAM.cx,q.y-CAM.cy), dT=Math.hypot(q.x-CAM.tx,q.y-CAM.ty);
+    drag = isTopCam() ? "c" : (dT<0.3 && dT<dC-0.02 ? "t" : "c"); try{S.setPointerCapture(e.pointerId)}catch(_){}
+    move(q); });
+  S.addEventListener("pointermove",e=>{ if(drag) move(pt(e)); });
+  ["pointerup","pointercancel"].forEach(t=>S.addEventListener(t,()=>{ if(drag){ drag=null; save(); } }));
+  function move(q){ const c=clampR(q);
+    if(drag==="t"){ CAM.tx=c.x; CAM.ty=c.y; }
+    else if(isTopCam()){ const b=clampBed(c); CAM.cx=CAM.tx=b.x; CAM.cy=CAM.ty=b.y; }
+    else { if(inBed(c.x,c.y)) return; CAM.cx=c.x; CAM.cy=c.y; }
+    render(); }
+  $("camDist").addEventListener("input",()=>{ if(isTopCam()) return; const G=camGeo(); const d=+$("camDist").value;
+    const c=clampR({x:CAM.tx-G.ux*d, y:CAM.ty-G.uy*d}); if(isTopCam()||!inBed(c.x,c.y)){ CAM.cx=c.x; CAM.cy=c.y; } });
+  $("camH").addEventListener("input",()=>{ const wasTop=isTopCam(); CAM.h=+$("camH").value;
+    if(isTopCam()&&!wasTop){ const b=clampBed({x:CAM.tx,y:CAM.ty}); CAM.cx=CAM.tx=b.x; CAM.cy=CAM.ty=b.y; }
+    if(!isTopCam()&&wasTop){ CAM.tx=BCX; CAM.ty=BCY; if(inBed(CAM.cx,CAM.cy)){ CAM.cx=3.95; CAM.cy=3.35; } } });
+  $("camDoor").addEventListener("change",()=>{ CAM.door=$("camDoor").checked; });
+}
+
+const val = n => { const e=document.querySelector(`input[name="${n}"]:checked`); return e?e.value:null; };
+const find = (list,id) => list.find(o=>o.id===id) || list[0];
+
+const PV_SHORT={
+  everyday:"A real, modest but tasteful home: simple furniture, honest materials, calm and tidy",
+  premium:"A beautifully considered real home: washed linen bedding, wool throw, solid wood, lime plaster walls, oak or stone floor, a ceramic lamp, one piece of art, long linen curtains. Few objects, all of them beautiful",
+  luxury:"A spacious architectural bedroom in a high-end home: high ceilings, plaster walls, tall windows with flowing linen curtains, refined furniture, generous empty space"
+};
+function productLines(view, base){
+  const lbl=modelLabel(), notes=customNotes();
+  const id=$("model").value, m=MODELS.find(x=>x.id===id)||MODELS[0];
+  const name = id==="otro" ? (lbl||"model shown in the references") : m.name;
+  const front = lbl ? `burgundy embroidered '${lbl}' in small spaced capitals above a larger 'LOMONACO' (short bar under the central M)` : "the model name copied letter by letter from the vista frontal reference, above a larger 'LOMONACO' (short bar under the central M), burgundy embroidery";
+  return [
+    `The LOMONACO ${name} mattress shown in the attached product photos (studio shots on a grey background). Copy its design exactly from those photos: they win over any description. Take only the mattress from them, never their grey background, framing or light. Do not redesign it.`,
+    `Tall mattress with an integrated pillow-top sewn as one piece: round biscuit tufting on top, a vertical ribbed band, a white jacquard lower panel. Never flat, never a separate topper.${base?" It sits on: "+base+".":""}`,
+    `FRONT (the short side at the foot of the bed, open to the room): ${front}, centered. No handles on the front. Exact spelling; if it cannot be sharp and correct, keep it covered by bedding.`,
+    "LONG SIDES: no words at all, only two horizontal handles; the handle nearest the front has a small burgundy M.",
+    "ONE burgundy ribbon with LOMONACO on the front-RIGHT corner only: the corner right after the final O of LOMONACO. Never on the front-left corner.",
+    "IN THIS IMAGE: "+view,
+    "Pillows rest at the head end against the wall. The mattress never turns. Bedding may cover parts of it."+(notes?" Model differences: "+notes+".":"")
+  ];
+}
+function build(){
+  const t=find(TIMES,val("time")); const G=camGeo(), F=framing(G);
+  const prod=$("product").checked;
+  const clean=x=>x.trim().replace(/[.\s]+$/,"");
+  const who=clean($("people").value), act=clean($("action").value), fp=clean($("focusPoint").value);
+  const room=ROOMS[$("room").value][1], pal=PALETTES[$("palette").value][1], extra=$("extra").value.trim();
+  const neg=$("neg").value.split(/[,\n]/).map(x=>x.trim()).filter(Boolean);
+  const lens=LENSES.find(l=>l.id===CAM.lens);
+  const lensHint=(lens.text.split(":")[1]||"").split(",")[0].trim();
+  const out={};
+  out.SCENE = [who, act].filter(Boolean).join(". ") + ". A real moment caught on camera: nobody poses, nobody looks into the lens."
+    + (fp ? " Point of interest, sharpest focus and visual center: " + fp + "." : "");
+  out.CAMERA = F.sentence.replace(CAM.lens+"mm lens", CAM.lens+"mm lens"+(lensHint?" ("+lensHint+")":"")) + "." + (who ? " The people and their action are the subject of the frame." : "") + " Keep exactly this camera position, height, lens and framing.";
+  out.LIGHT = t.time + ". " + t.light + ".";
+  out.LOOK = [
+    "Candid editorial photograph, documentary and cinematic, shot on 35mm film: natural grain, soft highlights, real depth. Never an ad, a catalog shot or a CGI render.",
+    "Light only from the window, the sun or a bedside lamp: one dominant light with a clear direction, real shadows. No flash, no studio light.",
+    "Neutral color around 5200K: clean whites with a hint of cream, natural untouched skin, a calm neutral base with one or two color accents from textiles.",
+    "Intuitive framing with layered depth; focus on the emotional point with gentle falloff.",
+    "People with real weight and mid-movement gestures, anatomically correct hands and limbs, natural morning hair, quality cotton or linen sleepwear."
+  ];
+  out.SET = [PV_SHORT[val("pv")]||PV_SHORT.premium, room, pal, extra?("Priority: "+clean(extra)):"", "Tidy room: nothing on the floor, no clothes on chairs, no visible sockets or switches. The bed is lived in, with crumpled linen."].filter(Boolean).join(". ").replace(/\.\s*\./g,".");
+  if(accident && !/^None/.test(accident)) out.SET += " Small camera accident: " + accident + ".";
+  if(prod) out.PRODUCT = productLines(F.detail ? ("only part of the mattress is in frame; what is visible follows this: "+F.view) : F.view, BED_BASES[$("pbase").value][1]);
+  out.AVOID = ["posing or looking into the camera","flash or studio lighting","catalog, stock or CGI look","clutter or clothes on the floor","extra or missing limbs and fingers","garbled or mirrored text",
+    ...(prod?["ribbon on the front-left corner","words on the long sides of the mattress","handles on the front","a separate topper"]:[]), ...neg];
+  out.FORMAT = "Aspect ratio " + $("ar").value;
+  $("stock").textContent = t.stock + " · color neutro";
+  $("arLabel").textContent = $("ar").value;
+  return out;
+}
+const REF_SUGGEST={front:"vista frontal + vista 3:4", r34:"vista 3:4 + vista frontal + vista lateral", right:"vista lateral + vista 3:4", l34:"vista frontal + vista 3:4", left:"vista lateral + vista frontal", top:"detalle tela esquina derecha + vista 3:4"};
+function fixPromptGen(){
+  const o=build(), F=framing(camGeo());
+  return "IMAGE EDIT ONLY: edit the generated bedroom photo, do not create a new image.\n"
+    + "REPLACE the mattress in this photo with the exact mattress from the attached product photos (studio shots on grey). Keep its position, size, perspective and the bedding that covers it.\n"
+    + "Keep everything else identical: the people, their pose, the bedding, the room, the light, the color, the grain and the framing.\n"
+    + "Relight the new mattress so it matches the light of the photo: " + o.LIGHT + "\n"
+    + "The mattress:\n- " + productLines(F.view, BED_BASES[$("pbase").value][1]).join("\n- ");
+}
+function updateRefHint(){ const el=$("refHint"); if(!el) return; const F=framing(camGeo()); el.textContent = REF_SUGGEST[F.side]||REF_SUGGEST.r34; }
+
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")}
+function highlight(json){
+  return esc(json).replace(/"([^"\\]*(?:\\.[^"\\]*)*)"(\s*:)?/g,(m,s,k)=>k?`<span class="k">"${s}"</span>${k}`:`<span class="s">"${s}"</span>`);
+}
+let current="";
+function render(){ toggleCustom(); drawCam(); updateRefHint(); current=JSON.stringify(build(),null,2); $("json").innerHTML=highlight(current); }
+
+function save(){
+  try{localStorage.setItem("instantaneasLM",JSON.stringify({p:$("people").value,a:$("action").value,fp:$("focusPoint").value,s:val("shot"),t:val("time"),pr:$("product").checked,r:$("room").value,pl:$("palette").value,ar:$("ar").value,x:$("extra").value,n:$("neg").value,pv:val("pv"),cam:CAM,m:$("model").value,cm:$("customModel").value,pb:$("pbase").value}))}catch(e){}
+}
+function load(){
+  try{
+    const d=JSON.parse(localStorage.getItem("instantaneasLM")||"null"); if(!d) return;
+    if(d.p!=null) $("people").value=d.p; if(d.a!=null) $("action").value=d.a; if(d.fp) $("focusPoint").value=d.fp;
+    if(d.s&&$("shot-"+d.s)) $("shot-"+d.s).checked=true;
+    if(d.t&&$("time-"+d.t)) $("time-"+d.t).checked=true;
+    if(d.r) $("room").value=d.r; if(d.pl) $("palette").value=d.pl; if(d.ar) $("ar").value=d.ar;
+    if(d.x) $("extra").value=d.x; if(d.n) $("neg").value=d.n;
+    if(d.pv&&$("pv-"+d.pv)) $("pv-"+d.pv).checked=true;
+    if(d.cam&&typeof d.cam.cx==="number"&&LENS_F[d.cam.lens]) Object.assign(CAM,d.cam);
+    if(d.m&&MODELS.some(x=>x.id===d.m)) $("model").value=d.m; if(d.cm) $("customModel").value=d.cm; if(d.pb) $("pbase").value=d.pb;
+  }catch(e){}
+}
+
+$("f").addEventListener("input",()=>{render();save();});
+$("f").addEventListener("change",()=>{render();save();});
+$("reroll").onclick=()=>{
+  let a; do{a=pick(ACCIDENTS)}while(a===accident); accident=a;
+  take++; $("takeNo").textContent=String(take).padStart(2,"0");
+  render(); $("toast").textContent="Nueva variación: cambia el pequeño accidente de cámara. La escena y la dirección de arte se mantienen.";
+};
+$("copy").onclick=()=>{
+  HIST_FIELDS.forEach(([field])=>pushHist(field,$(field).value)); drawHist();
+  const ok=()=>{$("toast").textContent="Prompt copiado. Pégalo en Magnific.";};
+  const fallback=()=>{const r=document.createRange();r.selectNodeContents($("json"));const s=getSelection();s.removeAllRanges();s.addRange(r);$("toast").textContent="Texto seleccionado. Pulsa Ctrl+C o Cmd+C para copiar.";};
+  try{navigator.clipboard.writeText(current).then(ok,fallback)}catch(e){fallback()}
+};
+
+$("copyFix").onclick=()=>{
+  const t=fixPromptGen();
+  const ok=()=>{$("toast").textContent="Prompt de corrección copiado. Úsalo en Magnific editando la imagen, con las mismas referencias conectadas.";};
+  const fb=()=>{ $("json").textContent=t; const r=document.createRange(); r.selectNodeContents($("json")); const sel=getSelection(); sel.removeAllRanges(); sel.addRange(r); $("toast").textContent="Texto seleccionado. Pulsa Ctrl+C o Cmd+C para copiar."; };
+  try{ navigator.clipboard.writeText(t).then(ok,fb); }catch(e){ fb(); }
+};
+setupCam(); load(); render(); drawHist();
+</script>
+
+</body>
+</html>

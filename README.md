@@ -8,15 +8,13 @@ Generadores de prompts de imagen de LOMONACO para Magnific (Nano Banana Pro), co
 | `instantaneas.html` | Generador de imágenes LOMONACO: fotos con personas: quién, qué hace, plano, hora, percepción de valor, modelo de colchón y base |
 | `ficha-producto.html` | Fichas de producto del colchón en set neutro, 2, 4 o 6 imágenes, por modelo |
 | `imagnes-lm.html` | Primer generador "Luz de casa" |
+| `instantaneas-camara.html` | Versión guardada con el plano de cámara en planta |
 
 Cada archivo es una página HTML independiente. Con GitHub Pages activo: https://marketinglomonaco-art.github.io/promptimagenes/
 
-## Flujo de trabajo: dos pasos
+## Versión activa
 
-1. **Escena.** "Paso 1 · Copiar prompt de escena" en el nodo que genera la imagen. Aquí mandan persona, acción, cámara, luz y dirección de arte.
-2. **Colchón exacto.** Con la escena elegida, editar esa imagen en Magnific (Dibujo sobre el colchón), conectar 2 o 3 referencias del mismo ángulo y pegar "Paso 2 · Copiar prompt del colchón".
-
-El modelo ve las fotos de referencia, no los nombres de los nodos.
+`instantaneas.html` es la versión de las 08:20 del 10/11, la que mejor resultado dio: dirección de arte, escena y producto en un solo prompt, con selector de plano y objetivo. `instantaneas-camara.html` guarda la versión con el plano de cámara en planta, por si se quiere recuperar.
 
 ## Anatomía del colchón (regla fija en los prompts)
 
