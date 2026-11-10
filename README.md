@@ -5,7 +5,7 @@ Generadores de prompts de imagen de LOMONACO para Magnific (Nano Banana 2.6), co
 | Archivo | Para qué sirve |
 | --- | --- |
 | `index.html` | Portada con enlaces a los generadores |
-| `instantaneas.html` | Fotos robadas con personas: quién, qué hace, plano, hora, percepción de valor, modelo de colchón y base |
+| `instantaneas.html` | Generador de imágenes LOMONACO: fotos con personas: quién, qué hace, plano, hora, percepción de valor, modelo de colchón y base |
 | `ficha-producto.html` | Fichas de producto del colchón en set neutro, 2, 4 o 6 imágenes, por modelo |
 | `imagnes-lm.html` | Primer generador "Luz de casa" |
 
