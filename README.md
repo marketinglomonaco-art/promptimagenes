@@ -11,12 +11,15 @@ Generadores de prompts de imagen de LOMONACO para Magnific (Nano Banana 2.6), co
 
 Cada archivo es una página HTML independiente. Con GitHub Pages activo: https://marketinglomonaco-art.github.io/promptimagenes/
 
-## Fotos de referencia: cómo nombrarlas
+## Nodos de referencia en Magnific
 
-El prompt cita las referencias por su nombre. Usa siempre `modelo_vista`:
+El prompt cita los nodos de referencia por su nombre exacto. Usa siempre estos nombres, sea cual sea el modelo:
 
-- `natura-latex_frontal`, `natura-latex_lateral`, `natura-latex_tres-cuartos`, `natura-latex_cinta`, `natura-latex_asa-m`
-- `gran-natura_frontal`, `gran-natura_lateral`, ...
+- `vista frontal`: lado corto con el nombre del modelo y LOMONACO, cinta a la derecha
+- `vista lateral`: lado largo con las dos asas, la de la M más cerca del frente
+- `vista 3:4`: esquina delantera derecha, con frente, lateral y tapa
+- `detalle asa y banda`: asa con la M y banda de acolchado vertical
+- `detalle tela esquina derecha`: cinta, capitoné y tejido de la esquina derecha
 
 ## Anatomía del colchón (regla fija en los prompts)
 

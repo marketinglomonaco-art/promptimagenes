@@ -162,7 +162,7 @@ details{border-top:1px solid var(--line)}
         <label for="model">Modelo de colchón <small>define cómo es el producto</small></label>
         <select id="model"></select>
         <textarea id="customModel" rows="2" hidden placeholder="Nombre del modelo y lo que lo diferencia. Ej.: Supreme Pocket, vivo gris, asas sin bordado"></textarea>
-        <p class="hint">Nombra tus fotos de referencia así: <b>modelo_frontal</b>, <b>modelo_lateral</b>, <b>modelo_tres-cuartos</b>, <b>modelo_cinta</b>, <b>modelo_asa-m</b> (por ejemplo, natura-latex_frontal).</p>
+        <p class="hint">El prompt cita tus nodos de referencia por su nombre: <b>vista frontal</b>, <b>vista lateral</b>, <b>vista 3:4</b>, <b>detalle asa y banda</b> y <b>detalle tela esquina derecha</b>. Usa siempre esos nombres en Magnific.</p>
       </div>
 
       <div class="field">
@@ -416,15 +416,21 @@ const MODELS = [
   {id:"gran-natura", name:"Gran Natura", label:"GRAN NATURA", piping:"Thin burgundy piping lines along the edges of the lower body panel, the signature detail of this model"},
   {id:"otro", name:"Otro modelo (escribir)", label:"", piping:""}
 ];
-const REF_VIEWS = [["frontal","front view, the logo side"],["lateral","long lateral side with the two handles"],["tres-cuartos","three-quarter view of the front-right corner"],["cinta","close-up of the ribbon on the right front corner"],["asa-m","close-up of the handle with the M"]];
+const REF_VIEWS = [
+  ["vista frontal","FRONT view: the short side with the model name and LOMONACO, ribbon on the right corner"],
+  ["vista lateral","LATERAL view: a long side with its two horizontal handles, the M handle nearest the front"],
+  ["vista 3:4","Three-quarter view from the front-right corner: front, right lateral and top at once"],
+  ["detalle asa y banda","Close-up of the M handle and the vertical ribbed band of the pillow-top"],
+  ["detalle tela esquina derecha","Close-up of the right front corner: the ribbon, the biscuit tufting and the fabric"]
+];
 function productSpec(baseText){
   const id=$("model").value, m=MODELS.find(x=>x.id===id)||MODELS[0];
   const custom=($("customModel")?$("customModel").value.trim():"");
   const name = id==="otro" ? (custom||"the model shown in the references") : m.name;
   const spec = {
     model: "LOMONACO " + name + " mattress",
-    reference_images: Object.fromEntries(REF_VIEWS.map(([v,d])=>[(id==="otro"?"modelo":id)+"_"+v, d])),
-    reference_rule: "The attached reference images follow these names. Read the mattress from them: they show the real product and win over any description",
+    reference_images: Object.fromEntries(REF_VIEWS.map(([v,d])=>[v, d])),
+    reference_rule: "The connected reference images carry exactly these names and all show this same mattress. Read the product from them: they show the real product and win over any description. Use each one for what it shows: front, lateral, three-quarter view and the two close-ups",
     anatomy: Object.assign({}, MATTRESS_COMMON, {
       model_name_on_front: id==="otro" ? ("Model name as embroidered in the reference" + (custom? (": "+custom):"")) : ("Small spaced capitals reading " + m.label + ", exactly as in the reference"),
       piping: id==="otro" ? "As in the reference" : m.piping
