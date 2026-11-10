@@ -300,8 +300,8 @@ const ART_DIRECTION = {
 
 const SHOTS = [
   {id:"top", name:"Cenital", hint:"Desde arriba, sobre la cama", text:"High overhead view looking down onto the bed, the bodies and the bedding forming the composition"},
-  {id:"door", name:"Desde la puerta", hint:"Testigo a escondidas", text:"Wide shot from the doorway or through a half-open door, the door frame softly out of focus in the foreground, the scene seen from outside the room"},
-  {id:"wide", name:"Plano general", hint:"La escena completa", text:"Wide shot of the room, the people within their space, the bed and the light visible"},
+  {id:"door", name:"Desde la puerta", hint:"Testigo a escondidas", text:"Wide shot from the doorway or through a half-open door, the door frame softly out of focus in the foreground, the whole bed and part of the room visible, the scene seen from outside the room"},
+  {id:"wide", name:"Plano general", hint:"La escena completa", text:"Wide shot of the whole bedroom from across the room: walls, window, floor and furniture visible, the bed taking about one third of the frame, the people seen full body within their space"},
   {id:"mid", name:"Plano medio", hint:"En la cama, de cerca", text:"Medium shot at bed level, the people from the waist up or half body, the bedding around them"},
   {id:"close", name:"Primer plano", hint:"Gesto íntimo", text:"Intimate close-up of a face, a gesture or a hand, very close, the background melting away"},
   {id:"detail", name:"Detalle", hint:"Pies, manos, objetos", text:"Detail shot of feet, socks, hands or an object, faces out of frame, the body telling the story"},
@@ -483,11 +483,11 @@ function productSpec(baseText){
 /* ---------- Bloque prioritario del producto ---------- */
 const MATTRESS_VIEWS = [
   {id:"r34", name:"Esquina derecha", hint:"Como la vista 3:4",
-   text:"Camera at the FRONT-RIGHT corner, exactly like the vista 3:4 reference. In the image, the face on the LEFT is the FRONT: it carries the small model name above LOMONACO. The face on the RIGHT is the right long side: only two horizontal handles, the M handle next to the corner, no text. The ONE ribbon sits on the corner between them, the corner closest to the camera"},
+   text:"The mattress is seen from its FRONT-RIGHT corner, with the same orientation as the vista 3:4 reference (orientation only: not its framing, distance, background or light). In the image, the face on the LEFT is the FRONT: it carries the small model name above LOMONACO. The face on the RIGHT is the right long side: only two horizontal handles, the M handle next to the corner, no text. The ONE ribbon sits on the corner between them, the corner closest to the camera"},
   {id:"front", name:"Frente", hint:"El logo de cara",
-   text:"Camera facing the FRONT, exactly like the vista frontal reference: the model name above LOMONACO centered on the face toward the camera, no handles on that face, the ribbon on the top-RIGHT corner of the mattress as seen in the image. The long sides are barely visible"},
+   text:"The mattress is seen from its FRONT, with the same orientation as the vista frontal reference (orientation only): the model name above LOMONACO centered on the face toward the camera, no handles on that face, the ribbon on the top-RIGHT corner of the mattress as seen in the image. The long sides are barely visible"},
   {id:"right", name:"Lateral derecho", hint:"Asas, sin texto",
-   text:"Camera facing the RIGHT long side, exactly like the vista lateral reference: the front is at the LEFT end of the mattress in the image. This long side shows only two horizontal handles, the one on the left with the M, and NO text at all. The ribbon is on the top-LEFT corner of the mattress in the image"},
+   text:"The mattress is seen from its RIGHT long side, with the same orientation as the vista lateral reference (orientation only): the front is at the LEFT end of the mattress in the image. This long side shows only two horizontal handles, the one on the left with the M, and NO text at all. The ribbon is on the top-LEFT corner of the mattress in the image"},
   {id:"top", name:"Desde arriba", hint:"Cenital o detalle",
    text:"Seen from above or very close: mostly the tufted top. If the front-right corner is in frame, it carries the ribbon. No side text needs to be visible"}
 ];
@@ -499,7 +499,7 @@ function modelLabel(){ const id=$("model").value, m=MODELS.find(x=>x.id===id); c
 function mustMatch(viewText){
   const lbl=modelLabel();
   return [
-    "1. COPY THE MATTRESS FROM THE CONNECTED REFERENCE IMAGES (vista frontal, vista lateral, vista 3:4, detalle asa y banda, detalle tela esquina derecha). It is a real product: do not redesign, simplify or reinterpret it",
+    "1. COPY THE MATTRESS FROM THE CONNECTED REFERENCE IMAGES (vista frontal, vista lateral, vista 3:4, detalle asa y banda, detalle tela esquina derecha). It is a real product: do not redesign, simplify or reinterpret it. Take ONLY the product design and its orientation from the references, never their framing, studio background, lighting or catalog look",
     "2. Tall mattress with an INTEGRATED pillow-top: round biscuit tufting all over the top, a vertical ribbed band, and a white jacquard lower panel. Never a flat top, never smooth fabric, never a separate topper",
     "3. TEXT ONLY ON THE FRONT (a short side), nowhere else: line 1 small spaced capitals '"+lbl+"', line 2 larger 'LOMONACO' with a short bar under the central M. Burgundy embroidery, centered, straight, sharp and perfectly legible",
     "4. EXACT SPELLING, letter by letter: '"+lbl+"' and 'L-O-M-O-N-A-C-O'. No other words, no extra letters, no invented characters. If the text cannot be rendered sharp and correct, frame or cover that area instead of inventing it",
@@ -507,7 +507,8 @@ function mustMatch(viewText){
     "6. FRONT: no handles",
     "7. ONE burgundy ribbon with LOMONACO, ONLY on the front-RIGHT corner. Never on the left corner, never two",
     "8. VIEW IN THIS IMAGE: "+viewText,
-    "9. Bedding may cover part of the mattress. Whatever stays visible follows these rules"
+    "9. Bedding may cover part of the mattress. Whatever stays visible follows these rules",
+    "10. Product accuracy never turns the image into a product shot: the camera distance and framing come from the scene, so the mattress may be small in the frame"
   ];
 }
 function fixPrompt(viewText){
@@ -566,13 +567,21 @@ function build(){
   scene.camera_accident = accident;
   scene.aspect_ratio = $("ar").value;
   const neg=$("neg").value.split(/[,\n]/).map(s=>s.trim()).filter(Boolean);
-  scene.strictly_exclude = ["ribbon on the left corner of the mattress","text or logo on the long side of the mattress","flat mattress without pillow-top","garbled or misspelled text","handles on the front of the mattress","separate topper on the mattress","looking into the camera","posed smiles","studio lighting","catalog look","socks, shoes, slippers or clothes on the floor","clothes piled on chairs or radiators","messy or cluttered room","visible light switches and power sockets","aluminium window frames","cheap laminate furniture","flat grey lighting","stock photo look","extra or missing limbs","extra fingers or fused hands","deformed bodies","impossible poses","floating objects","mirrored or garbled text","logo on the long side of the mattress", ...neg];
+  const wideShots=["top","door","wide","mid"];
+  scene.strictly_exclude = [...(wideShots.includes(shot.id)?["close-up of the mattress","product shot framing","mattress filling the frame"]:[]),"catalog product photo","glossy CGI render look","ribbon on the left corner of the mattress","text or logo on the long side of the mattress","flat mattress without pillow-top","garbled or misspelled text","handles on the front of the mattress","separate topper on the mattress","looking into the camera","posed smiles","studio lighting","catalog look","socks, shoes, slippers or clothes on the floor","clothes piled on chairs or radiators","messy or cluttered room","visible light switches and power sockets","aluminium window frames","cheap laminate furniture","flat grey lighting","stock photo look","extra or missing limbs","extra fingers or fused hands","deformed bodies","impossible poses","floating objects","mirrored or garbled text","logo on the long side of the mattress", ...neg];
   $("stock").textContent = t.stock + " · color neutro";
   $("arLabel").textContent = $("ar").value;
   const out={};
-  if($("product").checked) out.PRODUCT_MUST_MATCH_REFERENCES = mustMatch(find(MATTRESS_VIEWS,val("mview")).text);
-  out.scene = scene;
+  const prod=$("product").checked;
+  out.IMAGE = "A candid editorial photograph shot on film, NOT an advertisement and NOT a product shot. "
+    + scene.people + ". " + scene.action + ". "
+    + "Framing: " + shot.text + ". " + scene.lens + ". " + t.time + ": " + t.light + ". "
+    + (prod ? "The LOMONACO mattress is part of the room, recognizable but not the subject. " : "")
+    + "Natural film grain, real available light, documentary feel, nobody posing or looking at the camera";
+  if(prod) out.PRODUCT_MUST_MATCH_REFERENCES = mustMatch(find(MATTRESS_VIEWS,val("mview")).text);
+  out.FRAMING_IS_MANDATORY = "Respect this framing exactly: " + shot.text + ". Do not crop closer, do not turn it into a close-up of the mattress";
   out.art_direction = ART_DIRECTION;
+  out.scene = scene;
   out.production_value = find(VALUE_LEVELS,val("pv")).text;
   if($("product").checked) out.product_details = productSpec(BED_BASES[$("pbase").value][1]);
   return out;
