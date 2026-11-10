@@ -9,25 +9,22 @@
 <title>IMAGNES LM Producto</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: misma hoja de rodaje que IMAGNES LM. Izquierda el set de producto, derecha el JSON fijo al hacer scroll */
 :root{
-  --bg:#ECE6DC; --panel:#F7F2EA; --ink:#2B261F; --muted:#6F6657; --line:#D8CEBE;
-  --accent:#9C5B22; --accent-ink:#FFFFFF; --olive:#5C6340; --code-bg:#24201A; --code-fg:#EADFC8; --code-key:#E2A65A; --code-str:#C9C2A0;
-  --swatch-line:rgba(0,0,0,.12);
-  --f-display:"Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
-  --f-body:"Public Sans", "Helvetica Neue", Arial, sans-serif;
+  /* Herramienta corporativa LOMONACO: un solo tema claro, tokens del manual de marca */
+  --bg:#F6F6F6; --panel:#FFFFFF; --ink:#1D1D1F; --muted:#5F5F66; --line:#D9D9DE;
+  --accent:#7C1919; --accent-d:#5E1212; --accent-ink:#FFFFFF; --olive:#5F5F66;
+  --code-bg:#1D1D1F; --code-fg:#F1F1F1; --code-key:#E9A9A9; --code-str:#D9D9DE;
+  --swatch-line:rgba(0,0,0,.12); --mat:#FFFFFF; --wood:#78624A; --floor:#EDEDF0;
+  --f-display:"Albert Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --f-body:"Albert Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --serif:"Playfair Display", Georgia, "Times New Roman", serif;
   --f-mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  --r:24px; --r-sm:14px;
+  color-scheme:light;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#17150F; --panel:#211E17; --ink:#EDE6D6; --muted:#A39A86; --line:#38332A;
-  --accent:#E09A4B; --accent-ink:#1B1710; --olive:#AAB283; --code-bg:#0F0E0A; --code-fg:#E4DAC4; --code-key:#E9AE66; --code-str:#C9C2A0;
-  --swatch-line:rgba(255,255,255,.18); color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#17150F; --panel:#211E17; --ink:#EDE6D6; --muted:#A39A86; --line:#38332A;
-  --accent:#E09A4B; --accent-ink:#1B1710; --olive:#AAB283; --code-bg:#0F0E0A; --code-fg:#E4DAC4; --code-key:#E9AE66; --code-str:#C9C2A0;
-  --swatch-line:rgba(255,255,255,.18); color-scheme:dark}
 
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
@@ -102,19 +99,72 @@ pre .k{color:var(--code-key)} pre .s{color:var(--code-str)}
 .tip b{color:var(--ink)}
 @media (max-width:900px){.out{position:static}pre{max-height:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* --- Capa de marca LOMONACO (manual de marca, ed. 01) --- */
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px}
+header{border-bottom:1px solid var(--line);padding-bottom:24px;margin-bottom:32px;align-items:flex-end}
+.brandlogo{display:block;height:20px;width:auto;color:var(--accent);margin-bottom:24px}
+.brandlogo svg{height:100%;width:auto;fill:currentColor;display:block}
+h1{font-family:var(--f-body);font-weight:700;letter-spacing:-.02em;line-height:1.05}
+h1 span{font-family:var(--serif);font-style:italic;font-weight:400;font-size:1.08em;letter-spacing:0;color:var(--accent)}
+.sub{color:var(--muted);font-size:17px;line-height:1.5}
+.slate{font-family:var(--f-body);font-weight:600;font-size:12px;color:var(--muted)}
+.slate b{font-weight:700;color:var(--ink)}
+label,.lab,summary{font-family:var(--f-body);font-weight:700;font-size:18px;letter-spacing:-.01em}
+label small,.lab small{font-family:var(--f-body);font-weight:700;font-size:12px;color:var(--ink);letter-spacing:.08em;opacity:.55}
+.step{font-family:var(--f-body);font-weight:800;color:var(--accent)}
+textarea,select{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-sm);font-family:var(--f-body);font-size:16px}
+textarea:focus,select:focus{border-color:var(--accent)}
+.opt span{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-sm);font-family:var(--f-body);font-weight:600}
+.opt span em{color:var(--muted);font-weight:400}
+.opt input:checked + span{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.chip{background:var(--panel);border:1px solid var(--line);font-family:var(--f-body);font-weight:600;border-radius:999px}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+button.main,button.ghost{font-family:var(--f-body);font-weight:600;font-size:15px;min-height:52px;padding:0 24px;border-radius:999px}
+button.main{background:var(--accent);border-color:var(--accent);color:#fff}
+button.main:hover{background:var(--accent-d);border-color:var(--accent-d)}
+button.ghost{background:var(--panel);color:var(--accent);border-color:var(--accent)}
+pre{border-radius:var(--r);background:var(--code-bg);color:var(--code-fg)}
+.stock{font-family:var(--f-body);font-weight:700;font-size:12px;color:var(--ink);letter-spacing:.08em}
+.toast{color:var(--accent);font-weight:600}
+.tip{border-left:2px solid var(--accent);color:var(--muted)}
+.tip b{color:var(--ink)}
+.rule{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:var(--r-sm)}
+.rule b{color:var(--accent)}
+.check,.slot,figure,.mode{background:var(--panel);border-radius:var(--r-sm)}
+.mode{border-color:var(--line)}
+.mode input:checked + span{background:var(--accent);color:#fff}
+.mode label + label span{border-left-color:var(--line)}
+details{border-top:1px solid var(--line)}
+.card h3 span{font-family:var(--f-body);font-weight:700}
+.views svg{color:var(--ink)}
+.check{flex-wrap:nowrap;font-size:15px;font-weight:500;letter-spacing:0;padding:14px 16px}
+.hint b{color:var(--ink)}
 </style>
 
 <div class="wrap">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="logo" viewBox="0 0 2931.33 426.24">
+    <polygon points="207.55 234.14 207.55 288.59 4.57 288.59 4.57 288.03 0 288.03 0 11.79 66.27 11.79 66.27 234.13 207.55 234.14"/><path d="M2167.23,180.65l-.39-1.04-74.71-167.5-69.11-.39-122.6,276.31h66.63l25.9-59.09,129.24-.39,26.29,59.48h66.51l-47.76-107.37ZM2014.95,180l42.82-96.7,42.43,96.31-85.25.39Z"/><polygon points="1805.31 11.79 1805.31 288.08 1740.17 288.08 1740.17 287.11 1613.74 130.47 1613.74 288.08 1547.47 288.08 1547.47 11.79 1613.74 11.79 1740.17 174.44 1740.17 11.79 1805.31 11.79"/><polygon points="1020.12 11.79 1020.12 288.08 953.85 288.08 953.85 130.77 874.37 257.82 840.93 257.82 764.43 135.44 764.43 288.07 698.16 288.07 698.16 11.79 764.43 11.79 857.88 178.96 953.85 11.79 1020.12 11.79"/><rect x="831.6" y="241.88" width="54.36" height="314.36" transform="translate(1257.85 -459.72) rotate(90)"/><path d="M435.33.39c-85.38-.39-154.75,66.9-154.75,149.8s69.37,149.54,154.75,149.15c85.38.39,154.88-66.9,154.88-149.15S520.71,0,435.33.39ZM435.33,240.52c-51.67,0-93.84-40.74-93.84-90.32s42.17-90.97,93.84-90.97,93.97,40.74,93.58,90.71c.39,49.85-41.78,90.58-93.58,90.58Z"/><path d="M1283.38.39c-85.77,0-154.75,67.03-155.14,149.54.39,82.52,69.76,149.8,154.75,149.8s155.14-67.29,154.88-149.8c.39-82.51-69.11-149.93-154.49-149.54ZM1283.38,240.52c-51.67,0-93.84-40.74-93.84-90.32s42.17-90.97,93.84-90.97,93.84,40.74,93.58,90.71c.26,49.85-41.78,90.58-93.58,90.58Z"/><path d="M2776.45,0c-85.38.39-154.75,67.03-154.75,149.93s69.37,149.41,154.75,149.8c85.77,0,154.88-66.9,154.88-149.8S2861.83.39,2776.45,0ZM2776.45,240.91c-51.67,0-93.84-40.74-93.84-90.97s41.78-90.71,94.23-90.71,93.58,40.35,93.58,90.71c-.13,50.24-41.91,90.58-93.97,90.97Z"/><path d="M2547.09,245.45c-28.41,33.14-71.26,54.2-119.19,54.2-85.49,0-154.79-67.04-154.79-149.7,0-82.71,69.3-149.7,154.79-149.7,47.47,0,89.9,20.65,118.31,53.17l-45.57,39.25c-17.21-20.4-43.41-33.44-72.74-33.44-51.84,0-93.81,40.58-93.81,90.72,0,50.09,41.97,90.73,93.81,90.73,29.28,0,55.43-13,72.59-33.29l46.6,38.07Z"/>
+  </symbol></svg>
   <header>
     <div>
+      <a class="brandlogo" href="index.html" aria-label="LOMONACO, volver a las herramientas"><svg viewBox="0 0 2931.33 426.24"><use href="#logo"/></svg></a>
       <h1>Ficha de <span>producto</span></h1>
       <p class="sub">El colchón solo, en un set neutro y sin decoración. Elige cuántas imágenes quieres, el suelo, la pared y la luz. El tratamiento de imagen editorial ya va incluido, con una calidez más mediterránea que las referencias.</p>
     </div>
-    <div class="slate"><span>Toma <b id="takeNo">01</b></span><span>Formato <b id="arLabel">4:5</b></span><span>Modelo <b>Nano Banana 2.1</b></span></div>
+    <div class="slate"><span>Toma <b id="takeNo">01</b></span><span>Formato <b id="arLabel">4:5</b></span><span>Modelo <b>Nano Banana 2.6</b></span></div>
   </header>
 
   <div class="grid">
     <form id="f" autocomplete="off">
+      <div class="field">
+        <label for="model">Modelo de colchón <small>define cómo es el producto</small></label>
+        <select id="model"></select>
+        <textarea id="customModel" rows="2" hidden placeholder="Nombre del modelo y lo que lo diferencia. Ej.: Supreme Pocket, vivo gris, asas sin bordado"></textarea>
+        <p class="hint">Nombra tus fotos de referencia así: <b>modelo_frontal</b>, <b>modelo_lateral</b>, <b>modelo_tres-cuartos</b>, <b>modelo_cinta</b>, <b>modelo_asa-m</b> (por ejemplo, natura-latex_frontal).</p>
+      </div>
+
       <div class="field">
         <span class="lab" id="countLab">Número de imágenes <small>de la ficha</small></span>
         <div class="opts count" id="counts" role="radiogroup" aria-labelledby="countLab"></div>
@@ -174,7 +224,7 @@ pre .k{color:var(--code-key)} pre .s{color:var(--code-str)}
       </div>
       <div class="toast" id="toast" role="status"></div>
       <div class="cards" id="cards"></div>
-      <p class="tip"><b>En Magnific:</b> Nano Banana 2.1. Crea un generador por imagen, conecta en todos el nodo de tu colchón como referencia <b>Product</b> y pega en cada uno su prompt.</p>
+      <p class="tip"><b>En Magnific:</b> Nano Banana 2.6. Crea un generador por imagen, conecta en todos el nodo de tu colchón como referencia <b>Product</b> y pega en cada uno su prompt.</p>
     </section>
   </div>
 </div>
@@ -198,7 +248,7 @@ const STYLE = {
   image_treatment: {
     color: "Muted, slightly desaturated natural palette, creamy whites, sand and stone neutrals",
     finish: "Matte, soft analog look, gentle film grain, very subtle softness at the edges",
-    tonality: "Wall and floor in the same tonal family, smooth gradient from lit side to shadow side, subtle vignette",
+    tonality: "Wall and floor in the same tonal family, smooth gradient from lit side to shadow side, no vignette",
     focus: "Sharp focus on the closest edge of the mattress, gentle falloff into soft focus behind"
   },
   camera: {
@@ -350,6 +400,47 @@ const COUNTS = [
 ];
 
 const $ = id => document.getElementById(id);
+/* ---------- Modelos de colchón LOMONACO ---------- */
+const MATTRESS_COMMON = {
+  shape: "Rectangular, tall mattress about 30 cm thick with a pillow-top. The FRONT and the BACK are the two SHORT sides (the width of the bed). The two LATERALS are the LONG sides (the length of the bed)",
+  construction: "Two stacked layers visible on every side: an upper pillow-top layer, about one third of the height, wrapped by a band of fine vertical ribbed quilting between two thin piping lines; and a taller lower body panel in white embossed jacquard knit with a soft organic pattern, closed by a piping line along the bottom edge",
+  top: "White jacquard knit top with dense biscuit tufting: a regular grid of round puffy cushions, each sunk at its tuft point, covering the whole surface",
+  front: "FRONT = the short side that carries the model name in small spaced capitals above the LOMONACO wordmark, embroidered in burgundy and centered on the lower body panel. LOMONACO is one word in spaced capitals with a short horizontal bar under the central M. The front is always the foot of the bed, open to the room",
+  back: "BACK = the opposite short side: plain white jacquard with no text and no logo. It is the head of the bed, against the wall or the headboard, where the pillows rest",
+  laterals: "Each LONG lateral side has NO text and NO logo. It only has two horizontal rectangular fabric carry handles on the lower body panel, one near each end. Each handle has a stitched square with an X at both ends and thin burgundy edging along its top and bottom borders. The handle closest to the front carries a small embroidered burgundy M with a short bar beneath it; the other handle has no M",
+  ribbon: "A single burgundy satin ribbon printed with LOMONACO in light cream capitals crosses the RIGHT front corner diagonally (as seen facing the front), lying on the top surface and folding over the edge. Never on the left corner, never at the back, never more than one",
+  color: "The whole mattress is white. The only color is burgundy: the front embroidery, the ribbon, the handle edging and the M"
+};
+const MODELS = [
+  {id:"natura-latex", name:"Natura Látex", label:"NATURA LÁTEX", piping:"White piping on all edges"},
+  {id:"gran-natura", name:"Gran Natura", label:"GRAN NATURA", piping:"Thin burgundy piping lines along the edges of the lower body panel, the signature detail of this model"},
+  {id:"otro", name:"Otro modelo (escribir)", label:"", piping:""}
+];
+const REF_VIEWS = [["frontal","front view, the logo side"],["lateral","long lateral side with the two handles"],["tres-cuartos","three-quarter view of the front-right corner"],["cinta","close-up of the ribbon on the right front corner"],["asa-m","close-up of the handle with the M"]];
+function productSpec(baseText){
+  const id=$("model").value, m=MODELS.find(x=>x.id===id)||MODELS[0];
+  const custom=($("customModel")?$("customModel").value.trim():"");
+  const name = id==="otro" ? (custom||"the model shown in the references") : m.name;
+  const spec = {
+    model: "LOMONACO " + name + " mattress",
+    reference_images: Object.fromEntries(REF_VIEWS.map(([v,d])=>[(id==="otro"?"modelo":id)+"_"+v, d])),
+    reference_rule: "The attached reference images follow these names. Read the mattress from them: they show the real product and win over any description",
+    anatomy: Object.assign({}, MATTRESS_COMMON, {
+      model_name_on_front: id==="otro" ? ("Model name as embroidered in the reference" + (custom? (": "+custom):"")) : ("Small spaced capitals reading " + m.label + ", exactly as in the reference"),
+      piping: id==="otro" ? "As in the reference" : m.piping
+    }),
+    orientation_rules: "Seen from the front: model name and LOMONACO facing the camera, ribbon at the right corner. When the camera sees a long side, it shows only its two horizontal handles, the M handle nearest the front, never any text. Pillows and people's heads always at the back; people's feet point toward the front. The logo is never on a long side and is never mirrored, moved, duplicated or invented",
+    text_check: "Spell LOMONACO and the model name exactly, letter by letter, with the bar under the M",
+    do_not_modify: "Strict product lock. Reproduce the mattress exactly as in the reference images and do not change any aspect of the product or any element of its design: shape, proportions, thickness, layers, tufting, ribbed band, jacquard pattern, colors, piping, handles, M, logo, typography and ribbon. Nothing added, removed, simplified, redesigned or restyled"
+  };
+  if(baseText) spec.bed_base = baseText;
+  return spec;
+}
+function fillModels(){
+  MODELS.forEach(m=>$("model").add(new Option(m.name,m.id)));
+}
+function toggleCustom(){ const c=$("customModel"); if(c) c.hidden = $("model").value!=="otro"; }
+
 const pick = arr => arr[Math.floor(Math.random()*arr.length)];
 let take = 1, variantIdx = 0, lightVar = VARIANTS_LIGHT[0];
 let slots = COUNTS[1].set.slice();
@@ -419,7 +510,7 @@ function build(shotId, idx){
   scene.aspect_ratio = $("ar").value;
   const neg = negList();
   if(neg.length) scene.strictly_exclude = {instruction:"None of the following may appear anywhere in the image", items:neg};
-  return {product_photo_style: STYLE, scene};
+  return {product_photo_style: Object.assign({}, STYLE, {product: productSpec(null)}), scene};
 }
 
 function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")}
@@ -432,6 +523,7 @@ function copyText(text, el, okMsg){
   try{navigator.clipboard.writeText(text).then(ok,fallback)}catch(e){fallback()}
 }
 function render(){
+  toggleCustom();
   const box=$("cards"); box.innerHTML="";
   slots.forEach((id,i)=>{
     const json=JSON.stringify(build(id,i),null,2);
@@ -447,7 +539,7 @@ function render(){
 }
 
 function save(){
-  try{localStorage.setItem("fichaLM3",JSON.stringify({c:val("count"),sl:slots,fl:val("floor"),wl:val("wall"),wm:val("warm"),dr:val("dir"),b:$("base").value,ar:$("ar").value,x:$("extra").value,n:$("neg").value,ns:[...negSel]}))}catch(e){}
+  try{localStorage.setItem("fichaLM3",JSON.stringify({c:val("count"),sl:slots,fl:val("floor"),wl:val("wall"),wm:val("warm"),dr:val("dir"),b:$("base").value,ar:$("ar").value,x:$("extra").value,n:$("neg").value,ns:[...negSel],m:$("model").value,cm:$("customModel").value}))}catch(e){}
 }
 function load(){
   try{
@@ -456,6 +548,7 @@ function load(){
     if(Array.isArray(s.sl) && s.sl.length && s.sl.every(id=>SHOTS.some(x=>x.id===id))) slots=s.sl;
     if(s.b) $("base").value=s.b; if(s.ar) $("ar").value=s.ar;
     if(s.x) $("extra").value=s.x; if(s.n) $("neg").value=s.n;
+    if(s.m&&MODELS.some(x=>x.id===s.m)) $("model").value=s.m; if(s.cm) $("customModel").value=s.cm;
     (s.ns||[]).forEach(i=>{ if(NEG_QUICK[i]){ negSel.add(i); $("neg-"+i).setAttribute("aria-pressed","true"); } });
   }catch(e){}
 }
@@ -472,6 +565,7 @@ $("reroll").onclick=()=>{
   render(); $("toast").textContent="Nueva variación en todas las imágenes: cambian la composición y el matiz de la luz. El set y la temperatura se mantienen.";
 };
 
+fillModels();
 load(); drawSlots(); render();
 </script>
 

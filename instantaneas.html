@@ -9,22 +9,22 @@
 <title>IMAGNES LM Instantáneas</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: hoja de rodaje. Izquierda la ficha de la toma, derecha el prompt fijo al hacer scroll */
 :root{
-  --bg:#EAE7E1; --panel:#F6F4EF; --ink:#26241F; --muted:#6B675E; --line:#D5D0C6;
-  --accent:#B0432F; --accent-ink:#FFFFFF; --olive:#4F6146; --code-bg:#1F1E1B; --code-fg:#E8E2D4; --code-key:#E7A36A; --code-str:#BFC7A6;
-  --f-display:"Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
-  --f-body:"Public Sans", "Helvetica Neue", Arial, sans-serif;
+  /* Herramienta corporativa LOMONACO: un solo tema claro, tokens del manual de marca */
+  --bg:#F6F6F6; --panel:#FFFFFF; --ink:#1D1D1F; --muted:#5F5F66; --line:#D9D9DE;
+  --accent:#7C1919; --accent-d:#5E1212; --accent-ink:#FFFFFF; --olive:#5F5F66;
+  --code-bg:#1D1D1F; --code-fg:#F1F1F1; --code-key:#E9A9A9; --code-str:#D9D9DE;
+  --swatch-line:rgba(0,0,0,.12); --mat:#FFFFFF; --wood:#78624A; --floor:#EDEDF0;
+  --f-display:"Albert Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --f-body:"Albert Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --serif:"Playfair Display", Georgia, "Times New Roman", serif;
   --f-mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  --r:24px; --r-sm:14px;
+  color-scheme:light;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#161512; --panel:#201F1B; --ink:#ECE7DC; --muted:#A29C8F; --line:#36332D;
-  --accent:#E57A62; --accent-ink:#1A1512; --olive:#A9B98F; --code-bg:#0E0D0B; --code-fg:#E4DECF; --code-key:#EBAA72; --code-str:#BFC7A6; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#161512; --panel:#201F1B; --ink:#ECE7DC; --muted:#A29C8F; --line:#36332D;
-  --accent:#E57A62; --accent-ink:#1A1512; --olive:#A9B98F; --code-bg:#0E0D0B; --code-fg:#E4DECF; --code-key:#EBAA72; --code-str:#BFC7A6; color-scheme:dark}
 
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
@@ -82,15 +82,61 @@ pre .k{color:var(--code-key)} pre .s{color:var(--code-str)}
 .tip b{color:var(--ink)}
 @media (max-width:900px){.out{position:static}pre{max-height:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* --- Capa de marca LOMONACO (manual de marca, ed. 01) --- */
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px}
+header{border-bottom:1px solid var(--line);padding-bottom:24px;margin-bottom:32px;align-items:flex-end}
+.brandlogo{display:block;height:20px;width:auto;color:var(--accent);margin-bottom:24px}
+.brandlogo svg{height:100%;width:auto;fill:currentColor;display:block}
+h1{font-family:var(--f-body);font-weight:700;letter-spacing:-.02em;line-height:1.05}
+h1 span{font-family:var(--serif);font-style:italic;font-weight:400;font-size:1.08em;letter-spacing:0;color:var(--accent)}
+.sub{color:var(--muted);font-size:17px;line-height:1.5}
+.slate{font-family:var(--f-body);font-weight:600;font-size:12px;color:var(--muted)}
+.slate b{font-weight:700;color:var(--ink)}
+label,.lab,summary{font-family:var(--f-body);font-weight:700;font-size:18px;letter-spacing:-.01em}
+label small,.lab small{font-family:var(--f-body);font-weight:700;font-size:12px;color:var(--ink);letter-spacing:.08em;opacity:.55}
+.step{font-family:var(--f-body);font-weight:800;color:var(--accent)}
+textarea,select{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-sm);font-family:var(--f-body);font-size:16px}
+textarea:focus,select:focus{border-color:var(--accent)}
+.opt span{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-sm);font-family:var(--f-body);font-weight:600}
+.opt span em{color:var(--muted);font-weight:400}
+.opt input:checked + span{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.chip{background:var(--panel);border:1px solid var(--line);font-family:var(--f-body);font-weight:600;border-radius:999px}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+button.main,button.ghost{font-family:var(--f-body);font-weight:600;font-size:15px;min-height:52px;padding:0 24px;border-radius:999px}
+button.main{background:var(--accent);border-color:var(--accent);color:#fff}
+button.main:hover{background:var(--accent-d);border-color:var(--accent-d)}
+button.ghost{background:var(--panel);color:var(--accent);border-color:var(--accent)}
+pre{border-radius:var(--r);background:var(--code-bg);color:var(--code-fg)}
+.stock{font-family:var(--f-body);font-weight:700;font-size:12px;color:var(--ink);letter-spacing:.08em}
+.toast{color:var(--accent);font-weight:600}
+.tip{border-left:2px solid var(--accent);color:var(--muted)}
+.tip b{color:var(--ink)}
+.rule{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:var(--r-sm)}
+.rule b{color:var(--accent)}
+.check,.slot,figure,.mode{background:var(--panel);border-radius:var(--r-sm)}
+.mode{border-color:var(--line)}
+.mode input:checked + span{background:var(--accent);color:#fff}
+.mode label + label span{border-left-color:var(--line)}
+details{border-top:1px solid var(--line)}
+.card h3 span{font-family:var(--f-body);font-weight:700}
+.views svg{color:var(--ink)}
+.check{flex-wrap:nowrap;font-size:15px;font-weight:500;letter-spacing:0;padding:14px 16px}
+.hint b{color:var(--ink)}
 </style>
 
 <div class="wrap">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="logo" viewBox="0 0 2931.33 426.24">
+    <polygon points="207.55 234.14 207.55 288.59 4.57 288.59 4.57 288.03 0 288.03 0 11.79 66.27 11.79 66.27 234.13 207.55 234.14"/><path d="M2167.23,180.65l-.39-1.04-74.71-167.5-69.11-.39-122.6,276.31h66.63l25.9-59.09,129.24-.39,26.29,59.48h66.51l-47.76-107.37ZM2014.95,180l42.82-96.7,42.43,96.31-85.25.39Z"/><polygon points="1805.31 11.79 1805.31 288.08 1740.17 288.08 1740.17 287.11 1613.74 130.47 1613.74 288.08 1547.47 288.08 1547.47 11.79 1613.74 11.79 1740.17 174.44 1740.17 11.79 1805.31 11.79"/><polygon points="1020.12 11.79 1020.12 288.08 953.85 288.08 953.85 130.77 874.37 257.82 840.93 257.82 764.43 135.44 764.43 288.07 698.16 288.07 698.16 11.79 764.43 11.79 857.88 178.96 953.85 11.79 1020.12 11.79"/><rect x="831.6" y="241.88" width="54.36" height="314.36" transform="translate(1257.85 -459.72) rotate(90)"/><path d="M435.33.39c-85.38-.39-154.75,66.9-154.75,149.8s69.37,149.54,154.75,149.15c85.38.39,154.88-66.9,154.88-149.15S520.71,0,435.33.39ZM435.33,240.52c-51.67,0-93.84-40.74-93.84-90.32s42.17-90.97,93.84-90.97,93.97,40.74,93.58,90.71c.39,49.85-41.78,90.58-93.58,90.58Z"/><path d="M1283.38.39c-85.77,0-154.75,67.03-155.14,149.54.39,82.52,69.76,149.8,154.75,149.8s155.14-67.29,154.88-149.8c.39-82.51-69.11-149.93-154.49-149.54ZM1283.38,240.52c-51.67,0-93.84-40.74-93.84-90.32s42.17-90.97,93.84-90.97,93.84,40.74,93.58,90.71c.26,49.85-41.78,90.58-93.58,90.58Z"/><path d="M2776.45,0c-85.38.39-154.75,67.03-154.75,149.93s69.37,149.41,154.75,149.8c85.77,0,154.88-66.9,154.88-149.8S2861.83.39,2776.45,0ZM2776.45,240.91c-51.67,0-93.84-40.74-93.84-90.97s41.78-90.71,94.23-90.71,93.58,40.35,93.58,90.71c-.13,50.24-41.91,90.58-93.97,90.97Z"/><path d="M2547.09,245.45c-28.41,33.14-71.26,54.2-119.19,54.2-85.49,0-154.79-67.04-154.79-149.7,0-82.71,69.3-149.7,154.79-149.7,47.47,0,89.9,20.65,118.31,53.17l-45.57,39.25c-17.21-20.4-43.41-33.44-72.74-33.44-51.84,0-93.81,40.58-93.81,90.72,0,50.09,41.97,90.73,93.81,90.73,29.28,0,55.43-13,72.59-33.29l46.6,38.07Z"/>
+  </symbol></svg>
   <header>
     <div>
+      <a class="brandlogo" href="index.html" aria-label="LOMONACO, volver a las herramientas"><svg viewBox="0 0 2931.33 426.24"><use href="#logo"/></svg></a>
       <h1>Instantáneas <span>robadas</span></h1>
       <p class="sub">Escribe quién sale, qué hace, el plano y la hora. La dirección de arte, la luz, el color, la textura y la regla de foto robada ya van dentro del prompt.</p>
     </div>
-    <div class="slate"><span>Toma <b id="takeNo">01</b></span><span>Formato <b id="arLabel">4:5</b></span><span>Modelo <b>Nano Banana 2.1</b></span></div>
+    <div class="slate"><span>Toma <b id="takeNo">01</b></span><span>Formato <b id="arLabel">4:5</b></span><span>Modelo <b>Nano Banana 2.6</b></span></div>
   </header>
 
   <div class="grid">
@@ -124,6 +170,18 @@ pre .k{color:var(--code-key)} pre .s{color:var(--code-str)}
       </div>
 
       <label class="check" for="product"><input type="checkbox" id="product"><span>Incluir mi colchón (referencia de producto conectada en Magnific). El lado del logo es siempre los pies de la cama y las almohadas van en el lado contrario. Aparece de forma natural, nunca como bodegón.</span></label>
+
+      <div class="field">
+        <label for="model">Modelo de colchón <small>si incluyes el colchón</small></label>
+        <select id="model"></select>
+        <textarea id="customModel" rows="2" hidden placeholder="Nombre del modelo y lo que lo diferencia. Ej.: Supreme Pocket, vivo gris, asas sin bordado"></textarea>
+        <p class="hint">Nombra tus fotos de referencia así: <b>modelo_frontal</b>, <b>modelo_lateral</b>, <b>modelo_tres-cuartos</b>, <b>modelo_cinta</b>, <b>modelo_asa-m</b> (por ejemplo, natura-latex_frontal).</p>
+      </div>
+
+      <div class="field">
+        <label for="pbase">Base de la cama</label>
+        <select id="pbase"></select>
+      </div>
 
       <details>
         <summary>Ajustes opcionales del set</summary>
@@ -186,16 +244,16 @@ const ART_DIRECTION = {
     composition: "Intuitive but intentional framing: off-center subjects, occasional crops of feet, hands or heads, layered depth, generous negative space, few elements and all of them beautiful"
   },
   light: {
-    principle: "Only motivated, believable light: the window, the sun, a bedside lamp, a candle or a direct on-camera flash. Never polished studio lighting",
-    character: "Light that draws on the scene: sun patches and window shadows on walls and sheets, pools of lamp light, flash falloff into dark corners",
+    principle: "Only motivated, believable light: the window, the sun, a bedside lamp or a candle. No flash, no studio lights",
+    character: "Light that draws on the scene: sun patches and window shadows on walls and sheets, pools of lamp light falling off into soft dark corners",
     contrast: "Rich natural contrast with real depth: one dominant motivated light sculpting the scene, creamy highlights, deep soft shadows, never flat or grey",
     glow: "Skin and fabrics catch the light with a subtle natural glow"
   },
   color_grade: {
     white_balance: "Neutral and balanced, around 5200K: neither warm nor cold. True clean whites with a hint of cream, natural skin tones",
-    look: "Analog film look, like Kodak Portra 160 scanned from medium format: refined, rich tonal depth, natural but never dull",
+    look: "Natural color exactly as a good camera captures it: refined tonal depth, no filters, no trendy grades, untouched skin",
     accents: "A calm neutral base with one or two confident color accents from textiles or clothing: tomato red, kelly green, cobalt blue, bubblegum pink, mustard or burgundy",
-    texture: "Visible fine film grain over the whole image, subtle halation on highlights, gentle softness. Cinematic, never digital-clean"
+    texture: "Only the natural grain a real camera produces, a little more in low light, never an added filter. No vignette. Cinematic, never digital-clean or plastic"
   },
   set_design: {
     spaces: "Real homes with character and good taste: bedrooms and living rooms with lime plaster or warm cream walls, wood paneling or one deep painted wall, quality wood or stone floors",
@@ -233,8 +291,6 @@ const TIMES = [
    time:"Late afternoon", light:"Low raking sun across the room, long shadows and slats of light on the wall and the bed, warm light balanced in the grade so the image stays neutral"},
   {id:"dusk", name:"Anochecer", hint:"Ventana azul y lámpara", stock:"Anochecer",
    time:"Dusk", light:"Fading blue daylight from the window mixed with a small warm bedside lamp just switched on, soft and calm"},
-  {id:"flash", name:"Noche con flash", hint:"Flash directo editorial", stock:"Flash directo",
-   time:"Night", light:"Direct on-camera flash, frontal and honest, crisp shadow just behind the subjects, background falling off quickly into darkness, a slightly raw editorial snapshot feel"},
   {id:"lamp", name:"Noche de lamparita", hint:"Una lámpara o una vela", stock:"Luz de lámpara",
    time:"Late night", light:"Only one bedside lamp or a candle lit, a small pool of light on the faces and the bed, the room sinking into deep soft shadow, more visible grain"}
 ];
@@ -255,15 +311,23 @@ const PALETTES = [
   ["Tonos tierra y burdeos", "Ecru, terracotta, burgundy and olive textiles"],
   ["Frescos: azul y verde", "Cobalt blue, sky blue and kelly green accents on a white base"]
 ];
+const BED_BASES = [
+  ["Canapé de madera oscura","Dark walnut wood storage base with a black band right under the mattress"],
+  ["Canapé tapizado gris claro","Light grey upholstered storage base"],
+  ["Estructura de madera con patas","Simple solid wood bed frame with slim legs"],
+  ["Sin base visible","The base hidden by the bedding or out of frame"]
+];
 const ACTIONS = [
-  ["Piernas en alto", "Tumbada boca arriba en la cama leyendo una revista, con las piernas en alto apoyadas contra la pared"],
-  ["Bajo el edredón", "Completamente envuelta en el edredón, solo asoma la cara, mirando a la nada, con un café humeando en la mesilla"],
-  ["Estirarse", "Sentada en la cama recién despierta, estirando los brazos hacia arriba con los ojos cerrados"],
-  ["Siesta con perro", "Dormido boca abajo en el sofá, un brazo colgando hasta el suelo, el perro subido encima de su espalda"],
-  ["Saltar en la cama", "Saltando sobre la cama en pijama, el pelo en el aire, a mitad de salto"],
-  ["Leer en pareja", "Pareja en la cama: ella lee en voz baja, él se ha quedado dormido apoyado en su hombro"],
+  ["Saltar", "Salta sobre la cama en pijama, a mitad de salto, el pelo en el aire"],
+  ["Esperar", "Embarazada tumbada de lado en la cama, con la mano sobre la tripa, mirando por la ventana"],
+  ["Despertar", "Se despierta despacio entre las sábanas, ojos entrecerrados y el pelo revuelto sobre la almohada"],
+  ["Leer", "Tumbada boca arriba leyendo una revista, con las piernas apoyadas en alto contra la pared y la cadera junto a esa pared"],
+  ["Mañana", "Sentado en el borde del colchón con una taza de café entre las manos, mirando por la ventana"],
+  ["Abrazo", "Pareja abrazada bajo el edredón, ella con la cara hundida en su cuello, él con los ojos cerrados"],
+  ["Estirarse", "Sentada en la cama recién despierta, estirándose con los brazos hacia arriba y los ojos cerrados"],
   ["Familia", "Padres tumbados en la cama con su bebé entre los dos, haciéndole cosquillas, el bebé muerto de risa"],
-  ["Desayuno", "Sentado con las piernas cruzadas en la cama con una bandeja de desayuno, mordiendo una tostada mientras mira por la ventana"]
+  ["Noche", "Lee en la cama a la luz de la lamparita mientras su pareja ya duerme a su lado"],
+  ["Jugar", "Niños haciendo una cueva con el edredón sobre la cama, uno asomando la cabeza entre risas"]
 ];
 const VALUE_LEVELS = [
   {id:"everyday", name:"Cotidiano", hint:"Casa real, sencilla", text:"Everyday real home, modest but tasteful. Simple furniture, honest materials, a calm and tidy room"},
@@ -282,6 +346,47 @@ const ACCIDENTS = [
 ];
 
 const $ = id => document.getElementById(id);
+/* ---------- Modelos de colchón LOMONACO ---------- */
+const MATTRESS_COMMON = {
+  shape: "Rectangular, tall mattress about 30 cm thick with a pillow-top. The FRONT and the BACK are the two SHORT sides (the width of the bed). The two LATERALS are the LONG sides (the length of the bed)",
+  construction: "Two stacked layers visible on every side: an upper pillow-top layer, about one third of the height, wrapped by a band of fine vertical ribbed quilting between two thin piping lines; and a taller lower body panel in white embossed jacquard knit with a soft organic pattern, closed by a piping line along the bottom edge",
+  top: "White jacquard knit top with dense biscuit tufting: a regular grid of round puffy cushions, each sunk at its tuft point, covering the whole surface",
+  front: "FRONT = the short side that carries the model name in small spaced capitals above the LOMONACO wordmark, embroidered in burgundy and centered on the lower body panel. LOMONACO is one word in spaced capitals with a short horizontal bar under the central M. The front is always the foot of the bed, open to the room",
+  back: "BACK = the opposite short side: plain white jacquard with no text and no logo. It is the head of the bed, against the wall or the headboard, where the pillows rest",
+  laterals: "Each LONG lateral side has NO text and NO logo. It only has two horizontal rectangular fabric carry handles on the lower body panel, one near each end. Each handle has a stitched square with an X at both ends and thin burgundy edging along its top and bottom borders. The handle closest to the front carries a small embroidered burgundy M with a short bar beneath it; the other handle has no M",
+  ribbon: "A single burgundy satin ribbon printed with LOMONACO in light cream capitals crosses the RIGHT front corner diagonally (as seen facing the front), lying on the top surface and folding over the edge. Never on the left corner, never at the back, never more than one",
+  color: "The whole mattress is white. The only color is burgundy: the front embroidery, the ribbon, the handle edging and the M"
+};
+const MODELS = [
+  {id:"natura-latex", name:"Natura Látex", label:"NATURA LÁTEX", piping:"White piping on all edges"},
+  {id:"gran-natura", name:"Gran Natura", label:"GRAN NATURA", piping:"Thin burgundy piping lines along the edges of the lower body panel, the signature detail of this model"},
+  {id:"otro", name:"Otro modelo (escribir)", label:"", piping:""}
+];
+const REF_VIEWS = [["frontal","front view, the logo side"],["lateral","long lateral side with the two handles"],["tres-cuartos","three-quarter view of the front-right corner"],["cinta","close-up of the ribbon on the right front corner"],["asa-m","close-up of the handle with the M"]];
+function productSpec(baseText){
+  const id=$("model").value, m=MODELS.find(x=>x.id===id)||MODELS[0];
+  const custom=($("customModel")?$("customModel").value.trim():"");
+  const name = id==="otro" ? (custom||"the model shown in the references") : m.name;
+  const spec = {
+    model: "LOMONACO " + name + " mattress",
+    reference_images: Object.fromEntries(REF_VIEWS.map(([v,d])=>[(id==="otro"?"modelo":id)+"_"+v, d])),
+    reference_rule: "The attached reference images follow these names. Read the mattress from them: they show the real product and win over any description",
+    anatomy: Object.assign({}, MATTRESS_COMMON, {
+      model_name_on_front: id==="otro" ? ("Model name as embroidered in the reference" + (custom? (": "+custom):"")) : ("Small spaced capitals reading " + m.label + ", exactly as in the reference"),
+      piping: id==="otro" ? "As in the reference" : m.piping
+    }),
+    orientation_rules: "Seen from the front: model name and LOMONACO facing the camera, ribbon at the right corner. When the camera sees a long side, it shows only its two horizontal handles, the M handle nearest the front, never any text. Pillows and people's heads always at the back; people's feet point toward the front. The logo is never on a long side and is never mirrored, moved, duplicated or invented",
+    text_check: "Spell LOMONACO and the model name exactly, letter by letter, with the bar under the M",
+    do_not_modify: "Strict product lock. Reproduce the mattress exactly as in the reference images and do not change any aspect of the product or any element of its design: shape, proportions, thickness, layers, tufting, ribbed band, jacquard pattern, colors, piping, handles, M, logo, typography and ribbon. Nothing added, removed, simplified, redesigned or restyled"
+  };
+  if(baseText) spec.bed_base = baseText;
+  return spec;
+}
+function fillModels(){
+  MODELS.forEach(m=>$("model").add(new Option(m.name,m.id)));
+}
+function toggleCustom(){ const c=$("customModel"); if(c) c.hidden = $("model").value!=="otro"; }
+
 const pick = arr => arr[Math.floor(Math.random()*arr.length)];
 let take = 1, accident = ACCIDENTS[0];
 
@@ -295,6 +400,8 @@ function radio(el, name, list, checked){
 radio($("shots"),"shot",SHOTS,"low");
 radio($("times"),"time",TIMES,"morning");
 radio($("pvs"),"pv",VALUE_LEVELS,"premium");
+fillModels();
+BED_BASES.forEach((b,i)=>$("pbase").add(new Option(b[0],i)));
 ROOMS.forEach((r,i)=>$("room").add(new Option(r[0],i)));
 PALETTES.forEach((p,i)=>$("palette").add(new Option(p[0],i)));
 ACTIONS.forEach(a=>{
@@ -322,24 +429,7 @@ function build(){
   if(pal) scene.textiles_and_color = pal;
   if(extra) scene.decor_direction = "Priority over the default set: " + extra;
   scene.camera_accident = accident;
-  if($("product").checked){
-    scene.product = {
-      item: "The Lomonaco mattress on its dark wood storage base, from the connected product reference image",
-      anatomy: {
-        shape: "Rectangular mattress. The FRONT and the BACK are the two SHORT sides (the width of the bed). The two LATERAL sides are the LONG sides (the length of the bed)",
-        front: "FRONT = the short side that carries the embroidered burgundy LOMONACO logo with the small model name above it, exactly as in the reference. This is always the foot of the bed, open to the room, never against a wall or a headboard",
-        back: "BACK = the opposite short side, plain, with no logo and no embroidery. It is the head of the bed, against the wall or the headboard, where the pillows rest",
-        laterals: "The two LONG lateral sides have NO logo and NO embroidered text. Each lateral side has only two fabric carry handles, always horizontal, placed near its two ends. One of the handles has an embroidered M",
-        ribbon: "A single burgundy ribbon tag with LOMONACO crosses the top edge diagonally at the RIGHT front corner of the mattress, as seen when facing the front (the logo side). Never at the left corner, never at the back, never more than one",
-        top: "Thick white pillow-top with deep square tufting and a thin burgundy piping line",
-        base: "Dark walnut wood storage base with a black band right under the mattress"
-      },
-      orientation_rules: "Seen from the front: logo panel facing the camera, ribbon at the right corner. When the camera sees a long side, that side shows only its two horizontal handles, never the logo. Pillows and people's heads always at the back, never on the logo side; people's feet point toward the front. The logo is never on a long side, never mirrored, moved, duplicated or invented",
-      fidelity: "Exact mattress from the reference: fabric, tufting, piping, handles, logo, label, thickness and proportions",
-      do_not_modify: "Strict product lock. Reproduce the mattress and its base exactly as in the reference image and do not change any aspect of the product or any element of its design: no change to shape, size, proportions, thickness, number or size of tufts, quilting pattern, fabric texture, colors, piping, handles, M monogram, logo, typography, ribbon tag, stitching or base finish. Nothing added, removed, simplified, redesigned or restyled. Only the scene, light and people around it change",
-      presence: "Part of the real moment, never staged as a product shot: the duvet leaves the foot-end panel or part of a long side visible"
-    };
-  }
+  if($("product").checked){ scene.product = productSpec(BED_BASES[$("pbase").value][1]); }
   scene.aspect_ratio = $("ar").value;
   const neg=$("neg").value.split(/[,\n]/).map(s=>s.trim()).filter(Boolean);
   scene.strictly_exclude = ["looking into the camera","posed smiles","studio lighting","catalog look","socks, shoes, slippers or clothes on the floor","clothes piled on chairs or radiators","messy or cluttered room","visible light switches and power sockets","aluminium window frames","cheap laminate furniture","flat grey lighting","stock photo look","extra or missing limbs","extra fingers or fused hands","deformed bodies","impossible poses","floating objects","mirrored or garbled text","logo on the long side of the mattress", ...neg];
@@ -353,10 +443,10 @@ function highlight(json){
   return esc(json).replace(/"([^"\\]*(?:\\.[^"\\]*)*)"(\s*:)?/g,(m,s,k)=>k?`<span class="k">"${s}"</span>${k}`:`<span class="s">"${s}"</span>`);
 }
 let current="";
-function render(){ current=JSON.stringify(build(),null,2); $("json").innerHTML=highlight(current); }
+function render(){ toggleCustom(); current=JSON.stringify(build(),null,2); $("json").innerHTML=highlight(current); }
 
 function save(){
-  try{localStorage.setItem("instantaneasLM",JSON.stringify({p:$("people").value,a:$("action").value,fp:$("focusPoint").value,s:val("shot"),t:val("time"),pr:$("product").checked,r:$("room").value,pl:$("palette").value,ar:$("ar").value,x:$("extra").value,n:$("neg").value,pv:val("pv")}))}catch(e){}
+  try{localStorage.setItem("instantaneasLM",JSON.stringify({p:$("people").value,a:$("action").value,fp:$("focusPoint").value,s:val("shot"),t:val("time"),pr:$("product").checked,r:$("room").value,pl:$("palette").value,ar:$("ar").value,x:$("extra").value,n:$("neg").value,pv:val("pv"),m:$("model").value,cm:$("customModel").value,pb:$("pbase").value}))}catch(e){}
 }
 function load(){
   try{
@@ -368,6 +458,7 @@ function load(){
     if(d.r) $("room").value=d.r; if(d.pl) $("palette").value=d.pl; if(d.ar) $("ar").value=d.ar;
     if(d.x) $("extra").value=d.x; if(d.n) $("neg").value=d.n;
     if(d.pv&&$("pv-"+d.pv)) $("pv-"+d.pv).checked=true;
+    if(d.m&&MODELS.some(x=>x.id===d.m)) $("model").value=d.m; if(d.cm) $("customModel").value=d.cm; if(d.pb) $("pbase").value=d.pb;
   }catch(e){}
 }
 
