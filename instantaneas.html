@@ -136,6 +136,25 @@ details{border-top:1px solid var(--line)}
 .mviews{grid-template-columns:repeat(4,minmax(0,1fr))}
 @media (max-width:640px){.mviews{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .mviews svg{width:100%;max-width:110px;height:auto;display:block;margin-bottom:6px;color:var(--ink)}
+.camplan{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px;display:flex;flex-direction:column;gap:8px}
+#plan{width:100%;height:auto;display:block;touch-action:none;cursor:crosshair;user-select:none}
+.camplan figcaption{display:flex;flex-direction:column;gap:6px;font-size:14px}
+#camReadout{font-weight:700;color:var(--accent)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;color:var(--muted);font-size:12px;align-items:center}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.lg-cam{background:var(--accent)}.lg-aim{border:2px solid var(--ink)}.lg-rib{background:#7C1919;border-radius:0!important;transform:rotate(45deg)}
+.warn{margin:0;background:#FBEAEA;color:#5E1212;border:1px solid #E7C3C3;border-radius:var(--r-sm);padding:10px 12px;font-size:14px}
+.camctl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 18px}
+@media (max-width:520px){.camctl{grid-template-columns:minmax(0,1fr)}}
+.rng{display:flex;flex-direction:column;gap:2px}
+.rng label{font-size:14px;justify-content:space-between}
+.rng output{color:var(--accent);font-weight:700}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.lensrow{display:flex;flex-wrap:wrap;gap:6px}
+.lensrow button{font:600 14px var(--f-body);border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:7px 14px;cursor:pointer}
+.lensrow button small{font-weight:400;color:var(--muted);margin-left:4px}
+.lensrow button[aria-checked="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.lensrow button[aria-checked="true"] small{color:#fff;opacity:.8}
 .check{flex-wrap:nowrap;font-size:15px;font-weight:500;letter-spacing:0;padding:14px 16px}
 .hint b{color:var(--ink)}
 </style>
@@ -163,23 +182,30 @@ details{border-top:1px solid var(--line)}
 
       <div class="field">
         <label for="action"><span class="step">2</span> Qué está haciendo <small>la acción, en movimiento</small></label>
-        <textarea id="action" rows="3">Tumbada boca arriba en la cama recién levantada, lee una revista con las piernas apoyadas en alto contra la pared, absorta</textarea>
+        <textarea id="action" rows="3">Tumbada boca arriba en la cama recién levantada, lee una revista con las piernas apoyadas en alto contra la pared del cabecero y la cabeza hacia los pies de la cama, absorta</textarea>
         <div class="hist" id="histAction" hidden></div>
         <div class="chips" id="actChips" aria-label="Acciones rápidas"></div>
       </div>
 
       <div class="field">
-        <span class="lab" id="shotLab"><span class="step">3</span> Plano <small>desde dónde se hace la foto</small></span>
-        <div class="opts" id="shots" role="radiogroup" aria-labelledby="shotLab"></div>
+        <span class="lab" id="camLab"><span class="step">3</span> Cámara y encuadre <small>arrastra la cámara y el punto de mira</small></span>
+        <div class="chips" id="camPresets" aria-label="Encuadres rápidos"></div>
+        <figure class="camplan">
+          <svg id="plan" viewBox="-0.25 -0.4 5.1 4.55" role="img" aria-labelledby="camLab"></svg>
+          <figcaption><span id="camReadout"></span><span class="legend"><i class="lg-cam"></i>Cámara <i class="lg-aim"></i>Punto de mira <i class="lg-rib"></i>Cinta (esquina delantera derecha)</span></figcaption>
+        </figure>
+        <p class="warn" id="camWarn" hidden></p>
+        <div class="camctl">
+          <div class="rng"><label for="camDist">Distancia <output id="camDistOut" for="camDist"></output></label><input type="range" id="camDist" min="0.4" max="5.5" step="0.1" value="2.5"></div>
+          <div class="rng"><label for="camH">Altura <output id="camHOut" for="camH"></output></label><input type="range" id="camH" min="20" max="260" step="10" value="120"></div>
+        </div>
+        <div class="lensrow" id="lensRow" role="radiogroup" aria-label="Objetivo"></div>
+        <label class="check" for="camDoor"><input type="checkbox" id="camDoor"><span>A través de la puerta: el marco de la puerta desenfocado en primer término</span></label>
         <label for="focusPoint" style="font-size:14px;margin-top:4px">Punto de interés <small>opcional</small></label>
         <textarea id="focusPoint" rows="1" placeholder="Ej.: los pies con calcetines rojos en primer término, la cara tapada por la revista"></textarea>
         <div class="hist" id="histFocus" hidden></div>
       </div>
 
-      <div class="field">
-        <span class="lab" id="lensLab">Objetivo <small>cómo se ve la cama con cada lente</small></span>
-        <div class="opts lenses" id="lenses" role="radiogroup" aria-labelledby="lensLab"></div>
-      </div>
 
       <div class="field">
         <span class="lab" id="timeLab"><span class="step">4</span> Hora del día <small>define la luz</small></span>
@@ -198,12 +224,6 @@ details{border-top:1px solid var(--line)}
         <select id="model"></select>
         <textarea id="customModel" rows="2" hidden placeholder="Nombre del modelo y lo que lo diferencia. Ej.: Supreme Pocket, vivo gris, asas sin bordado"></textarea>
         <p class="hint">El prompt cita tus nodos de referencia por su nombre: <b>vista frontal</b>, <b>vista lateral</b>, <b>vista 3:4</b>, <b>detalle asa y banda</b> y <b>detalle tela esquina derecha</b>. Usa siempre esos nombres en Magnific.</p>
-      </div>
-
-      <div class="field">
-        <span class="lab" id="mvLab">Cara del colchón que se ve <small>las que existen en tus referencias</small></span>
-        <div class="opts mviews" id="mviews" role="radiogroup" aria-labelledby="mvLab"></div>
-        <p class="hint">Coloca la cámara solo donde tienes referencia. Desde el lado izquierdo el modelo no tiene foto que copiar y se lo inventa.</p>
       </div>
 
       <div class="field">
@@ -350,7 +370,7 @@ const ACTIONS = [
   ["Saltar", "Salta sobre la cama en pijama, a mitad de salto, el pelo en el aire"],
   ["Esperar", "Embarazada tumbada de lado en la cama, con la mano sobre la tripa, mirando por la ventana"],
   ["Despertar", "Se despierta despacio entre las sábanas, ojos entrecerrados y el pelo revuelto sobre la almohada"],
-  ["Leer", "Tumbada boca arriba leyendo una revista, con las piernas apoyadas en alto contra la pared y la cadera junto a esa pared"],
+  ["Leer", "Tumbada boca arriba leyendo una revista, con las piernas apoyadas en alto contra la pared del cabecero, la cadera junto a esa pared y la cabeza hacia los pies de la cama"],
   ["Mañana", "Sentado en el borde del colchón con una taza de café entre las manos, mirando por la ventana"],
   ["Abrazo", "Pareja abrazada bajo el edredón, ella con la cara hundida en su cuello, él con los ojos cerrados"],
   ["Estirarse", "Sentada en la cama recién despierta, estirándose con los brazos hacia arriba y los ojos cerrados"],
@@ -428,19 +448,19 @@ const lensText = () => (LENSES.find(l=>l.id===(document.querySelector('input[nam
 
 /* ---------- Modelos de colchón LOMONACO ---------- */
 const MATTRESS_COMMON = {
-  shape: "Rectangular, tall mattress about 30 cm thick with a pillow-top. The FRONT and the BACK are the two SHORT sides (the width of the bed). The two LATERALS are the LONG sides (the length of the bed)",
+  shape: "Rectangular, tall mattress about 30 cm thick with a pillow-top. The FRONT and the BACK are the two SHORT sides (the width of the bed). The two LATERALS are the LONG sides (the length of the bed). LEFT and RIGHT are always as seen standing at the foot facing the headboard",
   construction: "Two stacked layers visible on every side: an upper pillow-top layer, about one third of the height, wrapped by a band of fine vertical ribbed quilting between two thin piping lines; and a taller lower body panel in white embossed jacquard knit with a soft organic pattern, closed by a piping line along the bottom edge. Both layers are ONE single sewn mattress: the pillow-top has exactly the same width and length as the body, edges aligned, no gap and no overhang. It is never a separate topper or a second mattress lying on top",
   top: "White jacquard knit top with dense biscuit tufting: a regular grid of round puffy cushions, each sunk at its tuft point, covering the whole surface",
   front: "FRONT = the short side that carries the model name in small spaced capitals above the LOMONACO wordmark, embroidered in burgundy and centered on the lower body panel. LOMONACO is one word in spaced capitals with a short horizontal bar under the central M. The front is always the foot of the bed, open to the room. The front has NO handles",
   back: "BACK = the opposite short side: plain white jacquard with no text and no logo. It is the head of the bed, against the wall or the headboard, where the pillows rest",
-  laterals: "Each LONG lateral side has NO text and NO logo. It only has two horizontal rectangular fabric carry handles on the lower body panel, one near each end. Each handle has a stitched square with an X at both ends and thin burgundy edging along its top and bottom borders. The handle closest to the front carries a small embroidered burgundy M with a short bar beneath it; the other handle has no M. A long side NEVER carries embroidered text: no LOMONACO and no model name, ever",
-  ribbon: "A single burgundy satin ribbon printed with LOMONACO in light cream capitals crosses the RIGHT front corner diagonally (as seen facing the front), lying on the top surface and folding over the edge. ALWAYS on the right corner, NEVER on the left corner, even when the left corner is the one facing the camera. Anchor: reading LOMONACO on the front left to right, the ribbon is at the corner after the final O. Never at the back, never more than one",
-  color: "The whole mattress is white. The only color is burgundy: the front embroidery, the ribbon, the handle edging and the M",
+  laterals: "Each LONG lateral side has no words: no LOMONACO wordmark, no model name. It only has two horizontal rectangular fabric carry handles on the lower body panel, one near each end. Each handle has a stitched square with an X at both ends and thin burgundy edging along its top and bottom borders. The handle closest to the front carries a small embroidered burgundy M with a short bar beneath it; the other handle has no M. A long side NEVER carries embroidered words: the only mark is the small M on the handle nearest the front",
+  ribbon: "A single burgundy satin ribbon printed with LOMONACO in light cream capitals crosses the FRONT-RIGHT corner diagonally, lying on the top surface and folding over the edge: the corner at the END of the front text, after the final O (right for someone standing at the foot facing the headboard). NEVER on the front-LEFT corner (before the L), even when it is nearest the camera. Where it appears in the image depends on the camera: see view_logic. Never at the back, never more than one",
+  color: "The whole mattress is white. The only color is burgundy: the front embroidery, the ribbon, the handle edging and the M and, on models that have it, the piping",
   fabric: "Copy the jacquard pattern, the biscuit tufting and the ribbed band exactly from the reference images. Never invent the fabric or replace it with a generic quilt",
   view_logic: {
     front: "Camera facing the front: model name and LOMONACO centered on the front, NO handles on the front, ribbon on the RIGHT top corner",
     front_right_corner: "Camera at the front-right corner: front with the logo on the LEFT of the image, right long side with its two handles on the RIGHT of the image, the M handle next to the corner, ribbon on the corner closest to the camera",
-    front_left_corner: "Camera at the front-left corner: front with the logo on the RIGHT of the image, left long side with its two handles on the LEFT of the image. The ribbon stays on the FAR corner of the front, on the right of the image, small or hidden. Never a ribbon on the near left corner",
+    front_left_corner: "Camera at the front-left corner: front with the logo on the RIGHT of the image, left long side with its two handles on the LEFT of the image, the M handle next to the near corner, nearest the front. The ribbon stays on the FAR corner of the front, on the right of the image, small or hidden. Never a ribbon on the near front-left corner",
     right_long_side: "Camera facing the right long side: the front is on the LEFT of the image, ribbon at the top-left corner, two handles, the M handle on the left",
     left_long_side: "Camera facing the left long side: the front is on the RIGHT of the image, the ribbon at the far top-right corner, barely visible, two handles, the M handle on the right",
     back: "Back: plain, no text, pillows resting against it"
@@ -453,29 +473,33 @@ const MODELS = [
   {id:"otro", name:"Otro modelo (escribir)", label:"", piping:""}
 ];
 const REF_VIEWS = [
-  ["vista frontal","FRONT view: the short side with the model name and LOMONACO, ribbon on the right corner"],
-  ["vista lateral","LATERAL view: a long side with its two horizontal handles, the M handle nearest the front"],
-  ["vista 3:4","Three-quarter view from the front-right corner: front, right lateral and top at once"],
+  ["vista frontal","FRONT view: the short side with the model name above LOMONACO; the ribbon on the top-RIGHT corner of the image"],
+  ["vista lateral","RIGHT long side: the front at the LEFT end of the image, the ribbon top-left, two horizontal handles, the M handle on the left (nearest the front), no text"],
+  ["vista 3:4","Front-right corner: the front face on the LEFT of the image, the right long side on the RIGHT, the ribbon on the corner between them, nearest the camera"],
   ["detalle asa y banda","Close-up of the M handle and the vertical ribbed band of the pillow-top"],
-  ["detalle tela esquina derecha","Close-up of the right front corner: the ribbon, the biscuit tufting and the fabric"]
+  ["detalle tela esquina derecha","Close-up of the front-right corner: the ribbon, the biscuit tufting and the fabric"]
 ];
+function modelLabel(){ const id=$("model").value; if(id!=="otro") return (MODELS.find(x=>x.id===id)||MODELS[0]).label;
+  return ((($("customModel")||{}).value)||"").split(/[,.;:\n]/)[0].trim().toUpperCase(); }
+function customNotes(){ if($("model").value!=="otro") return ""; const v=((($("customModel")||{}).value)||"").trim(); const i=v.search(/[,.;:\n]/); return i<0?"":v.slice(i+1).trim(); }
 function productSpec(baseText){
   const id=$("model").value, m=MODELS.find(x=>x.id===id)||MODELS[0];
-  const custom=($("customModel")?$("customModel").value.trim():"");
-  const name = id==="otro" ? (custom||"the model shown in the references") : m.name;
+  const lbl=modelLabel(), notes=customNotes();
+  const name = id==="otro" ? (lbl||"model shown in the references") : m.name;
   const spec = {
     model: "LOMONACO " + name + " mattress",
     reference_images: Object.fromEntries(REF_VIEWS.map(([v,d])=>[v, d])),
-    reference_rule: "The connected reference images carry exactly these names and all show this same mattress. Read the product from them: they show the real product and win over any description. Use each one for what it shows: front, lateral, three-quarter view and the two close-ups",
+    reference_rule: "The connected reference images carry exactly these names and all show this same mattress. Read the product design from them: they show the real product and win over any description. Use each one for what it shows: front, lateral, three-quarter view and the two close-ups",
     anatomy: Object.assign({}, MATTRESS_COMMON, {
-      model_name_on_front: id==="otro" ? ("Model name as embroidered in the reference" + (custom? (": "+custom):"")) : ("Small spaced capitals reading " + m.label + ", exactly as in the reference"),
+      model_name_on_front: lbl ? ("Small spaced capitals reading " + lbl + ", exactly as in the reference") : "The model name copied letter by letter from the vista frontal reference",
       piping: id==="otro" ? "As in the reference" : m.piping
     }),
-    orientation_rules: "Seen from the front: model name and LOMONACO facing the camera, ribbon at the right corner. When the camera sees a long side, it shows only its two horizontal handles, the M handle nearest the front, never any text. Only ONE handle per long side has an M, never two. The ribbon is on the front-right corner only: if the camera sees the LEFT long side (the front appears on the right of the image), the ribbon is on the far corner and mostly hidden; it is clearly visible only when the camera sees the right long side or the front-right corner. Do not copy the viewpoint of the vista 3:4 reference: rotate the mattress to match the camera position of this scene and apply view_logic. Pillows and people's heads always at the back; people's feet point toward the front. The logo is never on a long side and is never mirrored, moved, duplicated or invented",
+    orientation_rules: "LEFT and RIGHT of the mattress are always as seen standing at the foot facing the headboard. Seen from the front: model name and LOMONACO facing the camera, ribbon on the front-right corner. When the camera sees a long side, it shows only its two horizontal handles, the M handle nearest the front, and no words. Only ONE handle per long side has an M, never two. The ribbon is on the front-right corner only: if the camera sees the LEFT long side (the front appears on the right of the image), the ribbon is on the far corner and mostly hidden; it is clearly visible when the camera sees the front, the front-right corner or the right long side. Copy the vista 3:4 orientation only when item 8 says front-right corner; otherwise rotate the mattress to the camera of this scene and apply view_logic. Pillows always rest at the back (headboard end). People may lie in any direction (for example legs up the headboard wall, head toward the foot), but the mattress never turns: the front with the text is always at the foot, open to the room. The wordmark is never on a long side and is never mirrored, moved, duplicated or invented",
     text_check: "Exact text, letter by letter: the model name and LOMONACO with the bar under the M. No garbled, invented or extra letters. If it cannot be rendered sharp and correct, keep it covered or out of frame",
-    never: ["ribbon on the left corner","more than one ribbon","handles on the front","LOMONACO or the model name embroidered on a long side","two M handles on the same long side","a separate topper or pad lying on top of the mattress","invented fabric, tufting or pattern different from the references"],
+    never: ["ribbon on the front-LEFT corner (before the L of LOMONACO)","more than one ribbon","handles on the front","the LOMONACO wordmark or the model name on a long side","two M handles on the same long side","a separate topper or pad lying on top of the mattress","invented fabric, tufting or pattern different from the references"],
     do_not_modify: "Strict product lock. Reproduce the mattress exactly as in the reference images and do not change any aspect of the product or any element of its design: shape, proportions, thickness, layers, tufting, ribbed band, jacquard pattern, colors, piping, handles, M, logo, typography and ribbon. Nothing added, removed, simplified, redesigned or restyled"
   };
+  if(notes) spec.model_notes = "Differences of this model, as seen in its references: " + notes;
   if(baseText) spec.bed_base = baseText;
   return spec;
 }
@@ -483,32 +507,36 @@ function productSpec(baseText){
 /* ---------- Bloque prioritario del producto ---------- */
 const MATTRESS_VIEWS = [
   {id:"r34", name:"Esquina derecha", hint:"Como la vista 3:4",
-   text:"The mattress is seen from its FRONT-RIGHT corner, with the same orientation as the vista 3:4 reference (orientation only: not its framing, distance, background or light). In the image, the face on the LEFT is the FRONT: it carries the small model name above LOMONACO. The face on the RIGHT is the right long side: only two horizontal handles, the M handle next to the corner, no text. The ONE ribbon sits on the corner between them, the corner closest to the camera"},
+   text:"The mattress is seen from its FRONT-RIGHT corner, with the same orientation as the vista 3:4 reference (orientation only: not its framing, distance, background or light). In the image, the face on the LEFT is the FRONT: it carries the small model name above LOMONACO. The face on the RIGHT is the right long side: only two horizontal handles, the M handle next to the corner, no words. The ONE ribbon sits on the corner between them, the corner closest to the camera"},
   {id:"front", name:"Frente", hint:"El logo de cara",
    text:"The mattress is seen from its FRONT, with the same orientation as the vista frontal reference (orientation only): the model name above LOMONACO centered on the face toward the camera, no handles on that face, the ribbon on the top-RIGHT corner of the mattress as seen in the image. The long sides are barely visible"},
   {id:"right", name:"Lateral derecho", hint:"Asas, sin texto",
-   text:"The mattress is seen from its RIGHT long side, with the same orientation as the vista lateral reference (orientation only): the front is at the LEFT end of the mattress in the image. This long side shows only two horizontal handles, the one on the left with the M, and NO text at all. The ribbon is on the top-LEFT corner of the mattress in the image"},
-  {id:"top", name:"Desde arriba", hint:"Cenital o detalle",
-   text:"Seen from above or very close: mostly the tufted top. If the front-right corner is in frame, it carries the ribbon. No side text needs to be visible"}
+   text:"The mattress is seen from its RIGHT long side, with the same orientation as the vista lateral reference (orientation only): the front is at the LEFT end of the mattress in the image. This long side shows only two horizontal handles, the one on the left with the M, and no words. The ribbon is on the top-LEFT corner of the mattress in the image, which is its front-right corner"},
+  {id:"top", name:"Desde arriba", hint:"Cenital",
+   text:"Seen from directly above: the head of the bed (pillows) at the TOP of the frame, the foot (front) at the BOTTOM. The tufted top fills the view. The ONE ribbon lies across the BOTTOM-RIGHT corner of the mattress in the image. No side text needs to be visible"},
+  {id:"cornerDetail", name:"Detalle esquina", hint:"",
+   text:"Close-up of the FRONT-RIGHT corner as in the detalle tela esquina derecha reference: the ribbon folding over the corner, the biscuit tufting and the ribbed band. The centered front text is out of frame: never move it toward the corner"},
+  {id:"handleDetail", name:"Detalle asa", hint:"",
+   text:"Close-up of the RIGHT long side near the front end, as in the detalle asa y banda reference: the M handle with its burgundy edging, the vertical ribbed band above, no words"},
+  {id:"tuftsDetail", name:"Detalle capitoné", hint:"",
+   text:"Close-up of the top surface only: the round biscuit tufts of the pillow-top, no sides and no text in frame"},
+  {id:"baseDetail", name:"Detalle base", hint:"",
+   text:"Low close-up of the front-right bottom corner where the mattress sits on its base: the front face to the LEFT, the right long side to the RIGHT, no text needed in frame"}
 ];
-function viewIcon(id){
-  const cam={r34:[66,55],front:[40,55],right:[72,28],top:[40,28]}[id];
-  return `<svg viewBox="0 0 80 62" aria-hidden="true"><rect x="24" y="6" width="32" height="42" rx="3" fill="var(--panel)" stroke="currentColor" stroke-width="1.6"/><rect x="28" y="9" width="24" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.1"/><path d="M24 48 H56" stroke="currentColor" stroke-width="3"/><path d="M50 48 L56 42 L56 48Z" fill="#7C1919"/><circle cx="${cam[0]}" cy="${cam[1]}" r="4.5" fill="var(--accent)"/>${id==="top"?"":`<path d="M${cam[0]} ${cam[1]} L40 27" stroke="var(--accent)" stroke-width="1.2" stroke-dasharray="2 2"/>`}<text x="14" y="51" text-anchor="middle" font-size="7" fill="currentColor" opacity=".6">frente</text></svg>`;
-}
-function modelLabel(){ const id=$("model").value, m=MODELS.find(x=>x.id===id); const c=($("customModel")&&$("customModel").value.trim())||""; return id==="otro" ? (c||"the model name of the reference") : m.label; }
-function mustMatch(viewText){
-  const lbl=modelLabel();
+function mustMatch(viewText, ctx){
+  const lbl=modelLabel(), sheet=ctx==="sheet", detail=ctx==="detail";
+  const line1 = lbl ? ("line 1 small spaced capitals '"+lbl+"'") : "line 1 the model name in small spaced capitals, copied letter by letter from the vista frontal reference";
   return [
-    "1. COPY THE MATTRESS FROM THE CONNECTED REFERENCE IMAGES (vista frontal, vista lateral, vista 3:4, detalle asa y banda, detalle tela esquina derecha). It is a real product: do not redesign, simplify or reinterpret it. Take ONLY the product design and its orientation from the references, never their framing, studio background, lighting or catalog look",
+    "1. COPY THE MATTRESS FROM THE CONNECTED REFERENCE IMAGES (vista frontal, vista lateral, vista 3:4, detalle asa y banda, detalle tela esquina derecha). It is a real product: do not redesign, simplify or reinterpret it. Take ONLY the product design from the references, never their framing, studio background or lighting"+(sheet?"":" or catalog look")+". The orientation in THIS image is defined only by item 8",
     "2. Tall mattress with an INTEGRATED pillow-top: round biscuit tufting all over the top, a vertical ribbed band, and a white jacquard lower panel. Never a flat top, never smooth fabric, never a separate topper",
-    "3. TEXT ONLY ON THE FRONT (a short side), nowhere else: line 1 small spaced capitals '"+lbl+"', line 2 larger 'LOMONACO' with a short bar under the central M. Burgundy embroidery, centered, straight, sharp and perfectly legible",
-    "4. EXACT SPELLING, letter by letter: '"+lbl+"' and 'L-O-M-O-N-A-C-O'. No other words, no extra letters, no invented characters. If the text cannot be rendered sharp and correct, frame or cover that area instead of inventing it",
-    "5. LONG SIDES: only two horizontal handles, one of them with a small M. NO text, NO logo, NO model name on a long side, ever",
+    "3. TEXT ONLY ON THE FRONT (a short side), nowhere else: "+line1+", line 2 larger 'LOMONACO' with a short bar under the central M. Burgundy embroidery, centered, straight, sharp and perfectly legible",
+    "4. EXACT SPELLING, letter by letter: "+(lbl?("'"+lbl+"' and "):"")+"'L-O-M-O-N-A-C-O'. No other words, no extra letters, no invented characters. If the text cannot be rendered sharp and correct, frame or cover that area instead of inventing it",
+    "5. LONG SIDES: only two horizontal handles, the one nearest the front with a small M. No words on a long side: no LOMONACO wordmark, no model name. The only mark there is that small M",
     "6. FRONT: no handles",
-    "7. ONE burgundy ribbon with LOMONACO, ONLY on the front-RIGHT corner. ANCHOR RULE: read LOMONACO on the front from left to right; the ribbon is on the top corner at the END of the word, after the final O, never on the corner before the L. If that corner is on the far side from the camera, the ribbon is small or hidden there; never move it to the near corner. Never two",
-    "8. VIEW IN THIS IMAGE: "+viewText,
+    "7. ONE burgundy ribbon with LOMONACO, ONLY on the front-RIGHT corner. ANCHOR RULE: read LOMONACO on the front from left to right; the ribbon is on the top corner at the END of the word, after the final O, never on the front-left corner before the L. If that corner is on the far side from the camera, the ribbon is small or hidden there; never move it to the near corner. Never two",
+    "8. VIEW IN THIS IMAGE: "+(detail?("Only part of the mattress is in frame; whatever is visible follows this orientation: "+viewText):viewText),
     "9. Bedding may cover part of the mattress. Whatever stays visible follows these rules",
-    "10. Product accuracy never turns the image into a product shot: the camera distance and framing come from the scene, so the mattress may be small in the frame"
+    sheet ? "10. The framing comes from the scene: a clean image of the mattress alone in the set" : detail ? "10. This is a close detail: the camera position, lens and framing come from the scene" : "10. Product accuracy never turns the image into a product shot: the camera distance and framing come from the scene, so the mattress may be small in the frame"
   ];
 }
 function fixPrompt(viewText){
@@ -530,13 +558,10 @@ function radio(el, name, list, checked){
     el.appendChild(l);
   });
 }
-radio($("shots"),"shot",SHOTS,"low");
 radio($("times"),"time",TIMES,"morning");
 radio($("pvs"),"pv",VALUE_LEVELS,"premium");
-lensRadios($("lenses"),"35");
 fillModels();
 BED_BASES.forEach((b,i)=>$("pbase").add(new Option(b[0],i)));
-MATTRESS_VIEWS.forEach(v=>{ const l=document.createElement("label"); l.className="opt"; l.innerHTML=`<input type="radio" name="mview" id="mview-${v.id}" value="${v.id}" ${v.id==="r34"?"checked":""}><span>${viewIcon(v.id)}${v.name}<em>${v.hint}</em></span>`; $("mviews").appendChild(l); });
 ROOMS.forEach((r,i)=>$("room").add(new Option(r[0],i)));
 PALETTES.forEach((p,i)=>$("palette").add(new Option(p[0],i)));
 ACTIONS.forEach(a=>{
@@ -545,19 +570,202 @@ ACTIONS.forEach(a=>{
   $("actChips").appendChild(b);
 });
 
+
+/* ---------- Cámara en planta: posición, punto de mira, altura y objetivo ---------- */
+const ROOM={w:4.6,h:3.8}, BED={x:1.55,y:0.15,w:1.5,l:1.9}, DOOR={x1:3.3,x2:4.1};
+const BCX=BED.x+BED.w/2, BCY=BED.y+BED.l/2;
+const LENS_F={"24":24,"35":35,"50":50,"85":85,"100":100};
+const CAM={cx:3.95,cy:3.35,tx:BCX,ty:BCY,h:120,lens:"35",door:false};
+const CAM_PRESETS=[
+  ["Plano general",{cx:4.35,cy:3.6,tx:BCX,ty:BCY,h:150,lens:"24",door:false}],
+  ["Desde la puerta",{cx:3.7,cy:3.72,tx:BCX+0.1,ty:BCY,h:160,lens:"35",door:true}],
+  ["Plano medio",{cx:3.55,cy:2.85,tx:BCX,ty:1.0,h:120,lens:"35",door:false}],
+  ["Primer plano",{cx:3.25,cy:2.45,tx:2.55,ty:1.35,h:95,lens:"50",door:false}],
+  ["Detalle cinta",{cx:3.35,cy:2.3,tx:3.0,ty:1.98,h:85,lens:"100",door:false}],
+  ["Contrapicado",{cx:2.3,cy:2.7,tx:2.3,ty:0.8,h:30,lens:"24",door:false}],
+  ["A ras del lateral",{cx:3.95,cy:1.35,tx:BCX,ty:1.1,h:60,lens:"24",door:false}],
+  ["Cenital",{cx:BCX,cy:BCY,tx:BCX,ty:BCY,h:260,lens:"24",door:false}]
+];
+const isTopCam=()=>CAM.h>=220;
+function sensorW(){ const [a,b]=$("ar").value.split(":").map(Number); const r=a/b; return r>=1? Math.min(36,24*r) : Math.min(24,36*r); }
+function sensorH(){ const [a,b]=$("ar").value.split(":").map(Number); return sensorW()*b/a; }
+const hfov=()=>2*Math.atan(sensorW()/(2*LENS_F[CAM.lens]));
+const clampBed=v=>({x:Math.min(BED.x+BED.w-0.1,Math.max(BED.x+0.1,v.x)), y:Math.min(BED.y+BED.l-0.1,Math.max(BED.y+0.1,v.y))});
+const inBed=(x,y)=>x>BED.x-0.05&&x<BED.x+BED.w+0.05&&y>BED.y-0.05&&y<BED.y+BED.l+0.05;
+function camGeo(){
+  const top=isTopCam(), fov=hfov();
+  let dx=CAM.tx-CAM.cx, dy=CAM.ty-CAM.cy, dAim=Math.hypot(dx,dy);
+  if(dAim<0.05){ dx=BCX-CAM.cx; dy=BCY-CAM.cy+0.0001; dAim=Math.hypot(dx,dy)||1; }
+  const ux=dx/dAim, uy=dy/dAim, px=-uy, py=ux;
+  const az=Math.atan2(CAM.cx-BCX, CAM.cy-BCY)*180/Math.PI;
+  const dBed=Math.hypot(BCX-CAM.cx,BCY-CAM.cy);
+  let ratio,pos=0,inFrame=1;
+  if(top){ const fw=2*Math.max(0.3,(CAM.h-60)/100)*Math.tan(fov/2); ratio=BED.w/fw; }
+  else{
+    let mn=1e9,mx=-1e9;
+    [[BED.x,BED.y],[BED.x+BED.w,BED.y],[BED.x,BED.y+BED.l],[BED.x+BED.w,BED.y+BED.l]].forEach(([x,y])=>{
+      const vx=x-CAM.cx,vy=y-CAM.cy; const a=Math.atan2(vx*px+vy*py, Math.max(vx*ux+vy*uy,0.05)); mn=Math.min(mn,a); mx=Math.max(mx,a);});
+    const hf=fov/2; ratio=(mx-mn)/fov; inFrame=Math.max(0,Math.min(mx,hf)-Math.max(mn,-hf))/fov;
+    const bx=BCX-CAM.cx,by=BCY-CAM.cy, bf=bx*ux+by*uy;
+    pos = bf>0 ? Math.tan(Math.atan2(bx*px+by*py,bf))/Math.tan(hf) : 99;
+  }
+  const pitch=Math.atan2(CAM.h-60, Math.max(dAim*100,1))*180/Math.PI;
+  const out = !top && (inFrame<0.02 || pos===99);
+  return {top,fov,az,dBed,dAim,ratio,pos,pitch,ux,uy,inFrame,out};
+}
+function faceSpans(){ const fy=BED.y+BED.l, rx=BED.x+BED.w, lx=BED.x;
+  const ang=(x1,y1,x2,y2)=>{let d=Math.abs(Math.atan2(y1-CAM.cy,x1-CAM.cx)-Math.atan2(y2-CAM.cy,x2-CAM.cx));return d>Math.PI?2*Math.PI-d:d;};
+  return {front:CAM.cy>fy?ang(lx,fy,rx,fy):0, right:CAM.cx>rx?ang(rx,BED.y,rx,fy):0, left:CAM.cx<lx?ang(lx,BED.y,lx,fy):0}; }
+function sideOf(){ const s=faceSpans(), k=s.right>=s.left?"right":"left", sd=s[k];
+  if(!sd) return "front"; if(!s.front) return k; const q=sd/s.front;
+  return q<0.3?"front":q>3?k:(k==="right"?"r34":"l34"); }
+const SIDE_ES={front:"Frente",r34:"Esquina delantera derecha",right:"Lateral derecho",l34:"Esquina delantera izquierda",left:"Lateral izquierdo",top:"Cenital"};
+const SIDE_VIEW={
+  l34:"The mattress is seen from its FRONT-LEFT corner. In the image, the face on the RIGHT is the FRONT with the model name above LOMONACO; the face on the LEFT is the left long side with only two horizontal handles and no text. The ribbon is on the FAR end of the front, the corner on the right of the image after the final O of LOMONACO, small or partly hidden. Nothing on the near left corner",
+  left:"The mattress is seen from its LEFT long side: the front is at the RIGHT end of the mattress in the image. This long side shows only two horizontal handles, the one on the right with the M, and no text. The ribbon is on the far top-right corner, barely visible"
+};
+function framing(G){
+  const side=G.top?"top":sideOf();
+  const detail = !G.top && G.ratio>3;
+  const nearCorner = Math.hypot(CAM.tx-(BED.x+BED.w), CAM.ty-(BED.y+BED.l))<0.4;
+  let view = (side==="l34"||side==="left") ? SIDE_VIEW[side] : find(MATTRESS_VIEWS, side).text;
+  if(detail && nearCorner) view = find(MATTRESS_VIEWS,"cornerDetail").text;
+  const r=G.ratio, vis=Math.min(G.inFrame,1), pct=Math.round(vis*100);
+  const scale = G.out ? "The bed is out of frame: the camera looks at another part of the room"
+    : detail ? "Detail framing: only a small part of the mattress is in frame and fills it"
+    : r>1.05 ? "Tight framing: the bed fills the frame edge to edge and is cropped by the borders"
+    : r>0.65 ? `Medium framing: the whole bed fills about ${pct}% of the frame width with a little room around it`
+    : r>0.35 ? `Wide framing: the bed takes about ${pct}% of the frame width, walls, floor and furniture clearly visible`
+    : `Very wide framing: the room dominates and the bed takes only about ${pct}% of the frame width`;
+  const h=CAM.h;
+  const height = G.top ? `Overhead top-down camera about ${h} cm above the floor, looking straight down onto the bed`
+    : h<45 ? `Camera very low, about ${h} cm from the floor, looking slightly up at the bed`
+    : h<85 ? `Camera at mattress height, about ${h} cm from the floor, level with the side of the bed`
+    : h<110 ? `Camera at waist height, about ${h} cm from the floor, a little above the mattress`
+    : h<155 ? `Camera at chest height, about ${h} cm from the floor, looking down about ${Math.round(G.pitch)} degrees`
+    : `High camera, about ${h} cm from the floor, looking down about ${Math.round(G.pitch)} degrees onto the bed`;
+  const ang=Math.round(Math.abs(G.az)), dd=G.dBed.toFixed(1);
+  const place = G.top ? "Directly above the bed"
+    : side==="front" ? `At the foot of the bed, in front of it, ${dd} m from its center`
+    : side==="r34" ? `At the front-right corner of the bed, about ${ang} degrees to the right of the foot axis, ${dd} m from its center`
+    : side==="right" ? `On the right side of the bed (right as seen from the foot), ${dd} m from its center`
+    : side==="l34" ? `At the front-left corner of the bed, about ${ang} degrees to the left of the foot axis, ${dd} m from its center`
+    : `On the left side of the bed (left as seen from the foot), ${dd} m from its center`;
+  const p=G.pos;
+  const comp = G.top ? "The bed seen from above as the main shape of the frame"
+    : G.out ? "The bed stays out of the frame"
+    : r>1.05 ? "The mattress runs past the frame edges"
+    : Math.abs(p)<1/3 ? "The bed sits in the center of the frame"
+    : p<=-1 ? "The bed is partly out of frame on the left, the room fills most of the image"
+    : p>=1 ? "The bed is partly out of frame on the right, the room fills most of the image"
+    : p<0 ? "The bed sits in the left third of the frame, open space on the right"
+    : "The bed sits in the right third of the frame, open space on the left";
+  const lens=LENSES.find(l=>l.id===CAM.lens);
+  const nearDoor = CAM.cy>3.0 && CAM.cx>DOOR.x1-0.4 && CAM.cx<DOOR.x2+0.4;
+  const door = CAM.door && nearDoor ? "Shot through an open doorway: the door frame softly out of focus in the foreground at one edge of the frame" : "";
+  const sentence=[place, height, `${CAM.lens}mm lens`, scale, comp, door].filter(Boolean).join(". ");
+  return {side, view, sentence, detail, nearDoor, block:{position:place, height, lens:lens.text, framing_scale:scale, composition:comp, foreground: door||"None", mattress_seen_as:view}};
+}
+function svgEl(t,a,parent){ const e=document.createElementNS("http://www.w3.org/2000/svg",t); for(const k in a) e.setAttribute(k,a[k]); if(parent) parent.appendChild(e); return e; }
+function drawCam(){
+  const S=$("plan"); if(!S) return; S.innerHTML="";
+  const G=camGeo();
+  const defs=svgEl("defs",{},S); const cp=svgEl("clipPath",{id:"roomclip"},defs); svgEl("rect",{x:0,y:0,width:ROOM.w,height:ROOM.h},cp);
+  svgEl("rect",{x:0,y:0,width:ROOM.w,height:ROOM.h,fill:"#EDEBE6"},S);
+  for(let y=0.3;y<ROOM.h;y+=0.3) svgEl("line",{x1:0,y1:y,x2:ROOM.w,y2:y,stroke:"#DFDBD3","stroke-width":0.01},S);
+  // paredes, ventana y puerta
+  svgEl("path",{d:`M0 0 H${ROOM.w} V${ROOM.h} H${DOOR.x2} M${DOOR.x1} ${ROOM.h} H0 Z`,fill:"none",stroke:"#1D1D1F","stroke-width":0.07,"stroke-linejoin":"round"},S);
+  svgEl("line",{x1:ROOM.w,y1:0.9,x2:ROOM.w,y2:2.2,stroke:"#9FC3D9","stroke-width":0.09},S);
+  svgEl("text",{x:ROOM.w-0.08,y:1.55,"font-size":0.13,fill:"#5F5F66","text-anchor":"middle",transform:`rotate(90 ${ROOM.w-0.08} 1.55)`},S).textContent="ventana";
+  svgEl("path",{d:`M${DOOR.x1} ${ROOM.h} L${DOOR.x1} ${ROOM.h-0.8} A0.8 0.8 0 0 1 ${DOOR.x2} ${ROOM.h}`,fill:"none",stroke:"#9A948A","stroke-width":0.015,"stroke-dasharray":"0.05 0.04"},S);
+  svgEl("text",{x:(DOOR.x1+DOOR.x2)/2,y:ROOM.h+0.25,"font-size":0.14,fill:"#5F5F66","text-anchor":"middle"},S).textContent="puerta";
+  svgEl("text",{x:ROOM.w/2,y:-0.15,"font-size":0.14,fill:"#5F5F66","text-anchor":"middle"},S).textContent="pared del cabecero";
+  // mesillas
+  svgEl("rect",{x:BED.x-0.5,y:0.15,width:0.42,height:0.4,rx:0.03,fill:"#C9B79F"},S);
+  svgEl("rect",{x:BED.x+BED.w+0.08,y:0.15,width:0.42,height:0.4,rx:0.03,fill:"#C9B79F"},S);
+  // cama
+  svgEl("rect",{x:BED.x-0.05,y:BED.y,width:BED.w+0.1,height:BED.l+0.05,rx:0.03,fill:"#78624A"},S);
+  svgEl("rect",{x:BED.x,y:BED.y,width:BED.w,height:BED.l,rx:0.05,fill:"#FFFFFF",stroke:"#1D1D1F","stroke-width":0.02},S);
+  for(let i=0;i<5;i++) for(let j=0;j<6;j++) svgEl("circle",{cx:BED.x+0.18+i*0.285,cy:BED.y+0.55+j*0.24,r:0.05,fill:"none",stroke:"#D9D9DE","stroke-width":0.012},S);
+  svgEl("rect",{x:BED.x+0.1,y:BED.y+0.08,width:0.6,height:0.3,rx:0.06,fill:"#EFEDE8",stroke:"#B9B1A2","stroke-width":0.012},S);
+  svgEl("rect",{x:BED.x+0.8,y:BED.y+0.08,width:0.6,height:0.3,rx:0.06,fill:"#EFEDE8",stroke:"#B9B1A2","stroke-width":0.012},S);
+  const fy=BED.y+BED.l;
+  svgEl("text",{x:BCX,y:fy+0.2,"font-size":0.13,fill:"#7C1919","text-anchor":"middle","font-weight":"700","letter-spacing":"0.02"},S).textContent="LOMONACO · frente";
+  [[BED.x+BED.w,BED.y+0.45],[BED.x+BED.w,fy-0.45],[BED.x,BED.y+0.45],[BED.x,fy-0.45]].forEach(([x,y])=>svgEl("rect",{x:x-0.03,y:y-0.12,width:0.06,height:0.24,fill:"#7C1919",opacity:.75},S));
+  svgEl("text",{x:BED.x+BED.w+0.13,y:fy-0.4,"font-size":0.11,fill:"#7C1919","font-weight":"700"},S).textContent="M";
+  svgEl("path",{d:`M${BED.x+BED.w-0.32} ${fy} L${BED.x+BED.w} ${fy-0.32} L${BED.x+BED.w} ${fy-0.18} L${BED.x+BED.w-0.18} ${fy}Z`,fill:"#7C1919"},S);
+  // cono de visión
+  const g=svgEl("g",{"clip-path":"url(#roomclip)"},S);
+  if(G.top){
+    const fw=2*Math.max(0.3,(CAM.h-60)/100)*Math.tan(G.fov/2), fh=fw*sensorH()/sensorW();
+    svgEl("rect",{x:CAM.cx-fw/2,y:CAM.cy-fh/2,width:fw,height:fh,fill:"#7C1919","fill-opacity":0.12,stroke:"#7C1919","stroke-width":0.02},g);
+  } else {
+    const a0=Math.atan2(G.uy,G.ux), L=8;
+    const p1=[CAM.cx+Math.cos(a0-G.fov/2)*L, CAM.cy+Math.sin(a0-G.fov/2)*L], p2=[CAM.cx+Math.cos(a0+G.fov/2)*L, CAM.cy+Math.sin(a0+G.fov/2)*L];
+    svgEl("polygon",{points:`${CAM.cx},${CAM.cy} ${p1} ${p2}`,fill:"#7C1919","fill-opacity":0.12,stroke:"#7C1919","stroke-opacity":0.6,"stroke-width":0.015},g);
+    svgEl("line",{x1:CAM.cx,y1:CAM.cy,x2:CAM.tx,y2:CAM.ty,stroke:"#7C1919","stroke-width":0.015,"stroke-dasharray":"0.05 0.04"},g);
+  }
+  // punto de mira y cámara
+  svgEl("circle",{cx:CAM.tx,cy:CAM.ty,r:0.09,fill:"#FFFFFF",stroke:"#1D1D1F","stroke-width":0.03},S);
+  svgEl("circle",{cx:CAM.tx,cy:CAM.ty,r:0.025,fill:"#1D1D1F"},S);
+  const ang=Math.atan2(G.uy,G.ux)*180/Math.PI;
+  const cam=svgEl("g",{transform:`translate(${CAM.cx} ${CAM.cy}) rotate(${G.top?0:ang})`},S);
+  if(G.top){ svgEl("circle",{r:0.16,fill:"none",stroke:"#7C1919","stroke-width":0.03},cam); svgEl("circle",{r:0.08,fill:"#7C1919"},cam); }
+  else { svgEl("rect",{x:-0.15,y:-0.11,width:0.22,height:0.22,rx:0.04,fill:"#7C1919"},cam); svgEl("rect",{x:0.07,y:-0.07,width:0.09,height:0.14,rx:0.02,fill:"#7C1919"},cam); svgEl("circle",{cx:-0.04,cy:0,r:0.05,fill:"#FFFFFF"},cam); }
+  // lectura y avisos
+  const F=framing(G);
+  $("camReadout").textContent = `${SIDE_ES[F.side]} · a ${G.dBed.toFixed(1).replace(".",",")} m · ${CAM.h} cm · ${CAM.lens} mm · la cama ocupa ~${Math.round(Math.min(G.inFrame,1)*100)} % del ancho`;
+  const w=[];
+  if(F.side==="l34"||F.side==="left") w.push("Desde el lado izquierdo no tienes foto de referencia: el modelo tendrá que imaginarlo y es donde más falla la cinta. Si puedes, pasa la cámara al lado derecho.");
+  if(!G.top && inBed(CAM.cx,CAM.cy)) w.push("La cámara está encima de la cama. Súbela a cenital o sácala fuera de la cama.");
+  if(G.out) w.push("La cama queda fuera del encuadre: mueve el punto de mira hacia la cama.");
+  if(CAM.door && !F.nearDoor) w.push("La opción de la puerta solo se aplica con la cámara junto a la puerta (abajo a la derecha del plano).");
+  $("camWarn").hidden=!w.length; $("camWarn").textContent=w.join(" ");
+  $("camDist").value=Math.min(5.5,Math.max(0.4,G.dAim)).toFixed(1);
+  $("camDistOut").textContent=G.dAim.toFixed(1).replace(".",",")+" m";
+  $("camH").value=CAM.h; $("camHOut").textContent=CAM.h+" cm"+(G.top?" · cenital":"");
+  document.querySelectorAll("#lensRow button").forEach(b=>b.setAttribute("aria-checked",b.dataset.l===CAM.lens));
+  $("camDoor").checked=CAM.door;
+}
+function setupCam(){
+  const S=$("plan");
+  CAM_PRESETS.forEach(([name,v])=>{ const b=document.createElement("button"); b.type="button"; b.className="chip"; b.textContent=name; b.onclick=()=>{ Object.assign(CAM,v); render(); save(); }; $("camPresets").appendChild(b); });
+  LENSES.forEach(l=>{ const b=document.createElement("button"); b.type="button"; b.dataset.l=l.id; b.setAttribute("role","radio"); b.innerHTML=`${l.name}<small>${l.hint}</small>`; b.onclick=()=>{ CAM.lens=l.id; render(); save(); }; $("lensRow").appendChild(b); });
+  const pt=e=>{ const q=S.createSVGPoint(); q.x=e.clientX; q.y=e.clientY; return q.matrixTransform(S.getScreenCTM().inverse()); };
+  const clampR=v=>({x:Math.min(ROOM.w-0.12,Math.max(0.12,v.x)), y:Math.min(ROOM.h-0.12,Math.max(0.12,v.y))});
+  let drag=null;
+  S.addEventListener("pointerdown",e=>{ const q=pt(e);
+    const dC=Math.hypot(q.x-CAM.cx,q.y-CAM.cy), dT=Math.hypot(q.x-CAM.tx,q.y-CAM.ty);
+    drag = isTopCam() ? "c" : (dT<0.3 && dT<dC-0.02 ? "t" : "c"); try{S.setPointerCapture(e.pointerId)}catch(_){}
+    move(q); });
+  S.addEventListener("pointermove",e=>{ if(drag) move(pt(e)); });
+  ["pointerup","pointercancel"].forEach(t=>S.addEventListener(t,()=>{ if(drag){ drag=null; save(); } }));
+  function move(q){ const c=clampR(q);
+    if(drag==="t"){ CAM.tx=c.x; CAM.ty=c.y; }
+    else if(isTopCam()){ const b=clampBed(c); CAM.cx=CAM.tx=b.x; CAM.cy=CAM.ty=b.y; }
+    else { if(inBed(c.x,c.y)) return; CAM.cx=c.x; CAM.cy=c.y; }
+    render(); }
+  $("camDist").addEventListener("input",()=>{ if(isTopCam()) return; const G=camGeo(); const d=+$("camDist").value;
+    const c=clampR({x:CAM.tx-G.ux*d, y:CAM.ty-G.uy*d}); if(isTopCam()||!inBed(c.x,c.y)){ CAM.cx=c.x; CAM.cy=c.y; } });
+  $("camH").addEventListener("input",()=>{ const wasTop=isTopCam(); CAM.h=+$("camH").value;
+    if(isTopCam()&&!wasTop){ const b=clampBed({x:CAM.tx,y:CAM.ty}); CAM.cx=CAM.tx=b.x; CAM.cy=CAM.ty=b.y; }
+    if(!isTopCam()&&wasTop){ CAM.tx=BCX; CAM.ty=BCY; if(inBed(CAM.cx,CAM.cy)){ CAM.cx=3.95; CAM.cy=3.35; } } });
+  $("camDoor").addEventListener("change",()=>{ CAM.door=$("camDoor").checked; });
+}
+
 const val = n => { const e=document.querySelector(`input[name="${n}"]:checked`); return e?e.value:null; };
 const find = (list,id) => list.find(o=>o.id===id) || list[0];
 
 function build(){
-  const shot=find(SHOTS,val("shot")), t=find(TIMES,val("time"));
+  const t=find(TIMES,val("time")); const G=camGeo(), F=framing(G);
   const scene = {
     people: $("people").value.trim(),
     action: $("action").value.trim() + ". Caught in the moment, unaware of the camera",
-    shot: shot.text
+    camera: F.block
   };
   const fp=$("focusPoint").value.trim();
   if(fp) scene.point_of_interest = fp;
-  scene.lens = lensText();
+  scene.lens = LENSES.find(l=>l.id===CAM.lens).text;
   scene.time_of_day = t.time;
   scene.lighting = t.light;
   const room=ROOMS[$("room").value][1], pal=PALETTES[$("palette").value][1], extra=$("extra").value.trim();
@@ -567,19 +775,20 @@ function build(){
   scene.camera_accident = accident;
   scene.aspect_ratio = $("ar").value;
   const neg=$("neg").value.split(/[,\n]/).map(s=>s.trim()).filter(Boolean);
-  const wideShots=["top","door","wide","mid"];
-  scene.strictly_exclude = [...(wideShots.includes(shot.id)?["close-up of the mattress","product shot framing","mattress filling the frame"]:[]),"catalog product photo","glossy CGI render look","ribbon on the left corner of the mattress","text or logo on the long side of the mattress","flat mattress without pillow-top","garbled or misspelled text","handles on the front of the mattress","separate topper on the mattress","looking into the camera","posed smiles","studio lighting","catalog look","socks, shoes, slippers or clothes on the floor","clothes piled on chairs or radiators","messy or cluttered room","visible light switches and power sockets","aluminium window frames","cheap laminate furniture","flat grey lighting","stock photo look","extra or missing limbs","extra fingers or fused hands","deformed bodies","impossible poses","floating objects","mirrored or garbled text","logo on the long side of the mattress", ...neg];
+  const prodOn=$("product").checked;
+  if(!prodOn) delete scene.camera.mattress_seen_as;
+  scene.strictly_exclude = [...(G.ratio<0.95?["close-up of the mattress","product shot framing","mattress filling the frame"]:[]),"catalog product photo","glossy CGI render look",...(prodOn?["ribbon on the front-left corner of the mattress (before the L of LOMONACO)","the LOMONACO wordmark or the model name on a long side of the mattress","flat mattress without pillow-top","handles on the front of the mattress","separate topper on the mattress"]:[]),"garbled or misspelled text","looking into the camera","posed smiles","studio lighting","catalog look","socks, shoes, slippers or clothes on the floor","clothes piled on chairs or radiators","messy or cluttered room","visible light switches and power sockets","aluminium window frames","cheap laminate furniture","flat grey lighting","stock photo look","extra or missing limbs","extra fingers or fused hands","deformed bodies","impossible poses","floating objects","mirrored or garbled text", ...neg];
   $("stock").textContent = t.stock + " · color neutro";
   $("arLabel").textContent = $("ar").value;
   const out={};
   const prod=$("product").checked;
-  out.IMAGE = "A candid editorial photograph shot on film, NOT an advertisement and NOT a product shot. "
+  out.IMAGE = "A candid editorial photograph shot on film, NOT an advertisement" + (F.detail ? ". " : " and NOT a product shot. ")
     + scene.people + ". " + scene.action + ". "
-    + "Framing: " + shot.text + ". " + scene.lens + ". " + t.time + ": " + t.light + ". "
-    + (prod ? "The LOMONACO mattress is part of the room, recognizable but not the subject. " : "")
+    + "Camera and framing: " + F.sentence + ". " + t.time + ": " + t.light + ". "
+    + (prod ? (F.detail ? "A close, intimate detail of the LOMONACO mattress within a real moment. " : "The LOMONACO mattress is part of the room, recognizable but not the subject. ") : "")
     + "Natural film grain, real available light, documentary feel, nobody posing or looking at the camera";
-  if(prod) out.PRODUCT_MUST_MATCH_REFERENCES = mustMatch(find(MATTRESS_VIEWS,val("mview")).text);
-  out.FRAMING_IS_MANDATORY = "Respect this framing exactly: " + shot.text + ". Do not crop closer, do not turn it into a close-up of the mattress";
+  if(prod) out.PRODUCT_MUST_MATCH_REFERENCES = mustMatch(F.view, F.detail?"detail":"");
+  out.FRAMING_IS_MANDATORY = "Respect this camera position, height, lens and framing exactly: " + F.sentence + ". Do not move the camera, do not crop closer or wider" + (F.detail ? "" : ", do not turn it into a close-up of the mattress");
   out.art_direction = ART_DIRECTION;
   out.scene = scene;
   out.production_value = find(VALUE_LEVELS,val("pv")).text;
@@ -592,10 +801,10 @@ function highlight(json){
   return esc(json).replace(/"([^"\\]*(?:\\.[^"\\]*)*)"(\s*:)?/g,(m,s,k)=>k?`<span class="k">"${s}"</span>${k}`:`<span class="s">"${s}"</span>`);
 }
 let current="";
-function render(){ toggleCustom(); current=JSON.stringify(build(),null,2); $("json").innerHTML=highlight(current); }
+function render(){ toggleCustom(); drawCam(); current=JSON.stringify(build(),null,2); $("json").innerHTML=highlight(current); }
 
 function save(){
-  try{localStorage.setItem("instantaneasLM",JSON.stringify({p:$("people").value,a:$("action").value,fp:$("focusPoint").value,s:val("shot"),t:val("time"),pr:$("product").checked,r:$("room").value,pl:$("palette").value,ar:$("ar").value,x:$("extra").value,n:$("neg").value,pv:val("pv"),mv:val("mview"),ln:val("lens"),m:$("model").value,cm:$("customModel").value,pb:$("pbase").value}))}catch(e){}
+  try{localStorage.setItem("instantaneasLM",JSON.stringify({p:$("people").value,a:$("action").value,fp:$("focusPoint").value,s:val("shot"),t:val("time"),pr:$("product").checked,r:$("room").value,pl:$("palette").value,ar:$("ar").value,x:$("extra").value,n:$("neg").value,pv:val("pv"),cam:CAM,m:$("model").value,cm:$("customModel").value,pb:$("pbase").value}))}catch(e){}
 }
 function load(){
   try{
@@ -606,8 +815,7 @@ function load(){
     if(d.r) $("room").value=d.r; if(d.pl) $("palette").value=d.pl; if(d.ar) $("ar").value=d.ar;
     if(d.x) $("extra").value=d.x; if(d.n) $("neg").value=d.n;
     if(d.pv&&$("pv-"+d.pv)) $("pv-"+d.pv).checked=true;
-    if(d.mv&&$("mview-"+d.mv)) $("mview-"+d.mv).checked=true;
-    if(d.ln&&$("lens-"+d.ln)) $("lens-"+d.ln).checked=true;
+    if(d.cam&&typeof d.cam.cx==="number"&&LENS_F[d.cam.lens]) Object.assign(CAM,d.cam);
     if(d.m&&MODELS.some(x=>x.id===d.m)) $("model").value=d.m; if(d.cm) $("customModel").value=d.cm; if(d.pb) $("pbase").value=d.pb;
   }catch(e){}
 }
@@ -627,12 +835,12 @@ $("copy").onclick=()=>{
 };
 
 $("copyFix").onclick=()=>{
-  const t=fixPrompt(find(MATTRESS_VIEWS,val("mview")).text);
+  const t=fixPrompt(framing(camGeo()).view);
   const ok=()=>{$("toast").textContent="Prompt de corrección copiado. Úsalo en Magnific editando la imagen, con las mismas referencias conectadas.";};
   const fb=()=>{ $("json").textContent=t; const r=document.createRange(); r.selectNodeContents($("json")); const sel=getSelection(); sel.removeAllRanges(); sel.addRange(r); $("toast").textContent="Texto seleccionado. Pulsa Ctrl+C o Cmd+C para copiar."; };
   try{ navigator.clipboard.writeText(t).then(ok,fb); }catch(e){ fb(); }
 };
-load(); render(); drawHist();
+setupCam(); load(); render(); drawHist();
 </script>
 
 </body>

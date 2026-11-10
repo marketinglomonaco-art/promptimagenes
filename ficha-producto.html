@@ -249,7 +249,7 @@ const STYLE = {
   },
   lighting_design: {
     source: "Single large soft natural window light from one side, out of frame",
-    quality: "Soft but directional, gentle raking light across the top of the mattress that reveals tufting, ticking stripes, piping and stitching",
+    quality: "Soft but directional, gentle raking light across the top of the mattress that reveals the biscuit tufting, the ribbed band, the jacquard pattern and the piping",
     shadows: "Long soft shadow gradients on the floor and wall, smooth falloff from light into shade, deep but open shadows",
     contrast: "Low to medium contrast, lifted shadows, nothing clipped",
     feel: "The light of a quiet afternoon in a Mediterranean home, calm and warm"
@@ -291,37 +291,37 @@ const ICON = {
 };
 
 const VIEWS = [
-  {id:"front", name:"Frontal", hint:"Lateral largo de cara",
-   framing:"Straight-on frontal view of the long side of the mattress at the height of its side panel, the mattress as a horizontal band across the frame, slight crop at both ends",
-   camera:"Camera level with the middle of the mattress side, perfectly square to it, no tilt",
-   variants:["Mattress centered with equal negative space above and below","Mattress placed in the lower third, wall filling the upper frame","Tighter crop, the side panel and handles filling the width"]},
+  {id:"front", name:"Frontal", hint:"El logo de cara",
+   framing:"Straight-on view of the FRONT (the foot end, a short side) at the height of its panel: the model name above LOMONACO centered, no handles on this face, the ribbon on the top-RIGHT corner of the mattress in the image; the mattress as a horizontal band across the frame",
+   camera:"Camera level with the middle of the front panel, perfectly square to it, no tilt",
+   variants:["Mattress centered with equal negative space above and below","Mattress placed in the lower third, wall filling the upper frame","Tighter crop, the front panel and its embroidered text filling the width"]},
   {id:"tq", name:"Tres cuartos", hint:"Superficie y lateral",
    framing:"Three-quarter view from the foot corner: the tufted top and the long side panel visible at once, the front corner closest to the camera and sharpest, the far end running out of frame",
    camera:"Camera slightly above the mattress top, about 30 degrees from the long side",
-   variants:["Corner in the lower left, mattress running to the upper right","Corner in the lower right, mattress running to the upper left","Lower angle, more side panel and base, less top surface"]},
-  {id:"side", name:"Lateral", hint:"Desde el pie, a ras",
-   framing:"View along the length of the bed from the foot end, at mattress height, showing the thickness of the mattress, the short end panel and the long side receding in perspective",
-   camera:"Camera at the height of the mattress top, close to the foot end, looking along the bed",
-   variants:["Foot end corner large in the foreground, side panel receding to the background","Lower camera, the base and legs more present","Slightly from above, the tufted top receding in gentle perspective"]},
+   variants:["Corner in the lower left, mattress running to the upper right","Corner slightly right of center, the front face receding to the left, the right long side running to the upper right","Lower angle, more side panel and base, less top surface"]},
+  {id:"side", name:"Lateral", hint:"Asas, sin texto",
+   framing:"Straight-on view of the RIGHT long side at the height of its side panel: the front (foot end) at the LEFT end of the frame, two horizontal handles, the M handle on the left nearest the front, no words, the ribbon on the top-left corner",
+   camera:"Camera level with the middle of the right long side, perfectly square to it, no tilt",
+   variants:["Mattress centered as a long horizontal band","Mattress placed in the lower third, wall filling the upper frame","Tighter crop on the front half: the M handle and the ribbon corner"]},
   {id:"det", name:"Detalle", hint:"Primer plano de acabado",
    framing:"", camera:"", variants:["Very shallow depth of field, only a narrow band in focus","Medium depth of field, the whole detail readable","Raking light grazing the fabric at a low angle"]}
 ];
 
 const DETAILS = [
   {id:"corner", name:"Esquina", hint:"Ribete y grosor",
-   framing:"Close-up of one corner of the mattress: piping, the meeting of top and side panel, the full thickness, the base edge below",
+   framing:"Close-up of the FRONT-RIGHT corner of the mattress: the ribbon folding over it, the piping, the meeting of top and side panel, the full thickness",
    camera:"Close, slightly above the corner"},
   {id:"tufts", name:"Capitoné", hint:"Botones del tapizado",
-   framing:"Close-up of the top surface: hand-tied tufts, sunken channels between them, fabric texture in raking light",
+   framing:"Close-up of the top surface: the round biscuit tufts of the pillow-top and the jacquard texture in raking light",
    camera:"Close, low angle across the top surface so the light grazes the tufts"},
   {id:"handle", name:"Asa", hint:"Asa y costuras",
-   framing:"Close-up of the side panel with a handle: stitching, side panel quilting and fabric pattern",
+   framing:"Close-up of the RIGHT long side near the front: the M handle with its burgundy edging, the ribbed band above and the jacquard panel",
    camera:"Close and square to the side panel"},
   {id:"base", name:"Base y pata", hint:"Unión con el soporte",
-   framing:"Close-up of the lower corner where the mattress sits on the base: side panel bottom edge, base frame and leg",
+   framing:"Close-up of the front-right bottom corner where the mattress sits on the base: front face to the left, right long side to the right, base frame and leg",
    camera:"Low, near the floor, looking slightly up at the corner"},
   {id:"fabric", name:"Tejido", hint:"Macro de la tela",
-   framing:"Macro of the mattress fabric: weave, stripes or pattern, a single tuft or line of stitching",
+   framing:"Macro of the mattress fabric: the white jacquard pattern, a single tuft or a line of stitching",
    camera:"Very close, macro distance"}
 ];
 
@@ -440,19 +440,19 @@ const lensText = () => (LENSES.find(l=>l.id===(document.querySelector('input[nam
 
 /* ---------- Modelos de colchón LOMONACO ---------- */
 const MATTRESS_COMMON = {
-  shape: "Rectangular, tall mattress about 30 cm thick with a pillow-top. The FRONT and the BACK are the two SHORT sides (the width of the bed). The two LATERALS are the LONG sides (the length of the bed)",
+  shape: "Rectangular, tall mattress about 30 cm thick with a pillow-top. The FRONT and the BACK are the two SHORT sides (the width of the bed). The two LATERALS are the LONG sides (the length of the bed). LEFT and RIGHT are always as seen standing at the foot facing the headboard",
   construction: "Two stacked layers visible on every side: an upper pillow-top layer, about one third of the height, wrapped by a band of fine vertical ribbed quilting between two thin piping lines; and a taller lower body panel in white embossed jacquard knit with a soft organic pattern, closed by a piping line along the bottom edge. Both layers are ONE single sewn mattress: the pillow-top has exactly the same width and length as the body, edges aligned, no gap and no overhang. It is never a separate topper or a second mattress lying on top",
   top: "White jacquard knit top with dense biscuit tufting: a regular grid of round puffy cushions, each sunk at its tuft point, covering the whole surface",
   front: "FRONT = the short side that carries the model name in small spaced capitals above the LOMONACO wordmark, embroidered in burgundy and centered on the lower body panel. LOMONACO is one word in spaced capitals with a short horizontal bar under the central M. The front is always the foot of the bed, open to the room. The front has NO handles",
   back: "BACK = the opposite short side: plain white jacquard with no text and no logo. It is the head of the bed, against the wall or the headboard, where the pillows rest",
-  laterals: "Each LONG lateral side has NO text and NO logo. It only has two horizontal rectangular fabric carry handles on the lower body panel, one near each end. Each handle has a stitched square with an X at both ends and thin burgundy edging along its top and bottom borders. The handle closest to the front carries a small embroidered burgundy M with a short bar beneath it; the other handle has no M. A long side NEVER carries embroidered text: no LOMONACO and no model name, ever",
-  ribbon: "A single burgundy satin ribbon printed with LOMONACO in light cream capitals crosses the RIGHT front corner diagonally (as seen facing the front), lying on the top surface and folding over the edge. ALWAYS on the right corner, NEVER on the left corner, even when the left corner is the one facing the camera. Anchor: reading LOMONACO on the front left to right, the ribbon is at the corner after the final O. Never at the back, never more than one",
-  color: "The whole mattress is white. The only color is burgundy: the front embroidery, the ribbon, the handle edging and the M",
+  laterals: "Each LONG lateral side has no words: no LOMONACO wordmark, no model name. It only has two horizontal rectangular fabric carry handles on the lower body panel, one near each end. Each handle has a stitched square with an X at both ends and thin burgundy edging along its top and bottom borders. The handle closest to the front carries a small embroidered burgundy M with a short bar beneath it; the other handle has no M. A long side NEVER carries embroidered words: the only mark is the small M on the handle nearest the front",
+  ribbon: "A single burgundy satin ribbon printed with LOMONACO in light cream capitals crosses the FRONT-RIGHT corner diagonally, lying on the top surface and folding over the edge: the corner at the END of the front text, after the final O (right for someone standing at the foot facing the headboard). NEVER on the front-LEFT corner (before the L), even when it is nearest the camera. Where it appears in the image depends on the camera: see view_logic. Never at the back, never more than one",
+  color: "The whole mattress is white. The only color is burgundy: the front embroidery, the ribbon, the handle edging and the M and, on models that have it, the piping",
   fabric: "Copy the jacquard pattern, the biscuit tufting and the ribbed band exactly from the reference images. Never invent the fabric or replace it with a generic quilt",
   view_logic: {
     front: "Camera facing the front: model name and LOMONACO centered on the front, NO handles on the front, ribbon on the RIGHT top corner",
     front_right_corner: "Camera at the front-right corner: front with the logo on the LEFT of the image, right long side with its two handles on the RIGHT of the image, the M handle next to the corner, ribbon on the corner closest to the camera",
-    front_left_corner: "Camera at the front-left corner: front with the logo on the RIGHT of the image, left long side with its two handles on the LEFT of the image. The ribbon stays on the FAR corner of the front, on the right of the image, small or hidden. Never a ribbon on the near left corner",
+    front_left_corner: "Camera at the front-left corner: front with the logo on the RIGHT of the image, left long side with its two handles on the LEFT of the image, the M handle next to the near corner, nearest the front. The ribbon stays on the FAR corner of the front, on the right of the image, small or hidden. Never a ribbon on the near front-left corner",
     right_long_side: "Camera facing the right long side: the front is on the LEFT of the image, ribbon at the top-left corner, two handles, the M handle on the left",
     left_long_side: "Camera facing the left long side: the front is on the RIGHT of the image, the ribbon at the far top-right corner, barely visible, two handles, the M handle on the right",
     back: "Back: plain, no text, pillows resting against it"
@@ -465,29 +465,33 @@ const MODELS = [
   {id:"otro", name:"Otro modelo (escribir)", label:"", piping:""}
 ];
 const REF_VIEWS = [
-  ["vista frontal","FRONT view: the short side with the model name and LOMONACO, ribbon on the right corner"],
-  ["vista lateral","LATERAL view: a long side with its two horizontal handles, the M handle nearest the front"],
-  ["vista 3:4","Three-quarter view from the front-right corner: front, right lateral and top at once"],
+  ["vista frontal","FRONT view: the short side with the model name above LOMONACO; the ribbon on the top-RIGHT corner of the image"],
+  ["vista lateral","RIGHT long side: the front at the LEFT end of the image, the ribbon top-left, two horizontal handles, the M handle on the left (nearest the front), no text"],
+  ["vista 3:4","Front-right corner: the front face on the LEFT of the image, the right long side on the RIGHT, the ribbon on the corner between them, nearest the camera"],
   ["detalle asa y banda","Close-up of the M handle and the vertical ribbed band of the pillow-top"],
-  ["detalle tela esquina derecha","Close-up of the right front corner: the ribbon, the biscuit tufting and the fabric"]
+  ["detalle tela esquina derecha","Close-up of the front-right corner: the ribbon, the biscuit tufting and the fabric"]
 ];
+function modelLabel(){ const id=$("model").value; if(id!=="otro") return (MODELS.find(x=>x.id===id)||MODELS[0]).label;
+  return ((($("customModel")||{}).value)||"").split(/[,.;:\n]/)[0].trim().toUpperCase(); }
+function customNotes(){ if($("model").value!=="otro") return ""; const v=((($("customModel")||{}).value)||"").trim(); const i=v.search(/[,.;:\n]/); return i<0?"":v.slice(i+1).trim(); }
 function productSpec(baseText){
   const id=$("model").value, m=MODELS.find(x=>x.id===id)||MODELS[0];
-  const custom=($("customModel")?$("customModel").value.trim():"");
-  const name = id==="otro" ? (custom||"the model shown in the references") : m.name;
+  const lbl=modelLabel(), notes=customNotes();
+  const name = id==="otro" ? (lbl||"model shown in the references") : m.name;
   const spec = {
     model: "LOMONACO " + name + " mattress",
     reference_images: Object.fromEntries(REF_VIEWS.map(([v,d])=>[v, d])),
-    reference_rule: "The connected reference images carry exactly these names and all show this same mattress. Read the product from them: they show the real product and win over any description. Use each one for what it shows: front, lateral, three-quarter view and the two close-ups",
+    reference_rule: "The connected reference images carry exactly these names and all show this same mattress. Read the product design from them: they show the real product and win over any description. Use each one for what it shows: front, lateral, three-quarter view and the two close-ups",
     anatomy: Object.assign({}, MATTRESS_COMMON, {
-      model_name_on_front: id==="otro" ? ("Model name as embroidered in the reference" + (custom? (": "+custom):"")) : ("Small spaced capitals reading " + m.label + ", exactly as in the reference"),
+      model_name_on_front: lbl ? ("Small spaced capitals reading " + lbl + ", exactly as in the reference") : "The model name copied letter by letter from the vista frontal reference",
       piping: id==="otro" ? "As in the reference" : m.piping
     }),
-    orientation_rules: "Seen from the front: model name and LOMONACO facing the camera, ribbon at the right corner. When the camera sees a long side, it shows only its two horizontal handles, the M handle nearest the front, never any text. Only ONE handle per long side has an M, never two. The ribbon is on the front-right corner only: if the camera sees the LEFT long side (the front appears on the right of the image), the ribbon is on the far corner and mostly hidden; it is clearly visible only when the camera sees the right long side or the front-right corner. Do not copy the viewpoint of the vista 3:4 reference: rotate the mattress to match the camera position of this scene and apply view_logic. Pillows and people's heads always at the back; people's feet point toward the front. The logo is never on a long side and is never mirrored, moved, duplicated or invented",
+    orientation_rules: "LEFT and RIGHT of the mattress are always as seen standing at the foot facing the headboard. Seen from the front: model name and LOMONACO facing the camera, ribbon on the front-right corner. When the camera sees a long side, it shows only its two horizontal handles, the M handle nearest the front, and no words. Only ONE handle per long side has an M, never two. The ribbon is on the front-right corner only: if the camera sees the LEFT long side (the front appears on the right of the image), the ribbon is on the far corner and mostly hidden; it is clearly visible when the camera sees the front, the front-right corner or the right long side. Copy the vista 3:4 orientation only when item 8 says front-right corner; otherwise rotate the mattress to the camera of this scene and apply view_logic. Pillows always rest at the back (headboard end). People may lie in any direction (for example legs up the headboard wall, head toward the foot), but the mattress never turns: the front with the text is always at the foot, open to the room. The wordmark is never on a long side and is never mirrored, moved, duplicated or invented",
     text_check: "Exact text, letter by letter: the model name and LOMONACO with the bar under the M. No garbled, invented or extra letters. If it cannot be rendered sharp and correct, keep it covered or out of frame",
-    never: ["ribbon on the left corner","more than one ribbon","handles on the front","LOMONACO or the model name embroidered on a long side","two M handles on the same long side","a separate topper or pad lying on top of the mattress","invented fabric, tufting or pattern different from the references"],
+    never: ["ribbon on the front-LEFT corner (before the L of LOMONACO)","more than one ribbon","handles on the front","the LOMONACO wordmark or the model name on a long side","two M handles on the same long side","a separate topper or pad lying on top of the mattress","invented fabric, tufting or pattern different from the references"],
     do_not_modify: "Strict product lock. Reproduce the mattress exactly as in the reference images and do not change any aspect of the product or any element of its design: shape, proportions, thickness, layers, tufting, ribbed band, jacquard pattern, colors, piping, handles, M, logo, typography and ribbon. Nothing added, removed, simplified, redesigned or restyled"
   };
+  if(notes) spec.model_notes = "Differences of this model, as seen in its references: " + notes;
   if(baseText) spec.bed_base = baseText;
   return spec;
 }
@@ -495,32 +499,36 @@ function productSpec(baseText){
 /* ---------- Bloque prioritario del producto ---------- */
 const MATTRESS_VIEWS = [
   {id:"r34", name:"Esquina derecha", hint:"Como la vista 3:4",
-   text:"The mattress is seen from its FRONT-RIGHT corner, with the same orientation as the vista 3:4 reference (orientation only: not its framing, distance, background or light). In the image, the face on the LEFT is the FRONT: it carries the small model name above LOMONACO. The face on the RIGHT is the right long side: only two horizontal handles, the M handle next to the corner, no text. The ONE ribbon sits on the corner between them, the corner closest to the camera"},
+   text:"The mattress is seen from its FRONT-RIGHT corner, with the same orientation as the vista 3:4 reference (orientation only: not its framing, distance, background or light). In the image, the face on the LEFT is the FRONT: it carries the small model name above LOMONACO. The face on the RIGHT is the right long side: only two horizontal handles, the M handle next to the corner, no words. The ONE ribbon sits on the corner between them, the corner closest to the camera"},
   {id:"front", name:"Frente", hint:"El logo de cara",
    text:"The mattress is seen from its FRONT, with the same orientation as the vista frontal reference (orientation only): the model name above LOMONACO centered on the face toward the camera, no handles on that face, the ribbon on the top-RIGHT corner of the mattress as seen in the image. The long sides are barely visible"},
   {id:"right", name:"Lateral derecho", hint:"Asas, sin texto",
-   text:"The mattress is seen from its RIGHT long side, with the same orientation as the vista lateral reference (orientation only): the front is at the LEFT end of the mattress in the image. This long side shows only two horizontal handles, the one on the left with the M, and NO text at all. The ribbon is on the top-LEFT corner of the mattress in the image"},
-  {id:"top", name:"Desde arriba", hint:"Cenital o detalle",
-   text:"Seen from above or very close: mostly the tufted top. If the front-right corner is in frame, it carries the ribbon. No side text needs to be visible"}
+   text:"The mattress is seen from its RIGHT long side, with the same orientation as the vista lateral reference (orientation only): the front is at the LEFT end of the mattress in the image. This long side shows only two horizontal handles, the one on the left with the M, and no words. The ribbon is on the top-LEFT corner of the mattress in the image, which is its front-right corner"},
+  {id:"top", name:"Desde arriba", hint:"Cenital",
+   text:"Seen from directly above: the head of the bed (pillows) at the TOP of the frame, the foot (front) at the BOTTOM. The tufted top fills the view. The ONE ribbon lies across the BOTTOM-RIGHT corner of the mattress in the image. No side text needs to be visible"},
+  {id:"cornerDetail", name:"Detalle esquina", hint:"",
+   text:"Close-up of the FRONT-RIGHT corner as in the detalle tela esquina derecha reference: the ribbon folding over the corner, the biscuit tufting and the ribbed band. The centered front text is out of frame: never move it toward the corner"},
+  {id:"handleDetail", name:"Detalle asa", hint:"",
+   text:"Close-up of the RIGHT long side near the front end, as in the detalle asa y banda reference: the M handle with its burgundy edging, the vertical ribbed band above, no words"},
+  {id:"tuftsDetail", name:"Detalle capitoné", hint:"",
+   text:"Close-up of the top surface only: the round biscuit tufts of the pillow-top, no sides and no text in frame"},
+  {id:"baseDetail", name:"Detalle base", hint:"",
+   text:"Low close-up of the front-right bottom corner where the mattress sits on its base: the front face to the LEFT, the right long side to the RIGHT, no text needed in frame"}
 ];
-function viewIcon(id){
-  const cam={r34:[66,55],front:[40,55],right:[72,28],top:[40,28]}[id];
-  return `<svg viewBox="0 0 80 62" aria-hidden="true"><rect x="24" y="6" width="32" height="42" rx="3" fill="var(--panel)" stroke="currentColor" stroke-width="1.6"/><rect x="28" y="9" width="24" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.1"/><path d="M24 48 H56" stroke="currentColor" stroke-width="3"/><path d="M50 48 L56 42 L56 48Z" fill="#7C1919"/><circle cx="${cam[0]}" cy="${cam[1]}" r="4.5" fill="var(--accent)"/>${id==="top"?"":`<path d="M${cam[0]} ${cam[1]} L40 27" stroke="var(--accent)" stroke-width="1.2" stroke-dasharray="2 2"/>`}<text x="14" y="51" text-anchor="middle" font-size="7" fill="currentColor" opacity=".6">frente</text></svg>`;
-}
-function modelLabel(){ const id=$("model").value, m=MODELS.find(x=>x.id===id); const c=($("customModel")&&$("customModel").value.trim())||""; return id==="otro" ? (c||"the model name of the reference") : m.label; }
-function mustMatch(viewText){
-  const lbl=modelLabel();
+function mustMatch(viewText, ctx){
+  const lbl=modelLabel(), sheet=ctx==="sheet", detail=ctx==="detail";
+  const line1 = lbl ? ("line 1 small spaced capitals '"+lbl+"'") : "line 1 the model name in small spaced capitals, copied letter by letter from the vista frontal reference";
   return [
-    "1. COPY THE MATTRESS FROM THE CONNECTED REFERENCE IMAGES (vista frontal, vista lateral, vista 3:4, detalle asa y banda, detalle tela esquina derecha). It is a real product: do not redesign, simplify or reinterpret it. Take ONLY the product design and its orientation from the references, never their framing, studio background, lighting or catalog look",
+    "1. COPY THE MATTRESS FROM THE CONNECTED REFERENCE IMAGES (vista frontal, vista lateral, vista 3:4, detalle asa y banda, detalle tela esquina derecha). It is a real product: do not redesign, simplify or reinterpret it. Take ONLY the product design from the references, never their framing, studio background or lighting"+(sheet?"":" or catalog look")+". The orientation in THIS image is defined only by item 8",
     "2. Tall mattress with an INTEGRATED pillow-top: round biscuit tufting all over the top, a vertical ribbed band, and a white jacquard lower panel. Never a flat top, never smooth fabric, never a separate topper",
-    "3. TEXT ONLY ON THE FRONT (a short side), nowhere else: line 1 small spaced capitals '"+lbl+"', line 2 larger 'LOMONACO' with a short bar under the central M. Burgundy embroidery, centered, straight, sharp and perfectly legible",
-    "4. EXACT SPELLING, letter by letter: '"+lbl+"' and 'L-O-M-O-N-A-C-O'. No other words, no extra letters, no invented characters. If the text cannot be rendered sharp and correct, frame or cover that area instead of inventing it",
-    "5. LONG SIDES: only two horizontal handles, one of them with a small M. NO text, NO logo, NO model name on a long side, ever",
+    "3. TEXT ONLY ON THE FRONT (a short side), nowhere else: "+line1+", line 2 larger 'LOMONACO' with a short bar under the central M. Burgundy embroidery, centered, straight, sharp and perfectly legible",
+    "4. EXACT SPELLING, letter by letter: "+(lbl?("'"+lbl+"' and "):"")+"'L-O-M-O-N-A-C-O'. No other words, no extra letters, no invented characters. If the text cannot be rendered sharp and correct, frame or cover that area instead of inventing it",
+    "5. LONG SIDES: only two horizontal handles, the one nearest the front with a small M. No words on a long side: no LOMONACO wordmark, no model name. The only mark there is that small M",
     "6. FRONT: no handles",
-    "7. ONE burgundy ribbon with LOMONACO, ONLY on the front-RIGHT corner. ANCHOR RULE: read LOMONACO on the front from left to right; the ribbon is on the top corner at the END of the word, after the final O, never on the corner before the L. If that corner is on the far side from the camera, the ribbon is small or hidden there; never move it to the near corner. Never two",
-    "8. VIEW IN THIS IMAGE: "+viewText,
+    "7. ONE burgundy ribbon with LOMONACO, ONLY on the front-RIGHT corner. ANCHOR RULE: read LOMONACO on the front from left to right; the ribbon is on the top corner at the END of the word, after the final O, never on the front-left corner before the L. If that corner is on the far side from the camera, the ribbon is small or hidden there; never move it to the near corner. Never two",
+    "8. VIEW IN THIS IMAGE: "+(detail?("Only part of the mattress is in frame; whatever is visible follows this orientation: "+viewText):viewText),
     "9. Bedding may cover part of the mattress. Whatever stays visible follows these rules",
-    "10. Product accuracy never turns the image into a product shot: the camera distance and framing come from the scene, so the mattress may be small in the frame"
+    sheet ? "10. The framing comes from the scene: a clean image of the mattress alone in the set" : detail ? "10. This is a close detail: the camera position, lens and framing come from the scene" : "10. Product accuracy never turns the image into a product shot: the camera distance and framing come from the scene, so the mattress may be small in the frame"
   ];
 }
 function fixPrompt(viewText){
@@ -603,9 +611,9 @@ function build(shotId, idx){
   scene.aspect_ratio = $("ar").value;
   const neg = negList();
   if(neg.length) scene.strictly_exclude = {instruction:"None of the following may appear anywhere in the image", items:neg};
-  const VIEW_BY_SHOT={front:"front",tq:"r34",side:"r34","d-corner":"r34"};
+  const VIEW_BY_SHOT={front:"front",tq:"r34",side:"right","d-corner":"cornerDetail","d-handle":"handleDetail","d-tufts":"tuftsDetail","d-base":"baseDetail","d-fabric":"tuftsDetail"};
   const vtext = find(MATTRESS_VIEWS, VIEW_BY_SHOT[shotId]||"top").text;
-  return {PRODUCT_MUST_MATCH_REFERENCES: mustMatch(vtext), scene, product_photo_style: Object.assign({}, STYLE, {product: productSpec(null)})};
+  return {PRODUCT_MUST_MATCH_REFERENCES: mustMatch(vtext, "sheet"), scene, product_photo_style: Object.assign({}, STYLE, {product: productSpec(null)})};
 }
 
 function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")}

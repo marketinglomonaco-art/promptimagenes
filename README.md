@@ -42,6 +42,8 @@ El prompt cita los nodos de referencia por su nombre exacto. Usa siempre estos n
 - Si una manta o una sábana tapa parte del colchón, no pasa nada.
 - Texto siempre real: NATURA LÁTEX y LOMONACO letra a letra. Si no sale nítido, mejor tapado que inventado.
 - Cámara solo donde hay referencia: frente, esquina delantera derecha, lateral derecho o desde arriba.
+- Izquierda y derecha del colchón: siempre vistas desde los pies de la cama mirando al cabecero.
+- La gente puede tumbarse en cualquier sentido, pero el colchón nunca gira: el frente con el texto siempre a los pies.
 - Si una imagen es buena salvo el colchón: botón "Corregir colchón" y edición en Magnific con las mismas referencias.
 
 ## Reglas de fotografía del manual
