@@ -11,15 +11,12 @@ Generadores de prompts de imagen de LOMONACO para Magnific (Nano Banana 2.6), co
 
 Cada archivo es una página HTML independiente. Con GitHub Pages activo: https://marketinglomonaco-art.github.io/promptimagenes/
 
-## Nodos de referencia en Magnific
+## Flujo de trabajo: dos pasos
 
-El prompt cita los nodos de referencia por su nombre exacto. Usa siempre estos nombres, sea cual sea el modelo:
+1. **Escena.** "Paso 1 · Copiar prompt de escena" en el nodo que genera la imagen. Aquí mandan persona, acción, cámara, luz y dirección de arte.
+2. **Colchón exacto.** Con la escena elegida, editar esa imagen en Magnific (Dibujo sobre el colchón), conectar 2 o 3 referencias del mismo ángulo y pegar "Paso 2 · Copiar prompt del colchón".
 
-- `vista frontal`: lado corto con el nombre del modelo y LOMONACO, cinta a la derecha
-- `vista lateral`: lado largo con las dos asas, la de la M más cerca del frente
-- `vista 3:4`: esquina delantera derecha, con frente, lateral y tapa
-- `detalle asa y banda`: asa con la M y banda de acolchado vertical
-- `detalle tela esquina derecha`: cinta, capitoné y tejido de la esquina derecha
+El modelo ve las fotos de referencia, no los nombres de los nodos.
 
 ## Anatomía del colchón (regla fija en los prompts)
 

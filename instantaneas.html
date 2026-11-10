@@ -226,7 +226,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
         <label for="model">Modelo de colchón <small>si incluyes el colchón</small></label>
         <select id="model"></select>
         <textarea id="customModel" rows="2" hidden placeholder="Nombre del modelo y lo que lo diferencia. Ej.: Supreme Pocket, vivo gris, asas sin bordado"></textarea>
-        <p class="hint">El prompt cita tus nodos de referencia por su nombre: <b>vista frontal</b>, <b>vista lateral</b>, <b>vista 3:4</b>, <b>detalle asa y banda</b> y <b>detalle tela esquina derecha</b>. Usa siempre esos nombres en Magnific.</p>
+        <p class="hint">Las referencias del colchón se conectan en Magnific. El modelo ve las fotos, no los nombres de los nodos, así que el prompt no depende de cómo se llamen.</p>
       </div>
 
       <div class="field">
@@ -259,16 +259,17 @@ input[type=range]{width:100%;accent-color:var(--accent)}
         <span class="stock" id="stock">Luz de ventana · neutra</span>
         <div class="btns">
           <button type="button" class="ghost" id="reroll">Otra variación</button>
-          <button type="button" class="main" id="copy">Copiar prompt</button>
+          <button type="button" class="main" id="copy">Paso 1 · Copiar prompt de escena</button>
         </div>
       </div>
       <pre id="json" tabindex="0"></pre>
       <div class="toast" id="toast" role="status"></div>
       <div class="fixbox">
-        <p><b>Solo para corregir una imagen ya generada.</b> En Magnific, abre esa imagen, escribe sobre ella en "¿Qué quieres cambiar?" con los nodos del colchón conectados y pega este texto. No sirve para generar una imagen nueva.</p>
-        <button type="button" class="ghost" id="copyFix">Copiar prompt de corrección</button>
+        <p><b>Paso 2 · El colchón exacto.</b> Cuando la escena del paso 1 te guste (persona, luz, encuadre), abre esa imagen en Magnific y edítala: con <b>Dibujo</b> marca solo el colchón, conecta las referencias y pega este texto. Sustituye el colchón por el real sin tocar el resto.</p>
+        <p>Referencias recomendadas para este ángulo: <b id="refHint"></b>. Menos fotos, del mismo ángulo, funcionan mejor que las cinco.</p>
+        <button type="button" class="ghost" id="copyFix">Paso 2 · Copiar prompt del colchón</button>
       </div>
-      <p class="tip"><b>En Magnific:</b> Nano Banana 2.6, pega el JSON entero en el nodo de texto que genera la imagen. Sube 1 o 2 de tus referencias como <b>Style</b> para clavar el grano y el color. Si incluyes el colchón, conéctalo como <b>Product</b>; si repites persona en varias fotos, súbela como <b>Character</b>.</p>
+      <p class="tip"><b>En Magnific:</b> Nano Banana 2.6. Paso 1: pega el JSON en el nodo que genera la imagen, con 1 o 2 referencias de estilo y, si quieres, las del colchón. Paso 2: edita la imagen elegida para poner el colchón exacto. Si repites persona en varias fotos, súbela como <b>Character</b>.</p>
     </section>
   </div>
 </div>
@@ -773,7 +774,7 @@ function productLines(view, base){
   const name = id==="otro" ? (lbl||"model shown in the references") : m.name;
   const front = lbl ? `burgundy embroidered '${lbl}' in small spaced capitals above a larger 'LOMONACO' (short bar under the central M)` : "the model name copied letter by letter from the vista frontal reference, above a larger 'LOMONACO' (short bar under the central M), burgundy embroidery";
   return [
-    `The LOMONACO ${name} mattress, copied exactly from the connected references (vista frontal, vista lateral, vista 3:4, detalle asa y banda, detalle tela esquina derecha). Take only its design from them, never their framing, grey background or light. Do not redesign it.`,
+    `The LOMONACO ${name} mattress shown in the attached product photos (studio shots on a grey background). Copy its design exactly from those photos: they win over any description. Take only the mattress from them, never their grey background, framing or light. Do not redesign it.`,
     `Tall mattress with an integrated pillow-top sewn as one piece: round biscuit tufting on top, a vertical ribbed band, a white jacquard lower panel. Never flat, never a separate topper.${base?" It sits on: "+base+".":""}`,
     `FRONT (the short side at the foot of the bed, open to the room): ${front}, centered. No handles on the front. Exact spelling; if it cannot be sharp and correct, keep it covered by bedding.`,
     "LONG SIDES: no words at all, only two horizontal handles; the handle nearest the front has a small burgundy M.",
@@ -813,20 +814,23 @@ function build(){
   $("arLabel").textContent = $("ar").value;
   return out;
 }
+const REF_SUGGEST={front:"vista frontal + vista 3:4", r34:"vista 3:4 + vista frontal + vista lateral", right:"vista lateral + vista 3:4", l34:"vista frontal + vista 3:4", left:"vista lateral + vista frontal", top:"detalle tela esquina derecha + vista 3:4"};
 function fixPromptGen(){
   const o=build(), F=framing(camGeo());
-  return "IMAGE EDIT ONLY. Use this text only as an edit of the attached generated image, never to create a new image.\n"
-    + "Change only the mattress. Keep the people, their pose, the bedding, the room, the light, the color and the framing exactly as in the image.\n"
-    + "Context of the image: " + o.SCENE + " " + o.CAMERA + "\n"
-    + "The mattress must match the connected references:\n- " + productLines(F.view, BED_BASES[$("pbase").value][1]).join("\n- ");
+  return "IMAGE EDIT ONLY: edit the generated bedroom photo, do not create a new image.\n"
+    + "REPLACE the mattress in this photo with the exact mattress from the attached product photos (studio shots on grey). Keep its position, size, perspective and the bedding that covers it.\n"
+    + "Keep everything else identical: the people, their pose, the bedding, the room, the light, the color, the grain and the framing.\n"
+    + "Relight the new mattress so it matches the light of the photo: " + o.LIGHT + "\n"
+    + "The mattress:\n- " + productLines(F.view, BED_BASES[$("pbase").value][1]).join("\n- ");
 }
+function updateRefHint(){ const el=$("refHint"); if(!el) return; const F=framing(camGeo()); el.textContent = REF_SUGGEST[F.side]||REF_SUGGEST.r34; }
 
 function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")}
 function highlight(json){
   return esc(json).replace(/"([^"\\]*(?:\\.[^"\\]*)*)"(\s*:)?/g,(m,s,k)=>k?`<span class="k">"${s}"</span>${k}`:`<span class="s">"${s}"</span>`);
 }
 let current="";
-function render(){ toggleCustom(); drawCam(); current=JSON.stringify(build(),null,2); $("json").innerHTML=highlight(current); }
+function render(){ toggleCustom(); drawCam(); updateRefHint(); current=JSON.stringify(build(),null,2); $("json").innerHTML=highlight(current); }
 
 function save(){
   try{localStorage.setItem("instantaneasLM",JSON.stringify({p:$("people").value,a:$("action").value,fp:$("focusPoint").value,s:val("shot"),t:val("time"),pr:$("product").checked,r:$("room").value,pl:$("palette").value,ar:$("ar").value,x:$("extra").value,n:$("neg").value,pv:val("pv"),cam:CAM,m:$("model").value,cm:$("customModel").value,pb:$("pbase").value}))}catch(e){}
