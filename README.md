@@ -1,6 +1,6 @@
 # promptimagenes
 
-Generadores de prompts de imagen de LOMONACO para Magnific (Nano Banana 2.6), con la imagen corporativa del manual de marca.
+Generadores de prompts de imagen de LOMONACO para Magnific (Nano Banana Pro), con la imagen corporativa del manual de marca.
 
 | Archivo | Para qué sirve |
 | --- | --- |
