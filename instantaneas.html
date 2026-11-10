@@ -133,6 +133,12 @@ details{border-top:1px solid var(--line)}
 .hchip:hover{color:var(--accent)}
 .hdel{border:0;background:transparent;color:var(--muted);cursor:pointer;padding:5px 10px 5px 4px;font-size:15px;line-height:1}
 .hdel:hover{color:var(--accent)}
+.fixbox{display:flex;flex-direction:column;gap:12px;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:var(--r-sm);padding:16px 18px;margin-top:8px}
+.fixbox h2{margin:0;font-family:var(--f-body);font-size:20px;font-weight:700;letter-spacing:-.01em}
+.fixbox p{margin:0;font-size:14px;color:var(--muted)}
+.fixbox p b{color:var(--ink)}
+.fixbox pre{max-height:220px;font-size:12px}
+.fixbox textarea{min-height:56px}
 .check{flex-wrap:nowrap;font-size:15px;font-weight:500;letter-spacing:0;padding:14px 16px}
 .hint b{color:var(--ink)}
 </style>
@@ -232,6 +238,15 @@ details{border-top:1px solid var(--line)}
       </div>
       <pre id="json" tabindex="0"></pre>
       <div class="toast" id="toast" role="status"></div>
+      <div class="fixbox" id="fixbox">
+        <h2>Corregir el colchón de una imagen ya generada</h2>
+        <p>Para cuando la imagen es buena pero el colchón ha salido mal. Marca los errores que ves, copia el texto y úsalo en un <b>segundo generador</b> con la imagen buena conectada como entrada, más las referencias del colchón. No sirve para generar una imagen nueva.</p>
+        <div class="chips" id="fixChips" aria-label="Errores del colchón"></div>
+        <label for="fixOther" style="font-size:14px">Otro error <small>opcional, en tus palabras</small></label>
+        <textarea id="fixOther" rows="2" placeholder="Ej.: la base debería ser de madera oscura, el colchón se ve demasiado bajo"></textarea>
+        <pre id="fixOut" tabindex="0"></pre>
+        <button type="button" class="ghost" id="copyFix">Copiar prompt de corrección</button>
+      </div>
       <p class="tip"><b>En Magnific:</b> Nano Banana Pro (o GPT 2.6), pega el JSON entero. Sube 1 o 2 de tus referencias como <b>Style</b> para clavar el grano y el color. Si incluyes el colchón, conéctalo como <b>Product</b>; si repites persona en varias fotos, súbela como <b>Character</b>.</p>
     </section>
   </div>
@@ -554,7 +569,49 @@ $("copy").onclick=()=>{
   try{navigator.clipboard.writeText(current).then(ok,fallback)}catch(e){fallback()}
 };
 
-load(); render(); drawHist();
+
+/* ---------- Corrección del colchón en una imagen ya generada ---------- */
+const FIX_ERRORS=[
+  ["front-handles","Asas en el frente","Remove the handles from the FRONT (the short side with LOMONACO). The front has only the embroidered text, centered, and no handles at all. Handles exist only on the two long sides"],
+  ["side-text","Texto en un lateral","Remove any LOMONACO or model name text from the long sides. A long side has no words, only two horizontal handles"],
+  ["ribbon-left","Cinta en la esquina izquierda","Move the burgundy ribbon to the front-RIGHT corner: the top corner right after the final O of LOMONACO. Remove it from the front-left corner"],
+  ["two-ribbons","Más de una cinta","Keep only ONE burgundy ribbon, on the front-right corner; remove any other ribbon"],
+  ["two-m","Dos asas con M","Only the handle nearest the front has the small embroidered M; remove the M from any other handle"],
+  ["text","Texto mal escrito","Rewrite the front embroidery exactly: '__LABEL__' in small spaced capitals above a larger 'LOMONACO' with a short bar under the central M, burgundy, sharp and correctly spelled"],
+  ["fabric","Tejido o capitoné inventado","Rebuild the mattress surface exactly as in the product photos: integrated pillow-top with round biscuit tufting on top, a vertical ribbed band, and a white jacquard lower panel"],
+  ["topper","Parece un topper suelto","The pillow-top is sewn to the mattress as one piece: same width and length, edges aligned, no gap. Never a separate topper lying on top"],
+  ["flat","Colchón plano o bajo","Make the mattress tall, about 30 cm, with its pillow-top, exactly as in the product photos"]
+];
+const fixSel=new Set(["front-handles"]);
+function fixLabel(){ const id=$("model").value, m=MODELS.find(x=>x.id===id)||MODELS[0]; const c=(($("customModel")||{}).value||"").split(/[,.;:\n]/)[0].trim().toUpperCase(); return id==="otro" ? (c||"the model name of the product photos") : m.label; }
+function fixPromptText(){
+  const lbl=fixLabel();
+  const fixes=FIX_ERRORS.filter(e=>fixSel.has(e[0])).map(e=>"- "+e[2].replace("__LABEL__",lbl));
+  const other=$("fixOther").value.trim(); if(other) fixes.push("- "+other);
+  return [
+    "IMAGE EDIT ONLY. The bedroom photo with people is the image to edit. The studio photos of a white mattress on a grey background are product references only: do not copy their background, light or framing.",
+    "Keep the bedroom photo exactly as it is: the same people, pose, expression, bedding, room, light, color, grain, framing and camera angle. Keep the mattress in the same position, size, perspective and orientation.",
+    "Fix only these errors on the mattress:",
+    ...(fixes.length?fixes:["- Make the mattress match the product photos exactly"]),
+    "The mattress must match the product photos: LOMONACO "+(lbl?lbl+" ":"")+"mattress. FRONT (short side at the foot): '"+lbl+"' above 'LOMONACO', no handles. LONG SIDES: no words, only two horizontal handles, the one nearest the front with a small M. ONE burgundy ribbon only on the front-right corner.",
+    "Change nothing else in the image."
+  ].join("\n");
+}
+function drawFix(){ $("fixOut").textContent=fixPromptText(); }
+FIX_ERRORS.forEach(([id,label])=>{
+  const b=document.createElement("button"); b.type="button"; b.className="chip"; b.textContent=label; b.setAttribute("aria-pressed",fixSel.has(id));
+  b.onclick=()=>{ fixSel.has(id)?fixSel.delete(id):fixSel.add(id); b.setAttribute("aria-pressed",fixSel.has(id)); drawFix(); };
+  $("fixChips").appendChild(b);
+});
+$("fixOther").addEventListener("input",drawFix);
+$("model").addEventListener("change",drawFix);
+$("copyFix").onclick=()=>{
+  const t=fixPromptText();
+  const ok=()=>{$("toast").textContent="Prompt de corrección copiado. Pégalo en el segundo generador, con la imagen buena y las referencias conectadas.";};
+  const fb=()=>{ const r=document.createRange(); r.selectNodeContents($("fixOut")); const sel=getSelection(); sel.removeAllRanges(); sel.addRange(r); $("toast").textContent="Texto seleccionado. Pulsa Ctrl+C o Cmd+C para copiar."; };
+  try{ navigator.clipboard.writeText(t).then(ok,fb); }catch(e){ fb(); }
+};
+load(); render(); drawHist(); drawFix();
 </script>
 
 </body>

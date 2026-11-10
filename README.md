@@ -16,6 +16,10 @@ Cada archivo es una página HTML independiente. Con GitHub Pages activo: https:/
 
 `instantaneas.html` es la versión de las 08:20 del 10/11, la que mejor resultado dio: dirección de arte, escena y producto en un solo prompt, con selector de plano y objetivo. `instantaneas-camara.html` guarda la versión con el plano de cámara en planta, por si se quiere recuperar.
 
+## Corregir el colchón de una imagen ya generada
+
+En el generador, la sección "Corregir el colchón" crea un prompt solo con los errores marcados. En Magnific: un segundo generador con la imagen buena conectada como entrada, las referencias del colchón y ese texto. El prompt principal no cambia.
+
 ## Anatomía del colchón (regla fija en los prompts)
 
 - Forma: delante y detrás son los lados cortos; los laterales son los largos. Unos 30 cm de alto, con pillow top.
