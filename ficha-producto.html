@@ -484,13 +484,48 @@ function productSpec(baseText){
       piping: id==="otro" ? "As in the reference" : m.piping
     }),
     orientation_rules: "Seen from the front: model name and LOMONACO facing the camera, ribbon at the right corner. When the camera sees a long side, it shows only its two horizontal handles, the M handle nearest the front, never any text. Only ONE handle per long side has an M, never two. The ribbon is on the front-right corner only: if the camera sees the LEFT long side (the front appears on the right of the image), the ribbon is on the far corner and mostly hidden; it is clearly visible only when the camera sees the right long side or the front-right corner. Do not copy the viewpoint of the vista 3:4 reference: rotate the mattress to match the camera position of this scene and apply view_logic. Pillows and people's heads always at the back; people's feet point toward the front. The logo is never on a long side and is never mirrored, moved, duplicated or invented",
-    text_check: "Spell LOMONACO and the model name exactly, letter by letter, with the bar under the M",
+    text_check: "Exact text, letter by letter: the model name and LOMONACO with the bar under the M. No garbled, invented or extra letters. If it cannot be rendered sharp and correct, keep it covered or out of frame",
     never: ["ribbon on the left corner","more than one ribbon","handles on the front","LOMONACO or the model name embroidered on a long side","two M handles on the same long side","a separate topper or pad lying on top of the mattress","invented fabric, tufting or pattern different from the references"],
     do_not_modify: "Strict product lock. Reproduce the mattress exactly as in the reference images and do not change any aspect of the product or any element of its design: shape, proportions, thickness, layers, tufting, ribbed band, jacquard pattern, colors, piping, handles, M, logo, typography and ribbon. Nothing added, removed, simplified, redesigned or restyled"
   };
   if(baseText) spec.bed_base = baseText;
   return spec;
 }
+
+/* ---------- Bloque prioritario del producto ---------- */
+const MATTRESS_VIEWS = [
+  {id:"r34", name:"Esquina derecha", hint:"Como la vista 3:4",
+   text:"Camera at the FRONT-RIGHT corner, exactly like the vista 3:4 reference. In the image, the face on the LEFT is the FRONT: it carries the small model name above LOMONACO. The face on the RIGHT is the right long side: only two horizontal handles, the M handle next to the corner, no text. The ONE ribbon sits on the corner between them, the corner closest to the camera"},
+  {id:"front", name:"Frente", hint:"El logo de cara",
+   text:"Camera facing the FRONT, exactly like the vista frontal reference: the model name above LOMONACO centered on the face toward the camera, no handles on that face, the ribbon on the top-RIGHT corner of the mattress as seen in the image. The long sides are barely visible"},
+  {id:"right", name:"Lateral derecho", hint:"Asas, sin texto",
+   text:"Camera facing the RIGHT long side, exactly like the vista lateral reference: the front is at the LEFT end of the mattress in the image. This long side shows only two horizontal handles, the one on the left with the M, and NO text at all. The ribbon is on the top-LEFT corner of the mattress in the image"},
+  {id:"top", name:"Desde arriba", hint:"Cenital o detalle",
+   text:"Seen from above or very close: mostly the tufted top. If the front-right corner is in frame, it carries the ribbon. No side text needs to be visible"}
+];
+function viewIcon(id){
+  const cam={r34:[66,55],front:[40,55],right:[72,28],top:[40,28]}[id];
+  return `<svg viewBox="0 0 80 62" aria-hidden="true"><rect x="24" y="6" width="32" height="42" rx="3" fill="var(--panel)" stroke="currentColor" stroke-width="1.6"/><rect x="28" y="9" width="24" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.1"/><path d="M24 48 H56" stroke="currentColor" stroke-width="3"/><path d="M50 48 L56 42 L56 48Z" fill="#7C1919"/><circle cx="${cam[0]}" cy="${cam[1]}" r="4.5" fill="var(--accent)"/>${id==="top"?"":`<path d="M${cam[0]} ${cam[1]} L40 27" stroke="var(--accent)" stroke-width="1.2" stroke-dasharray="2 2"/>`}<text x="14" y="51" text-anchor="middle" font-size="7" fill="currentColor" opacity=".6">frente</text></svg>`;
+}
+function modelLabel(){ const id=$("model").value, m=MODELS.find(x=>x.id===id); const c=($("customModel")&&$("customModel").value.trim())||""; return id==="otro" ? (c||"the model name of the reference") : m.label; }
+function mustMatch(viewText){
+  const lbl=modelLabel();
+  return [
+    "1. COPY THE MATTRESS FROM THE CONNECTED REFERENCE IMAGES (vista frontal, vista lateral, vista 3:4, detalle asa y banda, detalle tela esquina derecha). It is a real product: do not redesign, simplify or reinterpret it",
+    "2. Tall mattress with an INTEGRATED pillow-top: round biscuit tufting all over the top, a vertical ribbed band, and a white jacquard lower panel. Never a flat top, never smooth fabric, never a separate topper",
+    "3. TEXT ONLY ON THE FRONT (a short side), nowhere else: line 1 small spaced capitals '"+lbl+"', line 2 larger 'LOMONACO' with a short bar under the central M. Burgundy embroidery, centered, straight, sharp and perfectly legible",
+    "4. EXACT SPELLING, letter by letter: '"+lbl+"' and 'L-O-M-O-N-A-C-O'. No other words, no extra letters, no invented characters. If the text cannot be rendered sharp and correct, frame or cover that area instead of inventing it",
+    "5. LONG SIDES: only two horizontal handles, one of them with a small M. NO text, NO logo, NO model name on a long side, ever",
+    "6. FRONT: no handles",
+    "7. ONE burgundy ribbon with LOMONACO, ONLY on the front-RIGHT corner. Never on the left corner, never two",
+    "8. VIEW IN THIS IMAGE: "+viewText,
+    "9. Bedding may cover part of the mattress. Whatever stays visible follows these rules"
+  ];
+}
+function fixPrompt(viewText){
+  return "Edit only the mattress in this image. Keep everything else identical: people, bedding, room, light, color and framing.\nMake the mattress match the connected reference images exactly:\n"+mustMatch(viewText).join("\n");
+}
+
 function fillModels(){
   MODELS.forEach(m=>$("model").add(new Option(m.name,m.id)));
 }
@@ -567,7 +602,9 @@ function build(shotId, idx){
   scene.aspect_ratio = $("ar").value;
   const neg = negList();
   if(neg.length) scene.strictly_exclude = {instruction:"None of the following may appear anywhere in the image", items:neg};
-  return {product_photo_style: Object.assign({}, STYLE, {product: productSpec(null)}), scene};
+  const VIEW_BY_SHOT={front:"front",tq:"r34",side:"r34","d-corner":"r34"};
+  const vtext = find(MATTRESS_VIEWS, VIEW_BY_SHOT[shotId]||"top").text;
+  return {PRODUCT_MUST_MATCH_REFERENCES: mustMatch(vtext), scene, product_photo_style: Object.assign({}, STYLE, {product: productSpec(null)})};
 }
 
 function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")}

@@ -40,6 +40,9 @@ El prompt cita los nodos de referencia por su nombre exacto. Usa siempre estos n
 - El pillow top va cosido al colchón: nunca un topper suelto encima.
 - Nunca inventar el tejido ni el capitoné: se copian de las referencias.
 - Si una manta o una sábana tapa parte del colchón, no pasa nada.
+- Texto siempre real: NATURA LÁTEX y LOMONACO letra a letra. Si no sale nítido, mejor tapado que inventado.
+- Cámara solo donde hay referencia: frente, esquina delantera derecha, lateral derecho o desde arriba.
+- Si una imagen es buena salvo el colchón: botón "Corregir colchón" y edición en Magnific con las mismas referencias.
 
 ## Reglas de fotografía del manual
 
