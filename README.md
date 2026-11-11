@@ -20,7 +20,9 @@ Cada archivo es una página HTML independiente. Con GitHub Pages activo: https:/
 
 En el generador, la sección "Corregir el colchón" crea un prompt solo con los errores marcados. En Magnific: un segundo generador con la imagen buena conectada como entrada, las referencias del colchón y ese texto. El prompt principal no cambia.
 
-## Anatomía del colchón (regla fija en los prompts)
+## Anatomía del colchón (referencia interna)
+
+El prompt del generador ya no describe el colchón: el modelo lo copia de las fotos de referencia conectadas como Product. Esta anatomía sirve para revisar las imágenes y para la corrección.
 
 - Forma: delante y detrás son los lados cortos; los laterales son los largos. Unos 30 cm de alto, con pillow top.
 - Capas: arriba, pillow top con banda de acolchado vertical entre dos vivos; abajo, panel de jacquard blanco.

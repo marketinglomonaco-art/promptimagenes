@@ -194,13 +194,13 @@ details{border-top:1px solid var(--line)}
         <div class="opts" id="pvs" role="radiogroup" aria-labelledby="pvLab"></div>
       </div>
 
-      <label class="check" for="product"><input type="checkbox" id="product" checked><span>Incluir mi colchón (referencia de producto conectada en Magnific). El lado del logo es siempre los pies de la cama y las almohadas van en el lado contrario. Aparece de forma natural, nunca como bodegón.</span></label>
+      <label class="check" for="product"><input type="checkbox" id="product" checked><span>Incluir mi colchón. El prompt no lo describe: el modelo lo copia de las fotos de referencia que conectes en Magnific como <b>Product</b>.</span></label>
 
       <div class="field">
         <label for="model">Modelo de colchón <small>si incluyes el colchón</small></label>
         <select id="model"></select>
         <textarea id="customModel" rows="2" hidden placeholder="Nombre del modelo y lo que lo diferencia. Ej.: Supreme Pocket, vivo gris, asas sin bordado"></textarea>
-        <p class="hint">El prompt cita tus nodos de referencia por su nombre: <b>vista frontal</b>, <b>vista lateral</b>, <b>vista 3:4</b>, <b>detalle asa y banda</b> y <b>detalle tela esquina derecha</b>. Usa siempre esos nombres en Magnific.</p>
+        <p class="hint">El modelo solo se usa en la corrección, para escribir bien el texto del frente.</p>
       </div>
 
       <div class="field">
@@ -522,10 +522,13 @@ function build(){
   if(pal) scene.textiles_and_color = pal;
   if(extra) scene.decor_direction = "Priority over the default set: " + extra;
   scene.camera_accident = accident;
-  if($("product").checked){ scene.product = productSpec(BED_BASES[$("pbase").value][1]); }
+  if($("product").checked){
+    scene.product = "The mattress is the one in the attached product reference photos. Copy it exactly from those photos and do not change anything about it. Take only the mattress from them, not their grey background, framing or light";
+    scene.bed_base = BED_BASES[$("pbase").value][1];
+  }
   scene.aspect_ratio = $("ar").value;
   const neg=$("neg").value.split(/[,\n]/).map(s=>s.trim()).filter(Boolean);
-  scene.strictly_exclude = ["looking into the camera","posed smiles","studio lighting","catalog look","socks, shoes, slippers or clothes on the floor","clothes piled on chairs or radiators","messy or cluttered room","visible light switches and power sockets","aluminium window frames","cheap laminate furniture","flat grey lighting","stock photo look","extra or missing limbs","extra fingers or fused hands","deformed bodies","impossible poses","floating objects","mirrored or garbled text","logo on the long side of the mattress", ...neg];
+  scene.strictly_exclude = ["looking into the camera","posed smiles","studio lighting","catalog look","socks, shoes, slippers or clothes on the floor","clothes piled on chairs or radiators","messy or cluttered room","visible light switches and power sockets","aluminium window frames","cheap laminate furniture","flat grey lighting","stock photo look","extra or missing limbs","extra fingers or fused hands","deformed bodies","impossible poses","floating objects","mirrored or garbled text", ...neg];
   $("stock").textContent = t.stock + " · color neutro";
   $("arLabel").textContent = $("ar").value;
   return {art_direction: ART_DIRECTION, production_value: find(VALUE_LEVELS,val("pv")).text, scene};
@@ -593,7 +596,7 @@ function fixPromptText(){
     "Keep the bedroom photo exactly as it is: the same people, pose, expression, bedding, room, light, color, grain, framing and camera angle. Keep the mattress in the same position, size, perspective and orientation.",
     "Fix only these errors on the mattress:",
     ...(fixes.length?fixes:["- Make the mattress match the product photos exactly"]),
-    "The mattress must match the product photos: LOMONACO "+(lbl?lbl+" ":"")+"mattress. FRONT (short side at the foot): '"+lbl+"' above 'LOMONACO', no handles. LONG SIDES: no words, only two horizontal handles, the one nearest the front with a small M. ONE burgundy ribbon only on the front-right corner.",
+    "Copy the mattress design exactly from the product photos.",
     "Change nothing else in the image."
   ].join("\n");
 }
