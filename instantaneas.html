@@ -194,6 +194,11 @@ details{border-top:1px solid var(--line)}
         <div class="opts" id="pvs" role="radiogroup" aria-labelledby="pvLab"></div>
       </div>
 
+      <div class="field">
+        <span class="lab" id="gradeLab">Revelado <small>el color de la foto</small></span>
+        <div class="opts" id="grades" role="radiogroup" aria-labelledby="gradeLab"></div>
+      </div>
+
       <label class="check" for="product"><input type="checkbox" id="product" checked><span>Incluir mi colchón. El prompt no lo describe: el modelo lo copia de las fotos de referencia que conectes en Magnific como <b>Product</b>.</span></label>
 
       <div class="field">
@@ -351,6 +356,21 @@ const BED_BASES = [
   ["Estructura de madera con patas","Simple solid wood bed frame with slim legs"],
   ["Sin base visible","The base hidden by the bedding or out of frame"]
 ];
+const GRADES=[
+  {id:"suave", name:"LOMONACO suave", hint:"Mate, sereno, apagado", grade:{
+    white_balance:"Neutral to slightly cool daylight in the room, around 5600K; warmth only from lamps and wood. Walls read as soft grey with a faint green-grey cast",
+    exposure:"Quietly underexposed by about two thirds of a stop: a calm, dim, intimate room, never bright or airy",
+    tone:"Soft matte film tone: highlights rolled off and never pure white, the brightest whites a soft grey-cream; low-contrast midtones; deep clean shadows that keep detail",
+    color:"Muted, desaturated palette: grey-white walls and bedding, warm honey and brown wood, natural slightly warm skin. Nothing vivid; only wood and lamplight carry warmth",
+    texture:"Fine analog film grain like Kodak Portra 400, gentle softness, no digital sharpness, no vignette, no added filter look"
+  }},
+  {id:"natural", name:"Natural", hint:"El de antes, más luminoso", grade:{
+    white_balance:"Neutral and balanced, around 5200K: neither warm nor cold. True clean whites with a hint of cream, natural skin tones",
+    look:"Natural color exactly as a good camera captures it: refined tonal depth, no filters, no trendy grades, untouched skin",
+    accents:"A calm neutral base with one or two confident color accents from textiles or clothing: tomato red, kelly green, cobalt blue, bubblegum pink, mustard or burgundy",
+    texture:"Only the natural grain a real camera produces, a little more in low light, never an added filter. No vignette. Cinematic, never digital-clean or plastic"
+  }}
+];
 const ACTIONS = [
   ["Saltar", "Salta sobre la cama en pijama, a mitad de salto, el pelo en el aire"],
   ["Esperar", "Embarazada tumbada de lado en la cama, con la mano sobre la tripa, mirando por la ventana"],
@@ -491,6 +511,7 @@ function radio(el, name, list, checked){
 radio($("shots"),"shot",SHOTS,"low");
 radio($("times"),"time",TIMES,"morning");
 radio($("pvs"),"pv",VALUE_LEVELS,"premium");
+radio($("grades"),"grade",GRADES,"suave");
 lensRadios($("lenses"),"35");
 fillModels();
 BED_BASES.forEach((b,i)=>$("pbase").add(new Option(b[0],i)));
@@ -531,7 +552,8 @@ function build(){
   scene.strictly_exclude = ["looking into the camera","posed smiles","studio lighting","catalog look","socks, shoes, slippers or clothes on the floor","clothes piled on chairs or radiators","messy or cluttered room","visible light switches and power sockets","aluminium window frames","cheap laminate furniture","flat grey lighting","stock photo look","extra or missing limbs","extra fingers or fused hands","deformed bodies","impossible poses","floating objects","mirrored or garbled text", ...neg];
   $("stock").textContent = t.stock + " · color neutro";
   $("arLabel").textContent = $("ar").value;
-  return {art_direction: ART_DIRECTION, production_value: find(VALUE_LEVELS,val("pv")).text, scene};
+  const g=find(GRADES,val("grade"));
+  return {art_direction: Object.assign({}, ART_DIRECTION, {color_grade: g.grade}), production_value: find(VALUE_LEVELS,val("pv")).text, scene};
 }
 
 function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")}
@@ -542,7 +564,7 @@ let current="";
 function render(){ toggleCustom(); current=JSON.stringify(build(),null,2); $("json").innerHTML=highlight(current); }
 
 function save(){
-  try{localStorage.setItem("instantaneasLM",JSON.stringify({p:$("people").value,a:$("action").value,fp:$("focusPoint").value,s:val("shot"),t:val("time"),pr:$("product").checked,r:$("room").value,pl:$("palette").value,ar:$("ar").value,x:$("extra").value,n:$("neg").value,pv:val("pv"),ln:val("lens"),m:$("model").value,cm:$("customModel").value,pb:$("pbase").value}))}catch(e){}
+  try{localStorage.setItem("instantaneasLM",JSON.stringify({p:$("people").value,a:$("action").value,fp:$("focusPoint").value,s:val("shot"),t:val("time"),pr:$("product").checked,r:$("room").value,pl:$("palette").value,ar:$("ar").value,x:$("extra").value,n:$("neg").value,pv:val("pv"),gr:val("grade"),ln:val("lens"),m:$("model").value,cm:$("customModel").value,pb:$("pbase").value}))}catch(e){}
 }
 function load(){
   try{
@@ -553,6 +575,7 @@ function load(){
     if(d.r) $("room").value=d.r; if(d.pl) $("palette").value=d.pl; if(d.ar) $("ar").value=d.ar;
     if(d.x) $("extra").value=d.x; if(d.n) $("neg").value=d.n;
     if(d.pv&&$("pv-"+d.pv)) $("pv-"+d.pv).checked=true;
+    if(d.gr&&$("grade-"+d.gr)) $("grade-"+d.gr).checked=true;
     if(d.ln&&$("lens-"+d.ln)) $("lens-"+d.ln).checked=true;
     if(d.m&&MODELS.some(x=>x.id===d.m)) $("model").value=d.m; if(d.cm) $("customModel").value=d.cm; if(d.pb) $("pbase").value=d.pb;
   }catch(e){}

@@ -20,6 +20,11 @@ Cada archivo es una página HTML independiente. Con GitHub Pages activo: https:/
 
 En el generador, la sección "Corregir el colchón" crea un prompt solo con los errores marcados. En Magnific: un segundo generador con la imagen buena conectada como entrada, las referencias del colchón y ese texto. El prompt principal no cambia.
 
+## Revelado LOMONACO suave
+
+- En el generador: opción "Revelado", por defecto "LOMONACO suave" (mate, sereno, luces altas sin blanco puro, paleta apagada).
+- Para fotos ya hechas: `lut/lomonaco-suave.cube`, LUT 3D de 33 puntos para Photoshop, Lightroom, Capture One, DaVinci o Premiere. Es una aproximación sacada de la foto de referencia: ajustar la intensidad al gusto.
+
 ## Anatomía del colchón (referencia interna)
 
 El prompt del generador ya no describe el colchón: el modelo lo copia de las fotos de referencia conectadas como Product. Esta anatomía sirve para revisar las imágenes y para la corrección.
