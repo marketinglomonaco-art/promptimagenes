@@ -133,6 +133,8 @@ details{border-top:1px solid var(--line)}
 .hchip:hover{color:var(--accent)}
 .hdel{border:0;background:transparent;color:var(--muted);cursor:pointer;padding:5px 10px 5px 4px;font-size:15px;line-height:1}
 .hdel:hover{color:var(--accent)}
+.hmore{border:0;background:transparent;font:600 12px var(--f-body);color:var(--accent);cursor:pointer;padding:5px 6px;text-decoration:underline;text-underline-offset:3px}
+.hmore:hover{color:var(--ink)}
 .fixbox{display:flex;flex-direction:column;gap:12px;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:var(--r-sm);padding:16px 18px;margin-top:8px}
 .fixbox h2{margin:0;font-family:var(--f-body);font-size:20px;font-weight:700;letter-spacing:-.01em}
 .fixbox p{margin:0;font-size:14px;color:var(--muted)}
@@ -412,22 +414,42 @@ const $ = id => document.getElementById(id);
 
 /* ---------- Histórico de campos (se guarda en este navegador) ---------- */
 const HIST_KEY="lmHistorico", HIST_FIELDS=[["people","histPeople"],["action","histAction"],["camText","histCam"],["focusPoint","histFocus"]];
-function getHist(){ try{ return JSON.parse(localStorage.getItem(HIST_KEY)||"{}")||{}; }catch(e){ return {}; } }
+const HIST_DAYS=20, HIST_SHOW=2, histOpen={};
+function getHist(){
+  let h; try{ h=JSON.parse(localStorage.getItem(HIST_KEY)||"{}")||{}; }catch(e){ h={}; }
+  const now=Date.now(), limit=now-HIST_DAYS*864e5; let changed=false;
+  Object.keys(h).forEach(k=>{
+    const arr=Array.isArray(h[k])?h[k]:[];
+    const norm=arr.map(x=>{ if(typeof x==="string"){ changed=true; return {v:x,t:now}; } return x; })
+                  .filter(x=>x&&x.v&&x.t>=limit);
+    if(norm.length!==arr.length) changed=true;
+    h[k]=norm;
+  });
+  if(changed) setHist(h);
+  return h;
+}
 function setHist(h){ try{ localStorage.setItem(HIST_KEY,JSON.stringify(h)); }catch(e){} }
-function pushHist(field,v){ v=(v||"").trim(); if(!v) return; const h=getHist(); h[field]=[v,...(h[field]||[]).filter(x=>x!==v)].slice(0,12); setHist(h); }
+function pushHist(field,v){ v=(v||"").trim(); if(!v) return; const h=getHist(); h[field]=[{v,t:Date.now()},...(h[field]||[]).filter(x=>x.v!==v)].slice(0,12); setHist(h); }
 function drawHist(){
   const h=getHist();
   HIST_FIELDS.forEach(([field,box])=>{
     const el=document.getElementById(box); if(!el) return; const arr=h[field]||[]; el.innerHTML=""; el.hidden=!arr.length; if(!arr.length) return;
     const lab=document.createElement("span"); lab.className="histlab"; lab.textContent="Recientes"; el.appendChild(lab);
-    arr.forEach(v=>{
+    const open=!!histOpen[field], shown=open?arr:arr.slice(0,HIST_SHOW);
+    shown.forEach(({v})=>{
       const w=document.createElement("span"); w.className="hitem";
       const b=document.createElement("button"); b.type="button"; b.className="hchip"; b.title=v; b.textContent=v;
       b.onclick=()=>{ document.getElementById(field).value=v; render(); save(); };
       const x=document.createElement("button"); x.type="button"; x.className="hdel"; x.textContent="×"; x.setAttribute("aria-label","Quitar del historial");
-      x.onclick=()=>{ const hh=getHist(); hh[field]=(hh[field]||[]).filter(y=>y!==v); setHist(hh); drawHist(); };
+      x.onclick=()=>{ const hh=getHist(); hh[field]=(hh[field]||[]).filter(y=>y.v!==v); setHist(hh); drawHist(); };
       w.append(b,x); el.appendChild(w);
     });
+    if(arr.length>HIST_SHOW){
+      const m=document.createElement("button"); m.type="button"; m.className="hmore";
+      m.textContent=open?"Ver menos":"Ver más ("+(arr.length-HIST_SHOW)+")";
+      m.onclick=()=>{ histOpen[field]=!open; drawHist(); };
+      el.appendChild(m);
+    }
   });
 }
 
