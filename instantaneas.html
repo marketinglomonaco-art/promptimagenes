@@ -173,7 +173,8 @@ details{border-top:1px solid var(--line)}
 
       <div class="field">
         <label for="camText"><span class="step">3</span> Cámara y encuadre <small>escríbelo como lo pedirías a un fotógrafo</small></label>
-        <textarea id="camText" rows="3">Plano general desde la esquina delantera derecha de la habitación, cámara a la altura del pecho, la cama ocupa más o menos un tercio del encuadre</textarea>
+        <textarea id="camText" rows="4">Cámara en la esquina delantera derecha de la habitación, a 3 metros de la cama, a la altura del pecho (1,4 m), mirando en diagonal hacia el cabecero. Se ve la cama entera, las dos mesillas y parte de la ventana; la cama ocupa un tercio del encuadre</textarea>
+        <p class="hint">Para que lo respete, di siempre: <b>dónde</b> está la cámara respecto a la cama (pies, esquina derecha o izquierda, lateral, puerta, encima), <b>a qué altura</b>, <b>a qué distancia</b>, <b>hacia dónde mira</b> y <b>qué entra o se corta</b> en el encuadre.</p>
         <div class="hist" id="histCam" hidden></div>
         <div class="chips" id="camChips" aria-label="Encuadres de partida"></div>
         <label for="focusPoint" style="font-size:14px;margin-top:4px">Punto de interés <small>opcional</small></label>
@@ -284,9 +285,9 @@ const ART_DIRECTION = {
   photography: {
     genre: "Editorial lifestyle photography with a documentary, cinematic feel. A real photographer's frame, not a catalog shoot",
     camera: "35mm or medium format film camera, handheld, fast and intuitive",
-    lens: "As defined in scene.lens",
+    lens: "As defined in CAMERA",
     focus: "Focus on the emotional point of the scene, gentle falloff elsewhere, not everything perfectly sharp",
-    composition: "Intuitive but intentional framing: off-center subjects, occasional crops of feet, hands or heads, layered depth, generous negative space, few elements and all of them beautiful"
+    composition: "The camera position and framing are fixed by CAMERA and are never changed. Within that framing: layered depth, few elements and all of them beautiful"
   },
   light: {
     principle: "Only motivated, believable light: the window, the sun, a bedside lamp or a candle. No flash, no studio lights",
@@ -436,7 +437,7 @@ const LENSES = [
   {id:"35", name:"35 mm", hint:"Documental", s:0.88, r:0.56, text:"35mm lens: documentary feel, the person and the room together, natural mild perspective"},
   {id:"50", name:"50 mm", hint:"Como el ojo", s:1.05, r:0.68, text:"50mm lens: natural perspective close to the human eye, the bed fills more of the frame, little distortion"},
   {id:"85", name:"85 mm", hint:"Íntimo, comprime", s:1.45, r:0.84, text:"85mm lens: compressed perspective, the bed and the background look closer together, little of the room visible, soft background, intimate"},
-  {id:"100", name:"100 mm macro", hint:"Detalle", s:0, r:0, text:"100mm macro lens: very close detail of the fabric, the tufts, the ribbon or a hand, extremely shallow depth of field"}
+  {id:"100", name:"100 mm macro", hint:"Detalle", s:0, r:0, text:"100mm macro lens: very close detail, extremely shallow depth of field"}
 ];
 function lensSVG(l){
   if(!l.s){
@@ -516,13 +517,14 @@ function radio(el, name, list, checked){
   });
 }
 const CAM_CHIPS=[
-  ["Plano general","Plano general desde la esquina delantera derecha de la habitación, cámara a la altura del pecho, la cama ocupa más o menos un tercio del encuadre"],
-  ["Desde la puerta","Desde la puerta entreabierta, el marco desenfocado en primer término a un lado, se ve toda la cama y parte de la habitación"],
-  ["Desde los pies","De frente a los pies de la cama, a dos metros, cámara a la altura del colchón"],
-  ["Plano medio","Plano medio a la altura de la cama, las personas de cintura para arriba"],
-  ["Primer plano","Primer plano muy cerca de la cara y las manos, el fondo desenfocado"],
-  ["Cenital","Cenital, la cámara justo encima de la cama mirando hacia abajo"],
-  ["Contrapicado","Contrapicado desde el suelo a los pies de la cama, los pies grandes en primer término"]
+  ["Plano general","Cámara en la esquina delantera derecha de la habitación, a 3 metros de la cama, a la altura del pecho (1,4 m), mirando en diagonal hacia el cabecero. Se ve la cama entera, las dos mesillas y parte de la ventana; la cama ocupa un tercio del encuadre"],
+  ["Desde la puerta","Cámara en el umbral de la puerta, a 3,5 metros de la cama, a 1,6 m de altura, mirando hacia la cama. El marco de la puerta desenfocado en el borde izquierdo; se ve toda la cama y parte de la habitación"],
+  ["Desde los pies","Cámara de frente a los pies de la cama, centrada, a 2 metros, a la altura del colchón (60 cm), mirando recto hacia el cabecero. La cama llena el ancho del encuadre y el cabecero queda al fondo"],
+  ["Desde el lateral","Cámara en el lateral derecho de la cama, a 1,5 metros, a la altura del colchón, mirando de lado. La cama cruza el encuadre de izquierda a derecha, con los pies a la izquierda"],
+  ["Plano medio","Cámara a un lado de la cama, a 1,2 metros, a la altura de la cara de las personas tumbadas, mirando hacia ellas. Se ven de cintura para arriba; el resto de la cama queda fuera"],
+  ["Primer plano","Cámara muy cerca, a 60 cm de la cara de la persona, a su misma altura. Solo entran la cara, las manos y un trozo de almohada; todo lo demás desenfocado"],
+  ["Cenital","Cámara justo encima de la cama, a 2,5 metros del suelo, mirando recto hacia abajo. La cama entera llena el encuadre, con el cabecero arriba y los pies abajo"],
+  ["Contrapicado","Cámara casi en el suelo, a los pies de la cama, a 30 cm de altura, mirando hacia arriba a lo largo de la cama. Los pies de las personas grandes en primer término"]
 ];
 CAM_CHIPS.forEach(([n,t])=>{ const b=document.createElement("button"); b.type="button"; b.className="chip"; b.textContent=n; b.onclick=()=>{ $("camText").value=t; render(); save(); }; $("camChips").appendChild(b); });
 radio($("times"),"time",TIMES,"morning");
@@ -548,29 +550,36 @@ function build(){
   const scene = {
     people: $("people").value.trim(),
     action: $("action").value.trim() + ". Caught in the moment, unaware of the camera",
-    camera_and_framing: (camTxt || "Natural documentary framing") + ". Respect exactly this camera position, height and framing"
+    action_note: "The scene is built around the camera defined in CAMERA"
   };
   const fp=$("focusPoint").value.trim();
   if(fp) scene.point_of_interest = fp;
-  scene.lens = lensText();
   scene.time_of_day = t.time;
   scene.lighting = t.light;
   const room=ROOMS[$("room").value][1], pal=PALETTES[$("palette").value][1], extra=$("extra").value.trim();
   if(room) scene.space = room;
   if(pal) scene.bedding_colors = pal + ". Every textile on the bed follows these colors";
   if(extra) scene.decor_direction = "Priority over the default set: " + extra;
-  scene.camera_accident = accident;
+  scene.camera_accident = accident.startsWith("None") ? accident : accident + ". Only a small imperfection: the camera position stays exactly as in CAMERA";
   if($("product").checked){
-    scene.product = "The mattress is exactly the one in the attached product reference photos. Every detail of the mattress comes only from those photos: shape, height, fabric, quilting, seams, handles, text, logo and ribbon. Do not add, remove, move or invent anything that is not visible in them, and do not take any mattress detail from the rest of this prompt. Bedding may cover part of it. Take only the mattress from the photos, never their grey background, framing or light";
+    scene.product = "The mattress is exactly the one in the attached product reference photos. Every detail of the mattress comes only from those photos: shape, height, fabric, quilting, seams, handles, text, logo and ribbon. Do not add, remove, move or invent anything that is not visible in them, and do not take any mattress detail from the rest of this prompt. Bedding may cover part of it. Take only the mattress from the photos, never their grey background, framing, light or camera angle: the mattress is seen from the viewpoint defined in CAMERA";
     scene.bed_base = BED_BASES[$("pbase").value][1];
   }
   scene.aspect_ratio = $("ar").value;
   const neg=$("neg").value.split(/[,\n]/).map(s=>s.trim()).filter(Boolean);
-  scene.strictly_exclude = ["looking into the camera","posed smiles","studio lighting","catalog look","socks, shoes, slippers or clothes on the floor","clothes piled on chairs or radiators","messy or cluttered room","visible light switches and power sockets","aluminium window frames","cheap laminate furniture","flat grey lighting","stock photo look","extra or missing limbs","extra fingers or fused hands","deformed bodies","impossible poses","floating objects","mirrored or garbled text", ...neg];
+  scene.strictly_exclude = ["a camera position, angle, height or distance different from CAMERA","looking into the camera","posed smiles","studio lighting","catalog look","socks, shoes, slippers or clothes on the floor","clothes piled on chairs or radiators","messy or cluttered room","visible light switches and power sockets","aluminium window frames","cheap laminate furniture","flat grey lighting","stock photo look","extra or missing limbs","extra fingers or fused hands","deformed bodies","impossible poses","floating objects","mirrored or garbled text", ...neg];
   $("stock").textContent = t.stock + " · color neutro";
   $("arLabel").textContent = $("ar").value;
   const g=find(GRADES,val("grade"));
-  return {art_direction: Object.assign({}, ART_DIRECTION, {color_grade: g.grade}), production_value: find(VALUE_LEVELS,val("pv")).text, scene};
+  const CAMERA = {
+    MANDATORY: "This camera setup is the first and strictest rule of the image. Place the camera exactly where it is described, at that height and distance, pointing as described, and compose the whole scene for that viewpoint. It overrides any other composition idea in this prompt",
+    position_and_framing: (camTxt || "Natural documentary framing at eye level") + ".",
+    lens: lensText(),
+    viewpoint_check: "The final photo must look exactly as if taken from that spot: the side of the bed facing the camera, the camera height relative to the mattress, the distance and what is inside or cut by the frame must all match the description",
+    aspect_ratio: $("ar").value
+  };
+  delete scene.aspect_ratio;
+  return {CAMERA, art_direction: Object.assign({}, ART_DIRECTION, {color_grade: g.grade}), production_value: find(VALUE_LEVELS,val("pv")).text, scene};
 }
 
 function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")}
