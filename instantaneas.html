@@ -201,6 +201,11 @@ details{border-top:1px solid var(--line)}
         <div class="opts" id="grades" role="radiogroup" aria-labelledby="gradeLab"></div>
       </div>
 
+      <div class="field">
+        <label for="palette">Color de la ropa de cama <small>sábanas, edredón, mantas y cojines</small></label>
+        <select id="palette"></select>
+      </div>
+
       <label class="check" for="product"><input type="checkbox" id="product" checked><span>Incluir mi colchón. El prompt no lo describe: el modelo lo copia de las fotos de referencia que conectes en Magnific como <b>Product</b>.</span></label>
 
       <div class="field">
@@ -219,7 +224,6 @@ details{border-top:1px solid var(--line)}
         <summary>Ajustes opcionales del set</summary>
         <div class="adv">
           <div class="field"><label for="room">Espacio</label><select id="room"></select></div>
-          <div class="field"><label for="palette">Textiles y color</label><select id="palette"></select></div>
           <div class="field"><label for="ar">Formato</label>
             <select id="ar"><option value="4:5">4:5 feed (recomendado)</option><option value="3:4">3:4 vertical</option><option value="2:3">2:3 editorial</option><option value="9:16">9:16 stories</option><option value="3:2">3:2 horizontal</option></select></div>
         </div>
@@ -345,11 +349,12 @@ const ROOMS = [
   ["Habitación con cortinas de lino", "Room with long sheer linen curtains, white bedding, minimal furniture"]
 ];
 const PALETTES = [
-  ["Automático (base neutra + un acento)", ""],
-  ["Blancos y crudos", "White and ecru bedding, the only color coming from skin and one small accent"],
-  ["Rayas de pijama", "Striped pajamas and striped bedding in two colors, a graphic touch"],
+  ["Blancos y crudos", "All the bedding, sheets, duvet, pillows and throws in white, ecru and oatmeal tones"],
+  ["Cálidos suaves", "All the bedding, sheets, duvet, pillows and throws in warm soft tones: ecru, sand, camel and toasted beige"],
+  ["Tonos tierra y burdeos", "All the bedding, sheets, duvet, pillows and throws in ecru, terracotta, burgundy and olive"],
+  ["Gris y lino", "All the bedding, sheets, duvet, pillows and throws in natural linen, stone grey and white"],
+  ["Rayas", "Striped bedding in two soft colors, a graphic touch"],
   ["Color block", "Solid sheets and pillows in two or three bold colors that contrast with each other"],
-  ["Tonos tierra y burdeos", "Ecru, terracotta, burgundy and olive textiles"],
   ["Frescos: azul y verde", "Cobalt blue, sky blue and kelly green accents on a white base"]
 ];
 const BED_BASES = [
@@ -360,7 +365,7 @@ const BED_BASES = [
 ];
 const GRADES=[
   {id:"suave", name:"LOMONACO suave", hint:"Mate, sereno, apagado", grade:{
-    white_balance:"Neutral to slightly cool daylight in the room, around 5600K; warmth only from lamps and wood. Walls read as soft grey with a faint green-grey cast",
+    white_balance:"Neutral to slightly cool daylight in the room, around 5600K; warmth only from lamps and wood. Walls read as soft neutral grey",
     exposure:"Quietly underexposed by about two thirds of a stop: a calm, dim, intimate room, never bright or airy",
     tone:"Soft matte film tone: highlights rolled off and never pure white, the brightest whites a soft grey-cream; low-contrast midtones; deep clean shadows that keep detail",
     color:"Muted, desaturated palette: grey-white walls and bedding, warm honey and brown wood, natural slightly warm skin. Nothing vivid; only wood and lamplight carry warmth",
@@ -369,7 +374,7 @@ const GRADES=[
   {id:"natural", name:"Natural", hint:"El de antes, más luminoso", grade:{
     white_balance:"Neutral and balanced, around 5200K: neither warm nor cold. True clean whites with a hint of cream, natural skin tones",
     look:"Natural color exactly as a good camera captures it: refined tonal depth, no filters, no trendy grades, untouched skin",
-    accents:"A calm neutral base with one or two confident color accents from textiles or clothing: tomato red, kelly green, cobalt blue, bubblegum pink, mustard or burgundy",
+    accents:"A calm neutral base with at most one discreet color accent from clothing",
     texture:"Only the natural grain a real camera produces, a little more in low light, never an added filter. No vignette. Cinematic, never digital-clean or plastic"
   }}
 ];
@@ -552,7 +557,7 @@ function build(){
   scene.lighting = t.light;
   const room=ROOMS[$("room").value][1], pal=PALETTES[$("palette").value][1], extra=$("extra").value.trim();
   if(room) scene.space = room;
-  if(pal) scene.textiles_and_color = pal;
+  if(pal) scene.bedding_colors = pal + ". Every textile on the bed follows these colors";
   if(extra) scene.decor_direction = "Priority over the default set: " + extra;
   scene.camera_accident = accident;
   if($("product").checked){
@@ -576,7 +581,7 @@ let current="";
 function render(){ toggleCustom(); current=JSON.stringify(build(),null,2); $("json").innerHTML=highlight(current); }
 
 function save(){
-  try{localStorage.setItem("instantaneasLM",JSON.stringify({p:$("people").value,a:$("action").value,fp:$("focusPoint").value,ct:$("camText").value,t:val("time"),pr:$("product").checked,r:$("room").value,pl:$("palette").value,ar:$("ar").value,x:$("extra").value,n:$("neg").value,pv:val("pv"),gr:val("grade"),ln:val("lens"),m:$("model").value,cm:$("customModel").value,pb:$("pbase").value}))}catch(e){}
+  try{localStorage.setItem("instantaneasLM",JSON.stringify({p:$("people").value,a:$("action").value,fp:$("focusPoint").value,ct:$("camText").value,t:val("time"),pr:$("product").checked,r:$("room").value,pl2:$("palette").value,ar:$("ar").value,x:$("extra").value,n:$("neg").value,pv:val("pv"),gr:val("grade"),ln:val("lens"),m:$("model").value,cm:$("customModel").value,pb:$("pbase").value}))}catch(e){}
 }
 function load(){
   try{
@@ -584,7 +589,7 @@ function load(){
     if(d.p!=null) $("people").value=d.p; if(d.a!=null) $("action").value=d.a; if(d.fp) $("focusPoint").value=d.fp;
     if(d.ct!=null) $("camText").value=d.ct;
     if(d.t&&$("time-"+d.t)) $("time-"+d.t).checked=true;
-    if(d.r) $("room").value=d.r; if(d.pl) $("palette").value=d.pl; if(d.ar) $("ar").value=d.ar;
+    if(d.r) $("room").value=d.r; if(d.pl2!=null) $("palette").value=d.pl2; if(d.ar) $("ar").value=d.ar;
     if(d.x) $("extra").value=d.x; if(d.n) $("neg").value=d.n;
     if(d.pv&&$("pv-"+d.pv)) $("pv-"+d.pv).checked=true;
     if(d.gr&&$("grade-"+d.gr)) $("grade-"+d.gr).checked=true;
